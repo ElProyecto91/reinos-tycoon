@@ -40,14 +40,19 @@ func run_steps(province, count: int) -> void:
 ## Estado resumido en texto, ordenado, para comparar dos simulaciones.
 func snapshot(province) -> String:
 	var stock := {}
+	var ledgers := {}
 	for good_id in province.store.get("_stock").keys():
 		stock[good_id] = province.store.stock(good_id)
+		ledgers[good_id] = province.store.ledger(good_id)
 	var states: Array = []
 	for b in province.buildings:
-		states.append([b["uid"], b["type"], b["workers"], b["active"], b["progress"], b["status"]])
-	var data := {
-		"step": province.step_count, "population": province.population, "unrest": province.unrest,
-		"hunger": province.hunger_steps, "recruits": province.recruits, "stock": stock,
-		"buildings": states, "projects": province.projects, "ledger_wheat": province.store.ledger("wheat"),
+		states.append([b["uid"], b["type"], b["workers"], b["enabled"], b["active"], b["progress"], b["status"], b["missing"]])
+	var state := {
+		"id": province.id, "step": province.step_count, "population": province.population,
+		"unrest": province.unrest, "hunger": province.hunger_steps, "recruits": province.recruits,
+		"next_uid": province.next_uid, "auto_staff": province.auto_staff,
+		"shortage": province.food_shortage_percent, "capacity": province.store.capacity,
+		"stock": stock, "ledgers": ledgers, "buildings": states, "projects": province.projects,
+		"modifiers": province.modifiers, "wasted": province.wasted, "alerts": Array(province.alerts),
 	}
-	return JSON.stringify(data, "", true)
+	return JSON.stringify(state, "", true)

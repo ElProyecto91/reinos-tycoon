@@ -73,7 +73,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # Historial completo: el número de versión del APK es el número de commits.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Diagnóstico del entorno de Android en la imagen
         run: |
@@ -86,9 +89,23 @@ jobs:
             cat /root/.config/godot/editor_settings-4*.tres 2>&1 | head -30
             echo "--- clave de depuración ---"
             ls -l /root/debug.keystore 2>&1
+            keytool -list -keystore /root/debug.keystore -storepass android 2>&1 | head -6
             echo "--- java ---"
             java -version 2>&1 | head -1
           ' 2>&1 | tee logs/diagnostico.txt
+
+      - name: Numerar el APK con un código de versión creciente
+        run: |
+          # Android solo deja instalar una versión encima de otra si su código es mayor.
+          # Se usa el número de commits, que solo crece mientras no se reescriba el historial.
+          mkdir -p logs
+          CODE=$(git rev-list --count HEAD)
+          sed -i "s|^version/code=.*|version/code=${CODE}|" game/export_presets.cfg
+          {
+            echo "version/code del APK: ${CODE}"
+            grep -n '^version/' game/export_presets.cfg
+            docker image inspect --format 'imagen: {{index .RepoDigests 0}}' "$GODOT_IMAGE" 2>&1 || true
+          } | tee logs/numeracion.txt
 
       - name: Importar recursos y exportar el APK
         run: |
@@ -103,6 +120,8 @@ jobs:
               godot --headless --path game --import || true
               godot --headless --path game --export-debug "Android" /work/build/reinos-tycoon-debug.apk
               ls -l /work/build
+              echo "--- firma del APK (debe ser siempre la misma) ---"
+              "$(ls -d /usr/lib/android-sdk/build-tools/*/ | tail -1)apksigner" verify --print-certs /work/build/reinos-tycoon-debug.apk 2>&1 | head -4 || true
             ' 2>&1 | tee logs/export.txt
 
       - name: Comprobar que el APK existe y no está vacío

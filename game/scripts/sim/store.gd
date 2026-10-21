@@ -19,6 +19,7 @@ const EXPORTED := "exported"
 const LOST := "lost"
 const UNLIMITED := 1 << 60
 
+const LEDGER_KEYS: Array[String] = ["initial", "produced", "imported", "consumed", "exported", "lost"]
 const INCOMING: Array[String] = [PRODUCED, IMPORTED]
 const OUTGOING: Array[String] = [CONSUMED, EXPORTED, LOST]
 
@@ -36,7 +37,7 @@ func _init(goods: Dictionary, capacity_milli: int) -> void:
 	capacity = capacity_milli
 	for good_id in _goods.keys():
 		_stock[good_id] = 0
-		_ledger[good_id] = {"initial": 0, "produced": 0, "imported": 0, "consumed": 0, "exported": 0, "lost": 0}
+		_ledger[good_id] = _zero_ledger()
 
 
 func stock(good_id: String) -> int:
@@ -188,3 +189,79 @@ func _accept(good_id: String, amount: int) -> int:
 		last_error = "la cantidad no puede ser negativa"
 		return 0
 	return mini(amount, room(good_id))
+
+
+func _zero_ledger() -> Dictionary:
+	var entry := {}
+	for key in LEDGER_KEYS:
+		entry[key] = 0
+	return entry
+
+
+## Estado para guardar: capacidad, existencias y libro de movimientos.
+func to_dict() -> Dictionary:
+	var ledgers := {}
+	for good_id in _ledger.keys():
+		ledgers[good_id] = _ledger[good_id].duplicate()
+	return {"capacity": capacity, "stock": _stock.duplicate(), "ledger": ledgers}
+
+
+## Carga un estado guardado. Si no es válido devuelve false, deja el motivo en `last_error`
+## y no cambia nada. Las mercancías que falten en el guardado se toman como cero;
+## las desconocidas se rechazan.
+func load_dict(raw: Variant) -> bool:
+	last_error = ""
+	if typeof(raw) != TYPE_DICTIONARY:
+		last_error = "almacén: no es un objeto"
+		return false
+	var new_capacity = Fixed.exact_int(raw.get("capacity", null))
+	if new_capacity == null or new_capacity < 0:
+		last_error = "almacén: capacidad no válida"
+		return false
+	var stock_raw = raw.get("stock", null)
+	var ledger_raw = raw.get("ledger", null)
+	if typeof(stock_raw) != TYPE_DICTIONARY or typeof(ledger_raw) != TYPE_DICTIONARY:
+		last_error = "almacén: faltan las existencias o el libro de movimientos"
+		return false
+	var new_stock := {}
+	var new_ledger := {}
+	for good_id in _goods.keys():
+		new_stock[good_id] = 0
+		new_ledger[good_id] = _zero_ledger()
+	for good_id in stock_raw.keys():
+		if not _goods.has(good_id):
+			last_error = "almacén: mercancía desconocida en las existencias (%s)" % str(good_id)
+			return false
+		var amount = Fixed.exact_int(stock_raw[good_id])
+		if amount == null or amount < 0:
+			last_error = "almacén: existencias no válidas de %s" % str(good_id)
+			return false
+		new_stock[good_id] = amount
+	for good_id in ledger_raw.keys():
+		if not _goods.has(good_id):
+			last_error = "almacén: mercancía desconocida en el libro (%s)" % str(good_id)
+			return false
+		var entry = ledger_raw[good_id]
+		if typeof(entry) != TYPE_DICTIONARY:
+			last_error = "almacén: libro no válido de %s" % str(good_id)
+			return false
+		for key in LEDGER_KEYS:
+			var value = Fixed.exact_int(entry.get(key, null))
+			if value == null or value < 0:
+				last_error = "almacén: %s.%s no válido en el libro" % [str(good_id), key]
+				return false
+			new_ledger[good_id][key] = value
+	var old_capacity := capacity
+	var old_stock := _stock
+	var old_ledger := _ledger
+	capacity = new_capacity
+	_stock = new_stock
+	_ledger = new_ledger
+	var problems := check_conservation()
+	if not problems.is_empty():
+		capacity = old_capacity
+		_stock = old_stock
+		_ledger = old_ledger
+		last_error = "almacén incoherente: %s" % problems[0]
+		return false
+	return true

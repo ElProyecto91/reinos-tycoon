@@ -28,6 +28,10 @@ const ALERT_STORAGE_FULL := "storage_full"
 const ALERT_NO_WORKERS := "no_workers"
 const ALERT_WASTE := "waste"
 
+const STATUSES: Array[String] = [STATUS_IDLE, STATUS_RUNNING, STATUS_DISABLED, STATUS_NO_WORKERS, STATUS_MISSING_INPUTS, STATUS_NO_UPKEEP, STATUS_STORAGE_FULL]
+const ALERTS: Array[String] = [ALERT_HUNGER_WARNING, ALERT_UNREST, ALERT_STARVATION, ALERT_STORAGE_FULL, ALERT_NO_WORKERS, ALERT_WASTE]
+const BIG := 1000000000000
+
 var id: String = ""
 var display_name: String = ""
 var population: int = 0
@@ -241,6 +245,9 @@ func step() -> void:
 		_run_building(b)
 	_consume_food()
 	_update_population()
+	# La población puede haber bajado: así nunca queda un paso con más trabajadores
+	# asignados que mano de obra, ni siquiera entre dos pasos (por ejemplo, al guardar).
+	_enforce_labor_limit()
 	_update_alerts()
 
 
@@ -505,3 +512,190 @@ func check_invariants() -> Array[String]:
 		if p["remaining"] < 0 or p["workers"] < 0:
 			problems.append("obra %d: valores negativos" % p["uid"])
 	return problems
+
+
+# --- Guardado y carga ----------------------------------------------------------
+
+## Estado completo de la provincia para guardar (solo diccionarios, listas, números,
+## textos y booleanos).
+func to_dict() -> Dictionary:
+	return {
+		"id": id, "name": display_name, "population": population, "recruits": recruits,
+		"unrest": unrest, "hunger_steps": hunger_steps, "step_count": step_count,
+		"next_uid": next_uid, "auto_staff": auto_staff,
+		"food_shortage_percent": food_shortage_percent,
+		"buildings": buildings.duplicate(true), "projects": projects.duplicate(true),
+		"modifiers": modifiers.duplicate(true), "wasted": wasted.duplicate(),
+		"alerts": Array(alerts), "store": store.to_dict(),
+	}
+
+
+## Carga un estado guardado, comprobando todo. Devuelve false y deja el motivo en
+## `last_error` si algo no es válido; entonces este objeto no debe usarse.
+func load_dict(raw: Variant) -> bool:
+	last_error = ""
+	if typeof(raw) != TYPE_DICTIONARY:
+		return _load_fail("la provincia guardada no es un objeto")
+	var new_id = raw.get("id", null)
+	var new_name = raw.get("name", null)
+	if typeof(new_id) != TYPE_STRING or new_id == "" or typeof(new_name) != TYPE_STRING:
+		return _load_fail("id o nombre de provincia no válidos")
+	var limits := {
+		"population": [1, BIG], "recruits": [0, BIG], "unrest": [0, _rules["unrest_max"]],
+		"hunger_steps": [0, BIG], "step_count": [0, BIG], "next_uid": [1, BIG],
+		"food_shortage_percent": [0, 100],
+	}
+	var numbers := {}
+	for field in limits.keys():
+		var value = Fixed.exact_int(raw.get(field, null))
+		if value == null or value < limits[field][0] or value > limits[field][1]:
+			return _load_fail("%s: \"%s\" no válido" % [new_id, field])
+		numbers[field] = value
+	if typeof(raw.get("auto_staff", null)) != TYPE_BOOL:
+		return _load_fail("%s: \"auto_staff\" debe ser verdadero o falso" % new_id)
+	var seen_uids := {}
+	var new_buildings: Array = []
+	var buildings_raw = raw.get("buildings", null)
+	if typeof(buildings_raw) != TYPE_ARRAY:
+		return _load_fail("%s: falta la lista de edificios" % new_id)
+	for entry in buildings_raw:
+		var parsed = _parse_saved_building(entry, seen_uids, numbers["next_uid"])
+		if parsed == null:
+			return false
+		new_buildings.append(parsed)
+	var new_projects: Array = []
+	var projects_raw = raw.get("projects", null)
+	if typeof(projects_raw) != TYPE_ARRAY:
+		return _load_fail("%s: falta la lista de obras" % new_id)
+	for entry in projects_raw:
+		var parsed = _parse_saved_project(entry, seen_uids, numbers["next_uid"])
+		if parsed == null:
+			return false
+		new_projects.append(parsed)
+	var new_modifiers := {}
+	var modifiers_raw = raw.get("modifiers", null)
+	if typeof(modifiers_raw) != TYPE_DICTIONARY:
+		return _load_fail("%s: falta el objeto de efectos" % new_id)
+	for good in modifiers_raw.keys():
+		var entry = modifiers_raw[good]
+		if not _data.goods.has(good) or typeof(entry) != TYPE_DICTIONARY:
+			return _load_fail("%s: efecto no válido (%s)" % [new_id, str(good)])
+		var percent = Fixed.exact_int(entry.get("percent", null))
+		var until = Fixed.exact_int(entry.get("until_step", null))
+		if percent == null or until == null or percent < 0 or percent > 1000 or until < 0:
+			return _load_fail("%s: efecto de %s con valores no válidos" % [new_id, str(good)])
+		new_modifiers[good] = {"percent": percent, "until_step": until}
+	var new_wasted := {}
+	var wasted_raw = raw.get("wasted", null)
+	if typeof(wasted_raw) != TYPE_DICTIONARY:
+		return _load_fail("%s: falta el objeto de desperdicio" % new_id)
+	for good in wasted_raw.keys():
+		var amount = Fixed.exact_int(wasted_raw[good])
+		if not _data.goods.has(good) or amount == null or amount < 0:
+			return _load_fail("%s: desperdicio no válido (%s)" % [new_id, str(good)])
+		new_wasted[good] = amount
+	var new_alerts: Array[String] = []
+	var alerts_raw = raw.get("alerts", null)
+	if typeof(alerts_raw) != TYPE_ARRAY:
+		return _load_fail("%s: falta la lista de avisos" % new_id)
+	for alert in alerts_raw:
+		if typeof(alert) != TYPE_STRING or not ALERTS.has(alert):
+			return _load_fail("%s: aviso desconocido" % new_id)
+		new_alerts.append(alert)
+	if not store.load_dict(raw.get("store", null)):
+		return _load_fail("%s: %s" % [new_id, store.last_error])
+	id = new_id
+	display_name = new_name
+	population = numbers["population"]
+	recruits = numbers["recruits"]
+	unrest = numbers["unrest"]
+	hunger_steps = numbers["hunger_steps"]
+	step_count = numbers["step_count"]
+	next_uid = numbers["next_uid"]
+	food_shortage_percent = numbers["food_shortage_percent"]
+	auto_staff = raw["auto_staff"]
+	buildings = new_buildings
+	projects = new_projects
+	modifiers = new_modifiers
+	wasted = new_wasted
+	alerts = new_alerts
+	var expected_capacity: int = _rules["base_capacity"]
+	for b in buildings:
+		expected_capacity += _data.buildings[b["type"]]["storage_capacity"]
+	if store.capacity != expected_capacity:
+		return _load_fail("%s: la capacidad guardada (%d) no coincide con los edificios (%d)" % [id, store.capacity, expected_capacity])
+	var problems := check_invariants()
+	if not problems.is_empty():
+		return _load_fail("%s: estado incoherente: %s" % [id, problems[0]])
+	return true
+
+
+func _load_fail(message: String) -> bool:
+	last_error = message
+	return false
+
+
+## Valida un edificio guardado. Devuelve el diccionario normalizado o null (con last_error).
+func _parse_saved_building(entry: Variant, seen_uids: Dictionary, next_free_uid: int) -> Variant:
+	if typeof(entry) != TYPE_DICTIONARY:
+		_load_fail("edificio guardado no válido")
+		return null
+	var type_id = entry.get("type", null)
+	if typeof(type_id) != TYPE_STRING or not _data.buildings.has(type_id):
+		_load_fail("edificio de tipo desconocido (%s)" % str(type_id))
+		return null
+	var t: Dictionary = _data.buildings[type_id]
+	var uid = Fixed.exact_int(entry.get("uid", null))
+	if uid == null or uid < 1 or uid >= next_free_uid or seen_uids.has(uid):
+		_load_fail("edificio con uid no válido o repetido")
+		return null
+	seen_uids[uid] = true
+	var workers = Fixed.exact_int(entry.get("workers", null))
+	var progress = Fixed.exact_int(entry.get("progress", null))
+	if workers == null or workers < 0 or workers > t["workers"] or progress == null or progress < 0 or progress > t["cycle_steps"]:
+		_load_fail("edificio %d: trabajadores o progreso fuera de rango" % uid)
+		return null
+	if typeof(entry.get("enabled", null)) != TYPE_BOOL or typeof(entry.get("active", null)) != TYPE_BOOL:
+		_load_fail("edificio %d: enabled o active no son booleanos" % uid)
+		return null
+	var status = entry.get("status", null)
+	if typeof(status) != TYPE_STRING or not STATUSES.has(status):
+		_load_fail("edificio %d: estado desconocido" % uid)
+		return null
+	var missing := {}
+	var missing_raw = entry.get("missing", null)
+	if typeof(missing_raw) != TYPE_DICTIONARY:
+		_load_fail("edificio %d: falta la lista de lo que falta" % uid)
+		return null
+	for good in missing_raw.keys():
+		var amount = Fixed.exact_int(missing_raw[good])
+		if not _data.goods.has(good) or amount == null or amount <= 0:
+			_load_fail("edificio %d: \"missing\" no válido" % uid)
+			return null
+		missing[good] = amount
+	return {
+		"uid": uid, "type": type_id, "workers": workers, "enabled": entry["enabled"],
+		"active": entry["active"], "progress": progress, "status": status, "missing": missing,
+	}
+
+
+func _parse_saved_project(entry: Variant, seen_uids: Dictionary, next_free_uid: int) -> Variant:
+	if typeof(entry) != TYPE_DICTIONARY:
+		_load_fail("obra guardada no válida")
+		return null
+	var type_id = entry.get("type", null)
+	if typeof(type_id) != TYPE_STRING or not _data.buildings.has(type_id):
+		_load_fail("obra de tipo desconocido (%s)" % str(type_id))
+		return null
+	var t: Dictionary = _data.buildings[type_id]
+	var uid = Fixed.exact_int(entry.get("uid", null))
+	if uid == null or uid < 1 or uid >= next_free_uid or seen_uids.has(uid):
+		_load_fail("obra con uid no válido o repetido")
+		return null
+	seen_uids[uid] = true
+	var remaining = Fixed.exact_int(entry.get("remaining", null))
+	var workers = Fixed.exact_int(entry.get("workers", null))
+	if remaining == null or remaining < 1 or remaining > t["build_steps"] or workers == null or workers < 0 or workers > t["build_workers"]:
+		_load_fail("obra %d: tiempo o trabajadores fuera de rango" % uid)
+		return null
+	return {"uid": uid, "type": type_id, "remaining": remaining, "workers": workers}

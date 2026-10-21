@@ -108,6 +108,11 @@ func test_bad_harvest_causes_scarcity_and_the_province_recovers() -> void:
 			problems += 1
 		if recovered_at < 0 and i > 100 and p.hunger_steps == 0 and p.unrest == 0:
 			recovered_at = i
+		if i % 25 == 0:
+			var states := ""
+			for b in p.buildings:
+				states += str(b["status"]).substr(0, 4) + " "
+			print("  t=%d pob=%d desc=%d hambre=%d falta=%d%% prod=%d%% pan=%d trigo=%d harina=%d lena=%d mon=%d | %s" % [i, p.population, p.unrest, p.hunger_steps, p.food_shortage_percent, p.productivity_percent(), p.store.stock("bread"), p.store.stock("wheat"), p.store.stock("flour"), p.store.stock("firewood"), p.store.stock("coin"), states])
 	print("crisis: hambre máx. %d pasos, descontento máx. %d, población mín. %d, final %d, recuperada en el paso %d" % [max_hunger, max_unrest, min_population, p.population, recovered_at])
 	assert_true(max_hunger > 0, "la mala cosecha produjo escasez")
 	assert_true(max_unrest > 0, "y descontento")
