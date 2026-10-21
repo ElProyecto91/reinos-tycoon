@@ -43,6 +43,8 @@ var game_version: String = "?"
 var enable_3d: bool = true
 ## Sombras de la vista 3D (también se cambian desde el menú).
 var shadows_enabled: bool = true
+## Gente en movimiento en la vista 3D (cuesta batería; se puede quitar desde el menú).
+var animation_enabled: bool = true
 ## Dónde se guardan los ajustes de pantalla; vacío = no se leen ni se guardan (pruebas).
 var settings_path: String = SETTINGS_PATH
 ## Provincia que se muestra al arrancar (si existe en el mapa). Vacía: ninguna.
@@ -160,6 +162,7 @@ func _build_ui() -> void:
 	root.add_child(_center)
 	_province_view = ProvinceViewScript.new()
 	_province_view.sombras = shadows_enabled
+	_province_view.animar = animation_enabled
 	_center.add_child(_province_view)
 	_map_view = MapViewScript.new()
 	_map_view.setup(session.map, session.world)
@@ -393,6 +396,7 @@ func _on_menu_pressed() -> void:
 		{"text": "Medir velocidad", "action": _on_measure_pressed},
 		{"text": "Vista 3D: %s" % ("sí" if enable_3d else "no"), "action": _on_toggle_3d_pressed},
 		{"text": "Sombras de la vista 3D: %s" % ("sí" if shadows_enabled else "no"), "action": _on_toggle_shadows_pressed},
+		{"text": "Gente en movimiento: %s" % ("sí" if animation_enabled else "no"), "action": _on_toggle_animation_pressed},
 		{"text": "Partida nueva", "action": _on_new_game_pressed},
 		{"text": "Cerrar"},
 	])
@@ -451,9 +455,10 @@ func _load_settings() -> void:
 	var datos: Dictionary = interpretar_ajustes(FileAccess.get_file_as_string(settings_path))
 	enable_3d = datos.get("view_3d", enable_3d)
 	shadows_enabled = datos.get("shadows", shadows_enabled)
+	animation_enabled = datos.get("animation", animation_enabled)
 
 
-## Del texto de un archivo de ajustes devuelve solo lo válido: las claves «view_3d» y «shadows» que sean
+## Del texto de un archivo de ajustes devuelve solo lo válido: las claves «view_3d», «shadows» y «animation» que sean
 ## verdadero o falso. Texto que no es JSON, JSON que no es un objeto o valores de otro tipo se ignoran.
 static func interpretar_ajustes(texto: String):  # sin tipo de retorno a propósito: si fallase por dentro, devolvería null y la prueba lo vería (con «-> Dictionary» Godot devuelve un diccionario vacío y el fallo pasaría inadvertido)
 	var json := JSON.new()
@@ -463,7 +468,7 @@ static func interpretar_ajustes(texto: String):  # sin tipo de retorno a propós
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return {}
 	var salida := {}
-	for clave in ["view_3d", "shadows"]:
+	for clave in ["view_3d", "shadows", "animation"]:
 		if typeof(parsed.get(clave)) == TYPE_BOOL:
 			salida[clave] = parsed[clave]
 	return salida
@@ -475,7 +480,7 @@ func _save_settings() -> void:
 	var file := FileAccess.open(settings_path, FileAccess.WRITE)
 	if file == null:
 		return  # no es grave: el ajuste solo vale esta vez
-	file.store_string(JSON.stringify({"view_3d": enable_3d, "shadows": shadows_enabled}))
+	file.store_string(JSON.stringify({"view_3d": enable_3d, "shadows": shadows_enabled, "animation": animation_enabled}))
 
 
 func _on_toggle_3d_pressed() -> void:
@@ -489,6 +494,12 @@ func _on_toggle_shadows_pressed() -> void:
 	shadows_enabled = not shadows_enabled
 	_save_settings()
 	_province_view.set_sombras(shadows_enabled)
+
+
+func _on_toggle_animation_pressed() -> void:
+	animation_enabled = not animation_enabled
+	_save_settings()
+	_province_view.set_animacion(animation_enabled)
 
 
 func _on_save_pressed() -> void:

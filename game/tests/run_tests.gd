@@ -27,6 +27,7 @@ const TEST_FILES: Array[String] = [
 	"res://tests/test_diorama.gd",
 	"res://tests/test_epoca.gd",
 	"res://tests/test_vista_provincia.gd",
+	"res://tests/test_gente.gd",
 	"res://tests/test_session.gd",
 	"res://tests/test_ui_logic.gd",
 	"res://tests/test_closure.gd",

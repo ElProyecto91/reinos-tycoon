@@ -39,6 +39,9 @@ const HUECO_DE := {
 
 ## Habitantes que representa cada manzana del caserío (parámetro de aspecto, no de simulación).
 const HABITANTES_POR_MANZANA := 30
+## Habitantes que representa cada aldeano que se ve caminando (parámetro de aspecto) y tope.
+const HABITANTES_POR_CAMINANTE := 12
+const MAX_CAMINANTES := 16
 
 
 ## Aspecto («cordoba», «toledo», «zaragoza» o «norte») de una provincia; vacío si no se conoce.
@@ -67,6 +70,8 @@ static func plan(aspecto: String, buildings: Array, projects: Array, population:
 	var cells: Dictionary = (t["base"] as Dictionary).duplicate(true)
 	var huecos: Dictionary = t["huecos"]
 	var ocultos := {}
+	var visibles := {}      # tipo de hueco -> cuántos edificios terminados se dibujan
+	var celdas_obra: Array = []
 
 	var hechos := {}
 	for b in buildings:
@@ -90,18 +95,52 @@ static func plan(aspecto: String, buildings: Array, projects: Array, population:
 				cells[lista[i][0]] = {"o": lista[i][1]}
 		if mostrados > libres:
 			ocultos[tipo] = mostrados - libres
+		visibles[HUECO_DE[tipo]] = mini(mostrados, libres)
 		for k in range(en_obra):
 			var idx := mostrados + k
 			if idx < libres:
 				cells[lista[idx][0]] = {"o": "S"}
+				celdas_obra.append(lista[idx][0])
 			else:
 				ocultos[tipo] = int(ocultos.get(tipo, 0)) + 1
-	return {"cells": cells, "radio": RADIO, "foco": t["foco"], "ocultos": ocultos}
+	var horno_cells: Array = []
+	var hornos: Array = huecos["panaderia"]
+	for i in range(int(visibles.get("panaderia", 0))):
+		horno_cells.append(hornos[i][0])
+	return {
+		"cells": cells, "radio": RADIO, "foco": t["foco"], "ocultos": ocultos,
+		"gente": gente(t, visibles, celdas_obra, horno_cells, population),
+	}
+
+
+## Quién se ve moviéndose por la provincia (lógica pura; la vista solo lo dibuja):
+##   rutas: caminos de ida y vuelta (puntos [q, r] o [q, r, borde, fracción]) cuyos requisitos se cumplen,
+##   caminantes: cuántos aldeanos las recorren, obras: casillas con obra (llevan obreros),
+##   humos: casillas con horno encendido, mercado: casilla del mercado y cuántas personas hay en él.
+static func gente(t: Dictionary, visibles: Dictionary, celdas_obra: Array, horno_cells: Array, poblacion: int) -> Dictionary:
+	var rutas: Array = []
+	for r in t["rutas"]:
+		var req = r["req"]
+		if req == null or int(visibles.get(req[0], 0)) > int(req[1]):
+			rutas.append(r["pts"])
+	return {
+		"rutas": rutas,
+		"caminantes": clampi(maxi(poblacion, 0) / HABITANTES_POR_CAMINANTE, 2, MAX_CAMINANTES),
+		"obras": celdas_obra,
+		"humos": horno_cells,
+		"mercado": t["mercado"],
+		"gente_mercado": t["gente_mercado"],
+	}
 
 
 ## Firma estable de lo que se dibuja: si no cambia, no hace falta reconstruir la escena 3D.
 static func firma(aspecto: String, resultado: Dictionary) -> String:
 	return "%s:%d" % [aspecto, (resultado["cells"] as Dictionary).hash()]
+
+
+## Firma de la gente (rutas, aldeanos, obreros, humos): si cambia solo esto, no hace falta reconstruir el suelo.
+static func firma_gente(resultado: Dictionary) -> String:
+	return str((resultado["gente"] as Dictionary).hash())
 
 
 # ---------------------------------------------------------------------------------------------
@@ -170,7 +209,23 @@ static func _sur() -> Dictionary:
 		"panaderia": _huecos([[-3, 3, "p"], [3, -3, "p"]]),
 		"lenador": _huecos([[4, -2, "L"], [2, 2, "L"]]),
 	}
-	return {"base": c, "huecos": huecos, "foco": Vector3(0.0, 0.5, 0.5)}
+	var rutas := [
+		# Camino de la puerta al puente y por la calzada hasta el fondo.
+		{"req": null, "pts": [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]]},
+		# Huertas y olivares junto a la calzada.
+		{"req": null, "pts": [[0, 3], [-1, 3], [-2, 4]]},
+		{"req": null, "pts": [[0, 4], [1, 3]]},
+		# Del puente a los campos de cereal.
+		{"req": ["granja", 0], "pts": [[0, 2], [1, 2], [2, 1], [3, 1], [3, 0]]},
+		# Al molino de la orilla.
+		{"req": ["molino", 0], "pts": [[0, 2], [1, 1, 3, 0.45]]},
+		# Al aserradero.
+		{"req": ["lenador", 1], "pts": [[1, 2], [2, 2, 3, 0.5]]},
+		# Al arrabal del oeste.
+		{"req": null, "pts": [[0, 0], [-1, 1], [-1, 1, 3, 0.6]]},
+	]
+	return {"base": c, "huecos": huecos, "foco": Vector3(0.0, 0.5, 0.5), "rutas": rutas,
+		"mercado": Vector2i(0, -2), "gente_mercado": 3}
 
 
 ## Aldea cristiana con iglesia y feria, un arroyo, campos, bosque y un castro en el cerro.
@@ -210,4 +265,14 @@ static func _norte() -> Dictionary:
 		"panaderia": _huecos([[1, -3, "p"], [0, -4, "p"]]),
 		"lenador": _huecos([[2, 2, "L"], [3, 1, "L"]]),
 	}
-	return {"base": c, "huecos": huecos, "foco": Vector3(0.0, 0.5, 0.5)}
+	var rutas := [
+		# Vuelta por los campos de cereal.
+		{"req": null, "pts": [[0, 1, 5, 0.8], [0, 2], [-1, 2], [-2, 2], [-2, 1]]},
+		{"req": null, "pts": [[-1, 1, 4, 0.8], [-1, 2, 3, 0.2], [-2, 3]]},
+		# De la aldea al molino del arroyo.
+		{"req": ["molino", 1], "pts": [[0, 1, 0, 0.8], [1, 1, 3, 0.45]]},
+		# De las casas a la feria.
+		{"req": null, "pts": [[0, 0, 1, 0.85], [1, -1, 4, 0.65]]},
+	]
+	return {"base": c, "huecos": huecos, "foco": Vector3(0.0, 0.5, 0.5), "rutas": rutas,
+		"mercado": Vector2i(1, -1), "gente_mercado": 2}

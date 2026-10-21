@@ -43,6 +43,11 @@ var triangulos := 0
 var _palette_cache := {}
 
 
+## Casilla ya construida: {"t": terreno, "p": camino, "o": objeto, "h": altura}; vacío si no existe.
+func celda(q: int, r: int) -> Dictionary:
+	return _cells.get(Vector2i(q, r), {})
+
+
 func _datos() -> Dictionary:
 	return REGIONES.get(region, REGIONES["cordoba"])
 

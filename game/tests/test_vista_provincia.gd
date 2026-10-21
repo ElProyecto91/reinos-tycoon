@@ -414,7 +414,7 @@ func test_the_menu_offers_3d_and_shadow_switches_that_are_saved_apart_from_the_g
 	assert_true(not main.enable_3d and main._map_view.visible and not main._province_view.visible, "sin 3D se ve el mapa")
 	assert_true(main._map_button.disabled, "y el botón de mapa no lleva a ninguna parte")
 	var guardado = JSON.parse_string(FileAccess.get_file_as_string(AJUSTES))
-	assert_eq(guardado, {"view_3d": false, "shadows": false}, "los ajustes quedan en su archivo, no en la partida")
+	assert_eq(guardado, {"view_3d": false, "shadows": false, "animation": true}, "los ajustes quedan en su archivo, no en la partida")
 	main._on_menu_pressed()
 	assert_true("Vista 3D: no" in _botones_del_modal(main), "el menú refleja el estado")
 	_quitar(main)

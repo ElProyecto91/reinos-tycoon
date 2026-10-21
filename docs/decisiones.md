@@ -228,6 +228,14 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Versión del proyecto 0.0.6.
 - Estado: **provisional; pendiente de que el usuario lo vea en el móvil**.
 
+## D-027. Gente en movimiento y nuevas peticiones (2026-10-21)
+
+- Petición del usuario tras ver 0.0.6 («va bien, pero no me gusta visualmente»): aspecto vacío y quieto, edificios y terreno, colores y luz; más edificios; ejércitos con coste real (reclutar); aldeanos visibles; gran mapa antiguo con reinos y **muchas provincias jugables**; orden «todo». Referencia de estilo del mapa: dos imágenes del usuario (no se incluyen en el repositorio).
+- Orden elegido: 1) aldeanos y aspecto, 2) más edificios, 3) ejércitos con coste, 4) mapa grande; un APK tras cada pieza. Desacuerdo registrado con juntar todo en una versión.
+- Aldeanos: rutas de ida y vuelta definidas por plantilla (sobre suelo abierto, sin atravesar casas), que solo existen si lo que enlazan está construido; cantidad = habitantes / 12 (2 a 16); 2 obreros por obra; gente en el mercado; humo en panaderías. Figuras ~5 veces más grandes que a escala de las casas para verse en el móvil.
+- Coste: el 3D se redibuja a 15 fps mientras haya gente (antes, solo al cambiar). Interruptor en el menú. **Sin medir en el móvil.**
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

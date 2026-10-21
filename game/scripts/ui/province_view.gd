@@ -12,8 +12,11 @@ extends Control
 const Layout := preload("res://scripts/view/provincia_layout.gd")
 const CiudadEpoca := preload("res://scripts/view/ciudad_epoca.gd")
 const StageScript := preload("res://scripts/view/stage.gd")
+const GenteScript := preload("res://scripts/view/epoca_gente.gd")
 
 const REFRESCO_SEGUNDOS := 1.0
+## Con la gente en movimiento se redibuja a este ritmo (no a 60 fps: ahorra batería). Sin medir en el móvil.
+const FOTOGRAMAS_ANIMACION := 15.0
 ## Cámara: inclinación (grados sobre el horizonte), distancia al punto mirado y campo de visión horizontal.
 const INCLINACION := 44.0
 const DISTANCIA := 25.5
@@ -24,6 +27,8 @@ const LADO_MAXIMO := 1400
 
 ## Sombras del sol. Más bonitas, pero cuestan; se pueden quitar sin tocar nada más.
 var sombras := true
+## Gente en movimiento (aldeanos, obreros, humo). Si es false la escena vuelve a ser estática.
+var animar := true
 ## Veces que se ha reconstruido la escena (para pruebas).
 var reconstrucciones := 0
 
@@ -33,6 +38,9 @@ var _mundo: Node3D
 var _ciudad = null
 var _stage = null
 var _firma := ""
+var _firma_gente := ""
+var _gente = null
+var _acumulado := 0.0
 var _aspecto := ""
 var _ocultos: Dictionary = {}
 var _reloj := 0.0
@@ -64,6 +72,13 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if not is_visible_in_tree():
 		return
+	if animar and _gente != null:
+		_acumulado += delta
+		if _acumulado >= 1.0 / FOTOGRAMAS_ANIMACION:
+			_gente.avanzar(_acumulado)
+			_acumulado = 0.0
+			dibujar_de_nuevo()
+			return
 	_reloj += delta
 	if _reloj >= REFRESCO_SEGUNDOS:
 		_reloj = 0.0
@@ -80,6 +95,13 @@ func set_sombras(activas: bool) -> void:
 	sombras = activas
 	if _stage != null and _stage.sun != null:
 		_stage.sun.shadow_enabled = activas
+	dibujar_de_nuevo()
+
+
+## Activa o quita la gente en movimiento (la escena queda estática y vuelve a dibujarse solo al cambiar).
+func set_animacion(activa: bool) -> void:
+	animar = activa
+	_acumulado = 0.0
 	dibujar_de_nuevo()
 
 
@@ -122,6 +144,11 @@ func mostrar(province) -> void:
 	var plan := Layout.plan(aspecto_nuevo, province.buildings, province.projects, province.population)
 	var firma_nueva := Layout.firma(aspecto_nuevo, plan)
 	if firma_nueva == _firma:
+		var fg := Layout.firma_gente(plan)
+		if fg != _firma_gente and _gente != null:
+			_firma_gente = fg
+			_gente.configurar(_ciudad, plan["gente"], aspecto_nuevo != "norte")
+			dibujar_de_nuevo()
 		return
 	_reconstruir(aspecto_nuevo, plan, firma_nueva)
 
@@ -130,7 +157,11 @@ func _limpiar() -> void:
 	if _ciudad != null:
 		_ciudad.queue_free()
 		_ciudad = null
+	if _gente != null:
+		_gente.queue_free()
+		_gente = null
 	_firma = ""
+	_firma_gente = ""
 	_aspecto = ""
 	_ocultos = {}
 	dibujar_de_nuevo()
@@ -143,6 +174,10 @@ func _reconstruir(aspecto_nuevo: String, plan: Dictionary, firma_nueva: String) 
 		_mundo.remove_child(_ciudad)
 		_ciudad.queue_free()
 		_ciudad = null
+	if _gente != null:
+		_mundo.remove_child(_gente)
+		_gente.queue_free()
+		_gente = null
 	var ciudad = CiudadEpoca.new()
 	ciudad.region = aspecto_nuevo
 	var capas: Dictionary = ciudad.layers_from_cells(plan["radio"], plan["cells"])
@@ -160,6 +195,10 @@ func _reconstruir(aspecto_nuevo: String, plan: Dictionary, firma_nueva: String) 
 	_aspecto = aspecto_nuevo
 	_firma = firma_nueva
 	_ocultos = plan["ocultos"]
+	_gente = GenteScript.new()
+	_mundo.add_child(_gente)
+	_gente.configurar(_ciudad, plan["gente"], aspecto_nuevo != "norte")
+	_firma_gente = Layout.firma_gente(plan)
 	if _stage == null:
 		_stage = StageScript.new()
 		_mundo.add_child(_stage)
