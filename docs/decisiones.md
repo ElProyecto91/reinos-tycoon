@@ -33,7 +33,7 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 
 - Problema: el MVP (10–20 provincias, 2–3 poderes, 8–12 mercancías) necesita una región concreta; de ella depende toda la investigación histórica de la sección 32.
 - Propuesta: una sola región pequeña y bien documentada, fecha de referencia 1000.
-- Estado: **pendiente del usuario**.
+- Estado: **borrador de propuesta (Iberia hacia el año 1000) en `docs/MVP_PROTOTYPE.md`; pendiente de aprobación del usuario**.
 
 ## D-006. Versión de Godot
 
@@ -48,7 +48,7 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Motivo: desde aquí no se pueden verificar las URL de descarga de Godot ni las versiones exactas del SDK. La etiqueta existe en Docker Hub (vista el 2026-10-21, subida hace unos 2 meses).
 - Riesgos: es un tercero y la etiqueta es mutable; límites de descarga anónima de Docker Hub; las rutas internas (`/root/.config/godot`, `/root/.local/share/godot/export_templates`, `/root/debug.keystore`) y las variables `GODOT_ANDROID_KEYSTORE_DEBUG_*` se dan por buenas según lo que se recuerda de su documentación, sin comprobar. El flujo imprime un diagnóstico para verlo en la primera ejecución.
 - La firma de depuración es la de la imagen. Si cambia, instalar una versión nueva sobre la anterior puede fallar y habrá que desinstalar antes.
-- Estado: **el flujo salió en verde en la primera ejecución (2026-10-21, #1)**. Los supuestos sobre rutas internas quedan confirmados en la práctica solo si el APK instala y abre en un móvil; el registro del paso de diagnóstico no se ha revisado. Más adelante, fijar la imagen por huella (digest).
+- Estado: **confirmada en la práctica**: el flujo salió en verde (2026-10-21, #1) y el APK exportado se instaló y abrió en un móvil real. El registro del paso de diagnóstico no se ha revisado. Más adelante, fijar la imagen por huella (digest).
 
 ## D-008. `export_presets.cfg` dentro del repositorio
 

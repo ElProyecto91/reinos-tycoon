@@ -9,7 +9,7 @@ Juego de estrategia, economía y gestión territorial con progreso idle, ambient
 
 ## Estado actual
 
-**v0.0.3: fase 0.** Hay un proyecto de Godot mínimo (una pantalla de arranque), un ejecutor de pruebas y un flujo de GitHub Actions que prueba y exporta un APK de depuración. Todavía no hay juego. El flujo salió en verde en su primera ejecución (2026-10-21); el APK aún no se ha probado en un móvil.
+**v0.0.3: fase 0.** Hay un proyecto de Godot mínimo (una pantalla de arranque), un ejecutor de pruebas y un flujo de GitHub Actions que prueba y exporta un APK de depuración. Todavía no hay juego. El flujo salió en verde en su primera ejecución (2026-10-21) y el APK se instaló y abrió en un móvil real.
 
 ## Independencia
 
@@ -29,6 +29,7 @@ Este proyecto es independiente del juego "Reinos". No comparte código, archivos
 - `docs/00-documento-maestro.md`: especificación completa (40 secciones).
 - `docs/ROADMAP.md`: tareas por dependencia y prioridad, y qué se prueba sin Android.
 - `docs/decisiones.md`: contradicciones, huecos y decisiones pendientes.
+- `docs/MVP_PROTOTYPE.md`: borrador del prototipo y sus criterios de aceptación (pendiente de aprobación).
 - `docs/TEST_PLAN.md`: cómo ejecutar las pruebas y qué comprobar a mano en el móvil.
 - `docs/FREE_OPERATION.md`: herramientas, licencias y costes.
 - `THIRD_PARTY_LICENSES.md`: licencias de terceros.
@@ -43,4 +44,4 @@ El resto de documentos de la sección 31 se crearán cuando tengan contenido rea
 3. Descomprímelo con el gestor de archivos del móvil y abre el `.apk`. Android pedirá permitir instalar apps desconocidas desde esa aplicación.
 4. Si al actualizar dice "app no instalada", desinstala antes la versión anterior (la firma de depuración puede cambiar).
 
-Es un APK de depuración, solo para pruebas: no sirve para publicar. El primero lo generó la ejecución #1 del flujo; aún no se ha probado en un móvil.
+Es un APK de depuración, solo para pruebas: no sirve para publicar. El primero lo generó la ejecución #1 del flujo y se probó en un móvil real.
