@@ -31,16 +31,29 @@ Cómo se comprobó que no pasan por vacío: se desactivó a propósito la compro
 
 La interfaz se prueba sin ventana, llamando a sus métodos con eventos fabricados; **no** se prueba el dibujado. Para eso hay capturas a ojo (`tools/captura_ui.gd`, ver su cabecera) y la comprobación manual A11 en el móvil.
 
-## Comprobaciones manuales en móvil (tarea 0.7)
+## Comprobaciones manuales en móvil
 
-Estado: los puntos 1 a 3 se comprobaron con una captura del usuario (2026-10-21, pantalla en vertical, Redmi Note 13 5G). Los puntos 4 a 6 siguen sin ejecutar.
+### Fase 0 (tarea 0.7)
+
+Estado: los puntos 1 a 3 se comprobaron con una captura del usuario (2026-10-21, pantalla en vertical, Redmi Note 13 5G). Los puntos 4 a 6 quedaron sin ejecutar y **han cambiado**: desde la fase 1 la app está bloqueada en vertical (4 ya no aplica) y pide el permiso de Internet (6 ya no aplica tal cual; ver abajo).
 
 1. Descargar y descomprimir el artefacto del flujo; instalar el APK.
 2. La app abre y no se cierra sola.
-3. Se ve centrado el texto "Reinos Tycoon / v0.0.3 (fase 0) / Arranque correcto".
-4. Al girar el móvil el texto sigue centrado.
-5. Cerrar la app y volver a abrirla funciona.
-6. La app no pide ningún permiso (Ajustes del sistema, Apps, Reinos Tycoon, Permisos).
+3. Se ve centrado el texto de arranque.
+
+### Fase 1 (APK de la ejecución #16 o posterior) — sin ejecutar
+
+Instalación: si Android rechaza instalar encima del anterior, desinstalar primero (aún no hay partidas que perder).
+
+1. Se ve el mapa con 5 provincias y los botones de velocidad, en vertical y sin recortes (comparar con las capturas). Anotar si algo queda tapado por la cámara o la barra inferior.
+2. Tocar cada provincia con el dedo: se marca y aparece su ficha debajo. ¿Se acierta a la primera? (A11)
+3. Desplazar la ficha con el dedo: se ven existencias, edificios y botones de construir.
+4. Pulsar «Construir» en una provincia con recursos: aparece la obra y baja el tiempo restante.
+5. Cambiar la velocidad a ×600 y ver pasar los días; volver a ×60.
+6. Cerrar la app del todo y volver a abrirla: debe seguir la partida y mostrar «Mientras estabas fuera» con el tiempo real que estuvo cerrada (un paso por minuto, máximo 10 h).
+7. Menú → «Medir velocidad»: anotar los milisegundos por paso (A12).
+8. Menú → «Buscar actualización» con Internet: debe decir «Todavía no hay versiones publicadas…» (el repositorio no tiene ninguna release). Sin Internet: debe decir que no pudo conectar.
+9. Ajustes del sistema → Apps → Reinos Tycoon → Permisos: solo debería figurar Internet (a veces Android no lo lista, por ser un permiso normal).
 
 Al ejecutarlas, anotar fecha, modelo de móvil, versión de Android y qué pasó.
 
@@ -57,3 +70,4 @@ Al ejecutarlas, anotar fecha, modelo de móvil, versión de Android y qué pasó
 | 2026-10-21 | Las 172 pruebas en local con el mapa (tarea 1.8) | 172 de 172 superadas | Sabotajes a mano: aceptar vecindad no mutua, zonas de toque solapadas, provincias aisladas y un radio de toque ampliado; las pruebas fallaron en los cuatro. Pendiente de CI |
 | 2026-10-21 | Ejecución #13 de CI (commit 0b2800a): mapa y sesión | **Verde**: 180 de 180; APK generado | Primera vez con el mapa de ejemplo y la sesión en CI |
 | 2026-10-21 | Las 195 pruebas en local con la interfaz (1.9) | 195 de 195 superadas | Sabotajes a mano: sin autoguardado, toque que no selecciona, botón que no construye y ausencia no aplicada al volver, detectados por aserción; quitar el tope de 30 pasos por fotograma lo detecta el límite de tiempo (la prueba se queda calculando). Capturas a 1080×2400 revisadas a ojo; defectos encontrados y corregidos: nombres cortados, provincias solapadas, avisos ámbar en todo el mapa, cantidad redondeada a cero. Pendiente de CI y del móvil |
+| 2026-10-21 | Ejecuciones #14 (commit 43d23e0), #15 (4e9bef6) y #16 (9ecd143) de CI | **Verdes**: 195, 200 y 200 de 200; APK con `version/code` 19, 21 y 22 | Interfaz, medir velocidad, buscar actualización e icono. La firma del APK es la misma en todas (SHA-256 `f3e6ecc4…48d5`). En #16 desaparece el aviso «No project icon specified». APK final: artefacto `reinos-tycoon-debug-apk` de la ejecución #16 (28 MB). **No instalado ni visto todavía en el móvil** |

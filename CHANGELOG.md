@@ -12,7 +12,8 @@
 - Sesión de juego sin pantalla (`game_session.gd`): arranque, guardado con hora, reanudación, archivos dañados apartados sin borrarse.
 - Interfaz táctil en vertical (1.9, D-018): mapa con selección por toque, ficha de provincia, construcción, velocidad, autoguardado y resumen al volver. Versión del proyecto 0.0.4. `tools/captura_ui.gd` para capturas.
 - Menú: «Medir velocidad» (A12) y «Buscar actualización» (D-015; activa el permiso de Internet, solo se usa al pulsar el botón).
-- Estado de las pruebas: 200 de 200 en local; las 180 hasta el mapa y la sesión confirmadas en CI (#13), las 15 de interfaz pendientes.
+- Icono propio provisional.
+- Estado de las pruebas: 200 de 200 en GitHub Actions (ejecución #16). APK de esa ejecución sin instalar todavía en un móvil.
 
 ## v0.0.3 (2026-10-21)
 
