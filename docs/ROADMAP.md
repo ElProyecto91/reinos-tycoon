@@ -1,6 +1,14 @@
 # Plan de trabajo (entrega C)
 
-Estado de todas las tareas: **pendiente**. Nada está implementado ni probado.
+Estado a 2026-10-21 (v0.0.3):
+
+- 0.1 hecha: repositorio creado y `main` subido. Las etiquetas no pudieron subirse (403); queda crearlas a mano.
+- 0.2 hecha con salvedades: versión confirmada (4.7.2-stable); los requisitos de Android solo se leyeron en resúmenes (D-006).
+- 0.3 hecha: GitHub Actions.
+- 0.4, 0.5 y 0.6 escritas, **sin ejecutar**: se prueban en la primera ejecución del flujo en GitHub.
+- 0.7 escrita, **sin ejecutar**: falta que el flujo genere el APK y abrirlo en un móvil.
+- 0.8 pendiente: falta la región del MVP (D-005).
+- Fase 1 en adelante: pendiente.
 
 Leyenda de pruebas:
 - **[DOC]** no se ejecuta nada; se revisa un documento.

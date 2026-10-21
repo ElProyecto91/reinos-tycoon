@@ -2,8 +2,10 @@
 .godot/
 *.translation
 
-# Exportación Android: nunca subir claves ni binarios
-export_presets.cfg
+# Exportación Android: nunca subir claves ni binarios.
+# export_presets.cfg SÍ se versiona: la compilación en la nube lo necesita
+# y no contiene secretos (ver docs/decisiones.md, D-008).
+/build/
 *.apk
 *.aab
 *.keystore

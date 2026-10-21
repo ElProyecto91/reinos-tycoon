@@ -1,0 +1,89 @@
+name: Pruebas y APK de depuración
+
+# SIN EJECUTAR todavía: este flujo se escribió sin poder probarlo.
+# El primer resultado real es la primera ejecución en GitHub.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GODOT_IMAGE: barichello/godot-ci:4.7.2
+
+jobs:
+  pruebas:
+    name: Pruebas sin ventana
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Versión de Godot en la imagen
+        run: docker run --rm "$GODOT_IMAGE" godot --headless --version
+
+      - name: Ejecutar pruebas
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work "$GODOT_IMAGE" \
+            godot --headless --path game -s res://tests/run_tests.gd
+
+      - name: Comprobar que el ejecutor detecta fallos
+        run: |
+          set +e
+          docker run --rm -v "$PWD:/work" -w /work "$GODOT_IMAGE" \
+            godot --headless --path game -s res://tests/run_tests.gd -- --selftest-fail
+          codigo=$?
+          echo "Código de salida con el fallo intencionado: $codigo"
+          if [ "$codigo" -eq 0 ]; then
+            echo "::error::El ejecutor no detectó el fallo intencionado"
+            exit 1
+          fi
+
+  apk:
+    name: APK de depuración
+    needs: pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Diagnóstico del entorno de Android en la imagen
+        run: |
+          docker run --rm "$GODOT_IMAGE" bash -c '
+            echo "--- plantillas de exportación ---"
+            ls /root/.local/share/godot/export_templates/ 2>&1
+            echo "--- ajustes del editor ---"
+            ls /root/.config/godot/ 2>&1
+            cat /root/.config/godot/editor_settings-4*.tres 2>&1 | head -30
+            echo "--- clave de depuración ---"
+            ls -l /root/debug.keystore 2>&1
+            echo "--- java ---"
+            java -version 2>&1 | head -1
+          '
+
+      - name: Importar recursos y exportar el APK
+        run: |
+          mkdir -p build
+          docker run --rm -v "$PWD:/work" -w /work \
+            -e GODOT_ANDROID_KEYSTORE_DEBUG_PATH=/root/debug.keystore \
+            -e GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey \
+            -e GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD=android \
+            "$GODOT_IMAGE" bash -c '
+              set -e
+              godot --headless --path game --import || true
+              godot --headless --path game --export-debug "Android" /work/build/reinos-tycoon-debug.apk
+              ls -l /work/build
+            '
+
+      - name: Comprobar que el APK existe y no está vacío
+        run: test -s build/reinos-tycoon-debug.apk
+
+      - name: Guardar el APK como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: reinos-tycoon-debug-apk
+          path: build/reinos-tycoon-debug.apk
+          retention-days: 30
+          if-no-files-found: error
