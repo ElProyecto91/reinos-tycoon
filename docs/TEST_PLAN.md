@@ -37,7 +37,7 @@ La interfaz se prueba sin ventana, llamando a sus métodos con eventos fabricado
 
 Estado: los puntos 1 a 3 se comprobaron con una captura del usuario (2026-10-21, pantalla en vertical, Redmi Note 13 5G). Los puntos 4 a 6 quedaron sin ejecutar y **han cambiado**: desde la fase 1 la app está bloqueada en vertical (4 ya no aplica) y pide el permiso de Internet (6 ya no aplica tal cual; ver abajo).
 
-1. Descargar y descomprimir el artefacto del flujo; instalar el APK.
+1. Descargar el artefacto del flujo e instalar el APK (hasta la ejecución #16 era un zip que había que descomprimir; después se sube como `.apk` suelto, D-019).
 2. La app abre y no se cierra sola.
 3. Se ve centrado el texto de arranque.
 

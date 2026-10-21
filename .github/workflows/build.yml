@@ -130,11 +130,15 @@ jobs:
       - name: Comprobar que el APK existe y no está vacío
         run: test -s build/reinos-tycoon-debug.apk
 
-      - name: Guardar el APK como artefacto
-        uses: actions/upload-artifact@v4
+      # archive: false sube el .apk tal cual (sin envolverlo en un .zip), de modo que
+      # se descarga como un archivo instalable. Con archive: false el nombre del
+      # artefacto es el nombre del archivo y el parámetro "name" se ignora.
+      # Requiere upload-artifact v7 o superior.
+      - name: Guardar el APK como artefacto (sin comprimir)
+        uses: actions/upload-artifact@v7
         with:
-          name: reinos-tycoon-debug-apk
           path: build/reinos-tycoon-debug.apk
+          archive: false
           retention-days: 30
           if-no-files-found: error
 

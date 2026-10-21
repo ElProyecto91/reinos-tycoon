@@ -41,8 +41,8 @@ El resto de documentos de la sección 31 se crearán cuando tengan contenido rea
 ## Obtener el APK de depuración (sin ordenador)
 
 1. En GitHub, pestaña Actions, abre la última ejecución en verde de "Pruebas y APK de depuración".
-2. Abajo, en Artifacts, descarga `reinos-tycoon-debug-apk` (es un zip).
-3. Descomprímelo con el gestor de archivos del móvil y abre el `.apk`. Android pedirá permitir instalar apps desconocidas desde esa aplicación.
+2. Abajo, en Artifacts, descarga `reinos-tycoon-debug.apk`. Desde la ejecución posterior a la #16 el APK se sube **sin comprimir** (D-019): se descarga ya como `.apk`, sin zip. (Los artefactos de la #16 y anteriores sí son un zip.)
+3. Abre el `.apk` descargado. Android pedirá permitir instalar apps desconocidas desde esa aplicación.
 4. Si al actualizar dice "app no instalada", desinstala antes la versión anterior (la firma de depuración puede cambiar).
 
 Es un APK de depuración, solo para pruebas: no sirve para publicar. El primero lo generó la ejecución #1 del flujo y se probó en un móvil real.

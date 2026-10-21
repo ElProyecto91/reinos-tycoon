@@ -14,6 +14,7 @@
 - Menú: «Medir velocidad» (A12) y «Buscar actualización» (D-015; activa el permiso de Internet, solo se usa al pulsar el botón).
 - Icono propio provisional.
 - Estado de las pruebas: 200 de 200 en GitHub Actions (ejecución #16). APK de esa ejecución sin instalar todavía en un móvil.
+- D-019: el APK se sube como artefacto sin comprimir (`upload-artifact@v7`, `archive: false`) para descargarlo como `.apk` y no como zip. Escrito en el flujo, **todavía no ejecutado**.
 
 ## v0.0.3 (2026-10-21)
 

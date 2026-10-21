@@ -150,6 +150,14 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Qué NO está probado: nada de esto se ha visto en un móvil real. Las capturas se generan en un entorno Linux con dibujado por software (`tools/captura_ui.gd`).
 - Estado: **provisional**.
 
+## D-019. El APK se entrega como `.apk` suelto, no como zip
+
+- Petición del usuario (estable, «siempre»): el APK debe obtenerse como archivo instalable, no dentro de un `.zip`.
+- Causa: GitHub comprimía todo artefacto de Actions en un zip. Desde febrero de 2026 `actions/upload-artifact` v7 admite `archive: false`, que sube un único archivo tal cual y lo deja descargar sin descomprimir. Con esa opción el parámetro `name` se ignora y el artefacto se llama como el archivo: `reinos-tycoon-debug.apk`. Fuentes: anuncio de GitHub (26-02-2026) y README de la acción.
+- Cambio: el paso que guarda el APK usa `upload-artifact@v7` con `archive: false`. Los registros (`ci-log-*`) siguen con v4 y comprimidos, y el trabajo `informe` sigue leyéndolos con `download-artifact@v4`; no se tocan.
+- Límite conocido: sigue siendo un artefacto de Actions, así que hay que iniciar sesión en GitHub para bajarlo y caduca a los 30 días. Una página de versión (Release) con el APK adjunto evitaría la caducidad, pero publica en un repositorio público: **solo con permiso explícito del usuario** (sec. 37).
+- Estado: **provisional hasta ver la primera ejecución con el cambio**: falta confirmar en GitHub que el artefacto aparece como `.apk` y que el móvil lo instala.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.
