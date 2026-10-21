@@ -206,7 +206,9 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Compuerta: la maqueta se enseña al usuario **antes** de conectarla a la pantalla del juego.
 - Sin medir: rendimiento en el móvil (Redmi Note 13 5G), tamaño final del APK y consumo de batería. Solo se ha renderizado por software en el entorno del asistente, que no sirve de medida del móvil.
 - Pendiente: cómo se asignan los edificios del juego a los modelos, cámara con el dedo, y mostrar una provincia real (no la maqueta fija).
-- Estado: **maqueta hecha; pendiente de la aprobación del usuario**.
+- Segunda versión (2026-10-21, a petición del usuario: «lo quiero más real, igual a la imagen o mejor»): acantilados de roca bajo una capa fina de césped, río/camino/orilla que se eligen y giran solos mirando los bordes de las casillas vecinas (las conexiones de cada pieza salen de leer la geometría de los modelos), muralla en anillo con esquinas y torres, puerta con camino, molino de agua, lago, cielo, luz cálida y sombras. Se probó con niebla y brillo («glow») y lavaban la imagen por completo: se dejó una niebla casi nula y sin brillo.
+- Límite honesto: el paquete es de estilo «juguete» de poco polígono; se acerca al estilo de la imagen de referencia, no es realista en sentido fotográfico. «Mejor que la imagen» no es medible: depende de lo que el usuario vea.
+- Estado: **maqueta v2 hecha; pendiente de la aprobación del usuario**.
 
 ## Orden de entregas
 

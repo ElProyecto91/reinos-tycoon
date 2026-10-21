@@ -65,7 +65,7 @@ Las tareas 1.1 a 1.7 no necesitan pantalla. Se pueden hacer antes del mapa.
 
 | ID | Tarea | Prueba | Listo cuando |
 |---|---|---|---|
-| V1 | Maqueta de una provincia en 3D con modelos CC0 (hecha el 2026-10-21) | [PC] estructura, a ojo el aspecto | el usuario aprueba el aspecto en la imagen |
+| V1 | Maqueta de una provincia en 3D con modelos CC0 (hecha el 2026-10-21; v2 con relieve, río, caminos, muralla y atmósfera el mismo día) | [PC] estructura, a ojo el aspecto | el usuario aprueba el aspecto en la imagen |
 | V2 | Una provincia real en 3D: cada edificio del juego se asigna a un modelo, las obras a andamios, el diseño sale de los datos de forma determinista | [PC] | el mismo estado de la provincia da siempre el mismo dibujo; ningún edificio se queda sin modelo |
 | V3 | Cámara y toque: girar/acercar con el dedo y tocar un edificio para ver su ficha | [APK] | se maneja bien en el móvil |
 | V4 | Estaciones: paleta por estación (necesita 2.1) | [PC] y a ojo | se ve el cambio de estación sin cambiar modelos |
