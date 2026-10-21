@@ -9,7 +9,7 @@ Juego de estrategia, economía y gestión territorial con progreso idle, ambient
 
 ## Estado actual
 
-**v0.0.3: fase 0 escrita, sin ejecutar.** Hay un proyecto de Godot mínimo (una pantalla de arranque), un ejecutor de pruebas y un flujo de GitHub Actions que prueba y exporta un APK de depuración. Todavía no hay juego. Nada de esto se ha ejecutado: el primer resultado real llegará con la primera ejecución del flujo en GitHub.
+**v0.0.3: fase 0.** Hay un proyecto de Godot mínimo (una pantalla de arranque), un ejecutor de pruebas y un flujo de GitHub Actions que prueba y exporta un APK de depuración. Todavía no hay juego. El flujo salió en verde en su primera ejecución (2026-10-21); el APK aún no se ha probado en un móvil.
 
 ## Independencia
 
@@ -43,4 +43,4 @@ El resto de documentos de la sección 31 se crearán cuando tengan contenido rea
 3. Descomprímelo con el gestor de archivos del móvil y abre el `.apk`. Android pedirá permitir instalar apps desconocidas desde esa aplicación.
 4. Si al actualizar dice "app no instalada", desinstala antes la versión anterior (la firma de depuración puede cambiar).
 
-Es un APK de depuración, solo para pruebas: no sirve para publicar. Todavía no se ha generado ninguno.
+Es un APK de depuración, solo para pruebas: no sirve para publicar. El primero lo generó la ejecución #1 del flujo; aún no se ha probado en un móvil.

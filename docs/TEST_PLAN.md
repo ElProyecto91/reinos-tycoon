@@ -1,6 +1,6 @@
 # Plan de pruebas
 
-Regla (sección 29): ninguna prueba se marca como superada si no se ha ejecutado. **A fecha de hoy no se ha ejecutado ninguna.**
+Regla (sección 29): ninguna prueba se marca como superada si no se ha ejecutado. **Primera ejecución real: 2026-10-21, GitHub Actions, ejecución #1 (commit `10431e0`), en verde. Los registros no se han revisado: el resultado es el estado que comunicó el usuario.**
 
 ## Cómo se ejecutan
 
@@ -19,9 +19,11 @@ Regla (sección 29): ninguna prueba se marca como superada si no se ha ejecutado
 
 | Prueba | Archivo | Qué comprueba | Estado |
 |---|---|---|---|
-| test_basic_arithmetic | test_smoke.gd | que el ejecutor corre una prueba trivial | sin ejecutar |
-| test_project_version_defined | test_smoke.gd | que `project.godot` define la versión | sin ejecutar |
-| test_intentional_failure | selftest_fail.gd | que el ejecutor devuelve código distinto de 0 ante un fallo (el flujo lo exige) | sin ejecutar |
+| test_basic_arithmetic | test_smoke.gd | que el ejecutor corre una prueba trivial | superada en CI (#1), de forma indirecta* |
+| test_project_version_defined | test_smoke.gd | que `project.godot` define la versión | superada en CI (#1), de forma indirecta* |
+| test_intentional_failure | selftest_fail.gd | que el ejecutor devuelve código distinto de 0 ante un fallo (el flujo lo exige) | cumplida en CI (#1), de forma indirecta* |
+
+\*Indirecta: el flujo exige que el ejecutor devuelva 0 con las dos pruebas normales y un código distinto de 0 con el fallo intencionado, y todo salió en verde. No se han leído los registros de cada prueba.
 
 Ninguna prueba cubre todavía reglas del juego: no hay reglas implementadas.
 
@@ -42,4 +44,4 @@ Al ejecutarlas, anotar fecha, modelo de móvil, versión de Android y qué pasó
 
 | Fecha | Qué se ejecutó | Resultado | Notas |
 |---|---|---|---|
-| (aún no hay ejecuciones) | | | |
+| 2026-10-21 | Flujo completo, ejecución #1 (commit 10431e0): pruebas y APK | Verde, 1 min 57 s (según el estado comunicado por el usuario) | Registros sin revisar. El APK se generó y se subió como artefacto; aún no se ha abierto en un móvil |

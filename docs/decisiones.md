@@ -48,7 +48,7 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Motivo: desde aquí no se pueden verificar las URL de descarga de Godot ni las versiones exactas del SDK. La etiqueta existe en Docker Hub (vista el 2026-10-21, subida hace unos 2 meses).
 - Riesgos: es un tercero y la etiqueta es mutable; límites de descarga anónima de Docker Hub; las rutas internas (`/root/.config/godot`, `/root/.local/share/godot/export_templates`, `/root/debug.keystore`) y las variables `GODOT_ANDROID_KEYSTORE_DEBUG_*` se dan por buenas según lo que se recuerda de su documentación, sin comprobar. El flujo imprime un diagnóstico para verlo en la primera ejecución.
 - La firma de depuración es la de la imagen. Si cambia, instalar una versión nueva sobre la anterior puede fallar y habrá que desinstalar antes.
-- Estado: **sin verificar hasta la primera ejecución**. Más adelante, fijar la imagen por huella (digest).
+- Estado: **el flujo salió en verde en la primera ejecución (2026-10-21, #1)**. Los supuestos sobre rutas internas quedan confirmados en la práctica solo si el APK instala y abre en un móvil; el registro del paso de diagnóstico no se ha revisado. Más adelante, fijar la imagen por huella (digest).
 
 ## D-008. `export_presets.cfg` dentro del repositorio
 
