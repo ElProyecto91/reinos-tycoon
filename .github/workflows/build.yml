@@ -20,7 +20,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GODOT_IMAGE: barichello/godot-ci:4.7.2
+  # Fijada por huella (digest): la clave de depuración que firma el APK viene dentro de la
+  # imagen. Si la imagen cambiara, la firma cambiaría y Android no dejaría instalar el APK
+  # nuevo sobre el anterior. Digest leído en la ejecución #10 (barichello/godot-ci:4.7.2).
+  GODOT_IMAGE: barichello/godot-ci@sha256:cdcca31e9194fd59a68a63f4b1b9c3981716819c520cd6f7966c5d72ca7246bd
 
 jobs:
   pruebas:
