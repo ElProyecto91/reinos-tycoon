@@ -14,7 +14,7 @@
 - Menú: «Medir velocidad» (A12) y «Buscar actualización» (D-015; activa el permiso de Internet, solo se usa al pulsar el botón).
 - Icono propio provisional.
 - Estado de las pruebas: 200 de 200 en GitHub Actions (ejecución #16). APK de esa ejecución sin instalar todavía en un móvil.
-- Tarea 1.10 [PC]: `tests/test_closure.gd` (2 años de juego con las 5 provincias, guardado y carga cada 97 pasos con resultado idéntico, 40 cierres y reaperturas con ausencias raras, un año a ×600 por la pantalla real). Hallazgo y cambio: tope de edificios por provincia, regla `max_buildings` = 30 provisional (D-020). Pruebas de guardado en plena crisis (antes un campo olvidado con valor cero pasaba sin que ninguna prueba fallase). 210 pruebas en local; falta confirmar en GitHub Actions.
+- Tarea 1.10 [PC]: `tests/test_closure.gd` (2 años de juego con las 5 provincias, guardado y carga cada 97 pasos con resultado idéntico, 40 cierres y reaperturas con ausencias raras, un año a ×600 por la pantalla real). Hallazgo y cambio: tope de edificios por provincia, regla `max_buildings` = 30 provisional (D-020). Pruebas de guardado en plena crisis (antes un campo olvidado con valor cero pasaba sin que ninguna prueba fallase). 210 de 210 en GitHub Actions (ejecución #18, APK `version/code` 28).
 - D-019: el APK se sube como artefacto sin comprimir (`upload-artifact@v7`, `archive: false`) para descargarlo como `.apk` y no como zip. Escrito en el flujo, **todavía no ejecutado**.
 
 ## v0.0.3 (2026-10-21)
