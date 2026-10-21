@@ -188,18 +188,18 @@ func test_invalid_contents_are_rejected_even_with_a_valid_checksum() -> void:
 		var data = new_data()
 		var payload: Dictionary = _busy_world(data).to_dict()
 		_mutate(payload, kind)
-		var text: String = load(SAVE_GAME).wrap(payload, VERSION)
+		var text: String = load(SAVE_GAME).pack(payload, VERSION)
 		var result: Dictionary = load(SAVE_GAME).decode(new_data(), text)
 		assert_true(not result["ok"], "debe rechazar: %s" % kind)
 		assert_true(result["error"] != "", "y dar un motivo: %s" % kind)
 	done()
 
 
-func test_valid_payload_through_wrap_is_accepted() -> void:
+func test_valid_payload_through_pack_is_accepted() -> void:
 	# Comprueba que el ayudante de la prueba anterior no rechaza todo por error.
 	var data = new_data()
 	var payload: Dictionary = _busy_world(data).to_dict()
-	var result: Dictionary = load(SAVE_GAME).decode(new_data(), load(SAVE_GAME).wrap(payload, VERSION))
+	var result: Dictionary = load(SAVE_GAME).decode(new_data(), load(SAVE_GAME).pack(payload, VERSION))
 	assert_true(result["ok"], "un estado sin tocar debe cargar: %s" % result["error"])
 	done()
 

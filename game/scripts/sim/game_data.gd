@@ -30,7 +30,7 @@ const RULE_INTS := {
 	"unrest_rise": [0, 1000000],
 	"unrest_fall": [0, 1000000],
 	"unrest_slow_threshold": [0, 1000000],
-	"min_productivity_percent": [0, 100],
+	"min_productivity_percent": [1, 100],
 	"growth_interval": [1, 1000000],
 	"growth_percent": [0, 100],
 	"growth_unrest_limit": [0, 1000000],

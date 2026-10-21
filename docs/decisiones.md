@@ -87,10 +87,19 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 
 - Un paso de simulación equivale a una hora de juego; un día son 24 pasos y los "30 días" del criterio A10 son 720 pasos. Es una convención de pruebas, no una decisión de ritmo real: cuántos segundos reales dura un paso se decidirá con el progreso offline y la medición en el móvil (A9, A12).
 - Cada mercancía física puede ocupar como mucho una parte de la capacidad (`storage_share_percent` en `goods.json`), y la suma de las partes no puede pasar de 100. Motivo: sin ese tope, una mercancía que sobra (madera, harina) llena el almacén, los productores de alimento se bloquean y la provincia muere de hambre con el almacén lleno. Pasó en el diseño sobre el papel antes de escribir una línea.
-- La producción se detiene (no se pierde) cuando el resultado no cabe: el ciclo espera con el trabajo hecho y el edificio muestra `storage_full`. Los insumos se gastan al empezar el ciclo y solo si el resultado cabría.
-- Hambre: primero aviso (3 pasos), después descontento que sube según la falta de alimento, y solo tras 24 pasos seguidos de hambre se pierde población (2 % por paso, mínimo 1, sin bajar de 10). El descontento reduce la producción hasta un 30 % y baja 15 por paso cuando hay comida. No hay azar.
+- Cuando el resultado no cabe: si no cabe **ninguno** de los productos, el ciclo espera con el trabajo hecho y el edificio muestra `storage_full`. Si caben unos y otros no (un leñador con la madera al tope sigue entregando leña), lo que no cabe **se desperdicia** y se anota en `wasted` con un aviso, para que un subproducto sobrante no bloquee el principal. Los insumos se gastan al empezar el ciclo y solo si algún resultado cabría. Corrección: la primera versión de esta decisión decía que la producción nunca se pierde; la prueba larga (10 000 pasos) mostró que eso hacía que la madera sobrante bloqueara la leña y, con ella, el pan.
+- Hambre: primero aviso (3 pasos), después descontento que sube según la falta de alimento, y solo tras 24 pasos seguidos de hambre se pierde población (2 % por paso, mínimo 1, sin bajar de 10). El descontento ralentiza el trabajo (ver D-014) y baja 15 por paso cuando hay comida. No hay azar.
 - Los números (raciones, impuestos, costes, ciclos) son provisionales y se ajustarán con partidas reales; ninguno es un dato histórico.
 - Estado: **provisional**; el comportamiento queda cubierto por las pruebas, el equilibrio no.
+
+## D-014. El descontento ralentiza el trabajo y la gente come antes de que se produzca
+
+- Qué pasó: la prueba de crisis (A7: una mala cosecha provoca escasez y la provincia se recupera) falló en la ejecución #9 de CI. Con la regla anterior el descontento recortaba la cantidad producida en cada ciclo; en una cadena trigo → harina → pan el recorte se multiplica en cada eslabón (30 % × 30 % × 30 %), el pan no alcanzaba para dejar de pasar hambre y la provincia se quedaba en descontento ≈ 900–1000 sin salir (observado en el rastro, hasta el paso 800).
+- Cambio 1: el descontento ya no reduce lo producido sino la **velocidad**: el progreso de un ciclo avanza en centésimas de paso y cada paso suma la productividad (100 sin descontento; mínimo `min_productivity_percent`, ahora 50). Un ciclo tarda más, pero no se desperdician insumos.
+- Cambio 2: en el orden del paso, la población come **antes** de las obras y de la producción, de modo que un molino no se lleva el trigo que la gente iba a comer ese mismo paso.
+- Resultado medido (Godot 4.7.2, en el entorno del asistente, no todavía en CI): con las mismas pruebas de crisis, hambre máxima 50 pasos, descontento máximo 1000, población mínima 72, recuperación completa en el paso 172 con población final 100. Las 140 pruebas pasan.
+- Lo que NO está probado: que 50 % y 172 pasos sean un buen equilibrio de juego. Son valores provisionales; la prueba solo exige que la provincia se pueda recuperar. Se probó una sola mala cosecha (trigo a 0 durante 40 pasos); otras crisis más largas pueden no ser recuperables y eso es una decisión de diseño pendiente.
+- Estado: **provisional**.
 
 ## Orden de entregas
 

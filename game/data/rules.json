@@ -21,7 +21,7 @@
 		"unrest_rise": 25,
 		"unrest_fall": 15,
 		"unrest_slow_threshold": 300,
-		"min_productivity_percent": 30,
+		"min_productivity_percent": 50,
 		"growth_interval": 12,
 		"growth_percent": 2,
 		"growth_unrest_limit": 200

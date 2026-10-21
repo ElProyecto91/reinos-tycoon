@@ -214,22 +214,24 @@ func test_productivity_percent_follows_unrest() -> void:
 	p.unrest = 301
 	assert_eq(p.productivity_percent(), 100, "una milésima por encima apenas se nota")
 	p.unrest = 400
-	assert_eq(p.productivity_percent(), 90, "400")
+	assert_eq(p.productivity_percent(), 93, "400: 100 - floor(100 * 50 / 700)")
 	p.unrest = 650
-	assert_eq(p.productivity_percent(), 65, "650")
+	assert_eq(p.productivity_percent(), 75, "650: 100 - floor(350 * 50 / 700)")
 	p.unrest = 1000
-	assert_eq(p.productivity_percent(), 30, "máximo descontento: mínimo de producción")
+	assert_eq(p.productivity_percent(), 50, "máximo descontento: la mitad de velocidad")
 	done()
 
 
-func test_unrest_reduces_output() -> void:
+func test_unrest_slows_work_without_wasting_inputs() -> void:
 	var data = new_data()
 	data.rules["unrest_fall"] = 0
 	var p = _fed_province(data)
 	p.unrest = 1000
 	p.add_building("farm")
-	run_steps(p, 6)
-	assert_eq(p.store.stock("wheat"), 1800, "con descontento máximo sale el 30 %")
+	run_steps(p, 11)
+	assert_eq(p.store.stock("wheat"), 0, "a la mitad de velocidad 11 pasos no bastan para un ciclo de 6")
+	p.step()
+	assert_eq(p.store.stock("wheat"), 6000, "el ciclo tarda el doble (12 pasos) pero rinde lo mismo")
 	done()
 
 

@@ -20,12 +20,12 @@ const WorldScript := preload("res://scripts/sim/world.gd")
 
 
 static func encode(world, game_version: String) -> String:
-	return wrap(world.to_dict(), game_version)
+	return pack(world.to_dict(), game_version)
 
 
 ## Envuelve un estado ya convertido en diccionario. Separado de encode() para poder
 ## probar la carga de estados alterados con suma de control correcta.
-static func wrap(payload: Dictionary, game_version: String) -> String:
+static func pack(payload: Dictionary, game_version: String) -> String:
 	var payload_text := JSON.stringify(payload, "", true)
 	var envelope := {
 		"format_version": FORMAT_VERSION,

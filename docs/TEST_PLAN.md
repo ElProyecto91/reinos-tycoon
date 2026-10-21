@@ -25,7 +25,9 @@ Regla (sección 29): ninguna prueba se marca como superada si no se ha ejecutado
 
 \*Indirecta: el flujo exige que el ejecutor devuelva 0 con las dos pruebas normales y un código distinto de 0 con el fallo intencionado, y todo salió en verde. No se han leído los registros de cada prueba.
 
-Ninguna prueba cubre todavía reglas del juego: no hay reglas implementadas.
+Desde la fase 1 hay además pruebas de reglas del juego, una por comportamiento, en: `test_game_data.gd` (datos y reglas), `test_store.gd` (almacén y conservación), `test_population.gd`, `test_production.gd`, `test_construction.gd`, `test_scarcity.gd` (A6/A7, crisis y recuperación), `test_long_run.gd` (A1: 10 000 pasos; A10: 30 días; determinismo) y `test_save.gd` (A8: ida y vuelta, archivo truncado, suma de control alterada, versión nueva, escritura interrumpida, copia `.bak`). Total actual: 140 pruebas.
+
+Cómo se comprobó que no pasan por vacío: se desactivó a propósito la comprobación de la suma de control en una copia y `test_tampered_content_is_detected_by_the_checksum` falló; el autotest (`-- --selftest-fail`) devuelve código 1. Esa comprobación se hizo una vez, a mano; no está automatizada.
 
 ## Comprobaciones manuales en móvil (tarea 0.7)
 
@@ -46,3 +48,5 @@ Al ejecutarlas, anotar fecha, modelo de móvil, versión de Android y qué pasó
 |---|---|---|---|
 | 2026-10-21 | Flujo completo, ejecución #1 (commit 10431e0): pruebas y APK | Verde, 1 min 57 s (según el estado comunicado por el usuario) | Registros sin revisar. El APK se generó y se subió como artefacto |
 | 2026-10-21 | Comprobaciones manuales 1 a 3 (instalar, abrir, ver el texto) con el APK de la ejecución #1 | Superadas según la captura del usuario: se ve centrado «Reinos Tycoon / v0.0.3 (fase 0) / Arranque correcto» en vertical | Móvil: Redmi Note 13 5G; versión de Android sin indicar. Puntos 4 a 6 sin ejecutar |
+| 2026-10-21 | Ejecución #9 de CI (commit bc9b0f9), fase 1 tareas 1.1–1.7 | **Fallo** | 124 OK. Falló A7 (la provincia no se recuperaba) y todas las pruebas de guardado (error de nombre: una función propia llamada `wrap` choca con la integrada de GDScript). El trabajo `apk` se omitió |
+| 2026-10-21 | Las 140 pruebas con Godot 4.7.2 ejecutado en el entorno del asistente (sin CI), tras los arreglos de D-014 y el cambio de nombre `wrap` → `pack` | 140 de 140 superadas, código de salida 0 | No es CI: el resultado en GitHub está pendiente. Mismo número de versión de Godot que la CI, pero otro sistema |

@@ -5,8 +5,14 @@ extends RefCounted
 ## en pasos de simulación. No hay azar: con el mismo estado, `step()` da siempre el
 ## mismo resultado. Los valores de las reglas son parámetros de juego provisionales.
 ##
-## Orden de un paso: caducar efectos, ajustar mano de obra, impuestos, obras,
-## producción, consumo de alimento, descontento y población, avisos.
+## Orden de un paso: caducar efectos, ajustar mano de obra, impuestos, consumo de
+## alimento (la población come antes de que los molinos y panaderías se lleven el
+## grano), obras, producción, descontento y población, avisos.
+##
+## El descontento no reduce lo que se produce sino la velocidad de trabajo: un ciclo
+## tarda más, pero no se desperdician insumos. Reducir el resultado en cada eslabón de
+## una cadena (trigo, harina, pan) se multiplicaba y creaba una espiral de la que la
+## provincia no salía (descubierto por la prueba de crisis de cosecha, ver D-014).
 
 const Fixed := preload("res://scripts/sim/fixed.gd")
 const StoreScript := preload("res://scripts/sim/store.gd")
@@ -103,7 +109,7 @@ func housing_capacity() -> int:
 	return total
 
 
-## Producción en porcentaje según el descontento (100 = normal).
+## Velocidad de trabajo en porcentaje según el descontento (100 = normal).
 func productivity_percent() -> int:
 	var threshold: int = _rules["unrest_slow_threshold"]
 	if unrest <= threshold:
@@ -240,10 +246,10 @@ func step() -> void:
 	if auto_staff:
 		_staff_automatically()
 	_collect_taxes()
+	_consume_food()
 	_advance_projects()
 	for b in buildings:
 		_run_building(b)
-	_consume_food()
 	_update_population()
 	# La población puede haber bajado: así nunca queda un paso con más trabajadores
 	# asignados que mano de obra, ni siquiera entre dos pasos (por ejemplo, al guardar).
@@ -356,9 +362,12 @@ func _run_building(b: Dictionary) -> void:
 	if not b["active"]:
 		if not _try_start_cycle(b, t):
 			return
-	if b["progress"] < t["cycle_steps"]:
-		b["progress"] += 1
-	if b["progress"] >= t["cycle_steps"]:
+	# El progreso va en centésimas de paso: un ciclo necesita cycle_steps * 100 y cada
+	# paso suma la productividad (100 si no hay descontento).
+	var needed: int = t["cycle_steps"] * 100
+	if b["progress"] < needed:
+		b["progress"] = mini(b["progress"] + productivity_percent(), needed)
+	if b["progress"] >= needed:
 		_try_finish_cycle(b, t)
 	else:
 		b["status"] = STATUS_RUNNING
@@ -405,9 +414,8 @@ func _try_start_cycle(b: Dictionary, t: Dictionary) -> bool:
 ## `wasted` con un aviso, para que un subproducto sobrante no bloquee el principal.
 func _try_finish_cycle(b: Dictionary, t: Dictionary) -> void:
 	var produced := {}
-	var productivity := productivity_percent()
 	for good in t["outputs"].keys():
-		produced[good] = Fixed.percent_of_2(t["outputs"][good], productivity, _modifier_percent(good))
+		produced[good] = Fixed.percent_of(t["outputs"][good], _modifier_percent(good))
 	if not store.can_fit_any(produced):
 		b["status"] = STATUS_STORAGE_FULL
 		return
@@ -652,7 +660,7 @@ func _parse_saved_building(entry: Variant, seen_uids: Dictionary, next_free_uid:
 	seen_uids[uid] = true
 	var workers = Fixed.exact_int(entry.get("workers", null))
 	var progress = Fixed.exact_int(entry.get("progress", null))
-	if workers == null or workers < 0 or workers > t["workers"] or progress == null or progress < 0 or progress > t["cycle_steps"]:
+	if workers == null or workers < 0 or workers > t["workers"] or progress == null or progress < 0 or progress > t["cycle_steps"] * 100:
 		_load_fail("edificio %d: trabajadores o progreso fuera de rango" % uid)
 		return null
 	if typeof(entry.get("enabled", null)) != TYPE_BOOL or typeof(entry.get("active", null)) != TYPE_BOOL:
