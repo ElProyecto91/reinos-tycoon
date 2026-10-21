@@ -1,33 +1,45 @@
-# Decisiones y contradicciones abiertas
+# Decisiones y contradicciones
 
-Formato según la regla 15 del documento maestro: problema, solución más sencilla y segura, estado.
+Formato según la regla 15 del documento maestro: problema, propuesta más sencilla y segura, estado.
 
-## D-001. El documento maestro está cortado
+## D-001. Documento maestro cortado
 
-- Problema: el texto recibido termina en la sección 13 ("Debe existir una vista que muestre: - Exist"). Faltan el resto de la logística, comercio, tecnología, diplomacia, guerra, fases, MVP y criterios de aceptación.
-- Propuesta: no inventar fases. Pedir el texto restante antes de planificar más allá de la base.
-- Estado: **pendiente del usuario**.
+- Problema: el primer texto recibido terminaba a mitad de la sección 13.
+- Resolución: se recibió el `.docx` completo (40 secciones, más anexo y checklist). Ahora `docs/00-documento-maestro.md` es la versión completa y el original está en `docs/fuente/`.
+- Estado: **resuelta (2026-10-21)**.
 
-## D-002. "Coste obligatorio 0 €" frente a publicar en Google Play
+## D-002. "0 €" frente a Google Play
 
-- Problema: publicar en Google Play exige una cuota de registro de desarrollador (pago único, 25 USD). Contradice la regla 3.
-- Propuesta: distribuir como APK por instalación directa (gratis). Tratar Google Play como opcional y fuera del coste obligatorio.
-- Estado: **pendiente de confirmar**.
+- Estado: **retirada. Fue un error de lectura del asistente.**
+- Motivo: la sección 26 ya separa desarrollo, exportación APK, distribución directa y tienda, y manda comprobar las tasas vigentes antes de recomendar canales. No hay contradicción.
+- Nota práctica: el objetivo es generar y probar APK sin pagar. Si algún día se publica en una tienda, comprobar entonces las tasas vigentes.
 
-## D-003. No se puede verificar nada en el entorno actual
+## D-003. Godot no está disponible en el entorno del asistente
 
-- Problema: Godot no está instalado en el entorno de trabajo del asistente, y no hay repositorio previo. Las reglas 12 y 13 exigen versiones ejecutables y probadas.
-- Propuesta: hasta tener Godot disponible, todo código se marca como "sin probar". Opciones para probar de verdad: instalar Godot en un ordenador del usuario, o automatizar pruebas y exportación con GitHub Actions (gratis en repositorios públicos).
-- Estado: **pendiente de decidir** según el equipo que tenga el usuario.
+- Comprobado el 2026-10-21: Godot no está instalado; la descarga desde GitHub Releases devuelve 403 desde el proxy del entorno; no existe paquete de Godot en PyPI.
+- Consecuencia: el asistente puede escribir y revisar archivos, pero no ejecutar el juego, ni sus pruebas, ni exportar APK. Todo código irá marcado "sin probar" hasta que se ejecute en un entorno real (sección 29: no marcar una prueba como superada si no se ejecutó).
+- Opciones: (a) instalar Godot en un ordenador del usuario; (b) pruebas y exportación con GitHub Actions. La opción (b) no está verificada y requiere configuración.
+- Estado: **pendiente de decidir según el equipo del usuario**.
 
-## D-004. Los datos deben vivir dentro del proyecto de Godot
+## D-004. Datos dentro del proyecto de Godot
 
-- Problema: la regla 7 pide separar datos históricos de la lógica, pero Godot solo empaqueta en el juego los recursos dentro de la carpeta del proyecto (`res://`).
-- Propuesta: separar por carpetas dentro del proyecto (`game/data/` frente a `game/scripts/`), no por repositorios ni carpetas externas.
-- Estado: **adoptada como norma provisional**.
+- Problema: la regla 7 pide datos separados de la lógica, pero Godot solo empaqueta recursos dentro de la carpeta del proyecto (`res://`).
+- Propuesta: separar por carpetas dentro del proyecto (`game/data/` frente a `game/scripts/`).
+- Estado: **norma provisional**.
 
 ## D-005. Región y fecha del MVP
 
-- Problema: el MVP (10–20 provincias, 8–12 mercancías) necesita una región concreta, y de ella depende toda la investigación histórica.
-- Propuesta: elegir una sola región pequeña y bien documentada para el año 1000. No empezar por Eurasia completa.
+- Problema: el MVP (10–20 provincias, 2–3 poderes, 8–12 mercancías) necesita una región concreta; de ella depende toda la investigación histórica de la sección 32.
+- Propuesta: una sola región pequeña y bien documentada, fecha de referencia 1000.
 - Estado: **pendiente del usuario**.
+
+## D-006. Versión de Godot
+
+- Dato: el archivo oficial de descargas (consultado el 2026-10-21) lista 4.7.2-stable, del 18/08/2026, como la última estable. 4.8 solo aparece en beta (beta1, 15/10/2026).
+- Propuesta: candidata 4.7.2-stable; no usar la beta.
+- Sin verificar: requisitos actuales de Android (JDK, SDK, build-tools, plantillas de exportación). La página de documentación que se pudo leer parecía una copia antigua (citaba OpenJDK 17), así que no se fija ningún requisito hasta confirmarlo en la documentación oficial vigente.
+- Estado: **pendiente de confirmar en la tarea 0.2 del ROADMAP**.
+
+## Orden de entregas
+
+La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

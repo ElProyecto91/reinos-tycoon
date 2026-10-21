@@ -1,778 +1,696 @@
-REINOS TYCOON — DOCUMENTO MAESTRO DEL PROYECTO
+**REINOS**
 
-Versión del documento: 1.0
-Tipo: Especificación maestra de producto, diseño, programación, contenido histórico, arquitectura, pruebas y publicación.
-Prioridad: Juego funcional, escalable, históricamente fundamentado, compatible con Android y sin costes obligatorios.
-Responsable del proyecto: Usuario no programador que necesita instrucciones claras y resultados verificables.
+**TYCOON**
 
----
+**DOCUMENTO MAESTRO DEL PROYECTO**
 
-1. TU PAPEL COMO DESARROLLADOR
+Especificación de producto, diseño, historia, arquitectura,  
+implementación, pruebas y estrategia de coste cero
 
-Actúa como un equipo multidisciplinar formado por:
+Versión 1.0 • Preparado para trabajar con Claude
 
-- Director técnico de videojuegos.
-- Programador sénior de Godot y GDScript.
-- Diseñador de juegos de estrategia, gestión y Idle Tycoon.
-- Especialista en simulaciones económicas.
-- Diseñador de sistemas de población, logística y comercio.
-- Historiador especializado en Eurasia medieval.
-- Diseñador de interfaces táctiles para Android.
-- Especialista en rendimiento, persistencia y pruebas automatizadas.
-- Responsable de documentación y control de calidad.
+# Cómo utilizar este documento
 
-Tu responsabilidad es ayudarme a construir el videojuego completo Reinos Tycoon, no solo diseñarlo.
+Este documento contiene las instrucciones maestras para desarrollar Reinos Tycoon como un proyecto independiente. Pégalo en Claude o utilízalo como especificación de referencia. La implementación debe realizarse por fases verificables, no en una única generación masiva de código.
 
-Debes convertir esta especificación en un proyecto real, implementable, documentado, probado y ampliable.
+Importante: Reinos Tycoon es independiente del videojuego existente llamado Reinos. No modificar ni sobrescribir el repositorio original.
 
-No te limites a explicar cómo se programaría. Cuando dispongas de acceso efectivo al repositorio y las herramientas necesarias, crea y modifica los archivos, ejecuta las pruebas disponibles, corrige errores y prepara entregas funcionales.
+## Flujo recomendado
 
-Si trabajas desde un chat que no permite modificar archivos directamente, genera los archivos completos por entregas pequeñas y explica dónde guardarlos.
+1.  Crear un repositorio independiente llamado reinos-tycoon.
 
-Nunca afirmes haber creado, modificado, ejecutado o probado algo si realmente no lo has hecho.
+2.  Pegar el documento en Claude y solicitar primero la verificación del entorno, la auditoría del repositorio nuevo y el plan de ejecución.
 
-Reglas fundamentales
+3.  Crear la documentación y la estructura inicial antes de implementar sistemas complejos.
 
-1. El proyecto debe ser independiente.
-2. El nombre oficial es Reinos Tycoon.
-3. El coste obligatorio de desarrollo, ejecución y juego debe ser 0 €.
-4. El juego debe funcionar sin conexión a Internet.
-5. Android es la plataforma prioritaria.
-6. La simulación debe ser profunda, pero el código debe seguir siendo mantenible.
-7. Los datos históricos deben estar separados de la lógica del juego.
-8. No construyas todos los sistemas a la vez.
-9. No sacrifiques la estabilidad para añadir funciones.
-10. No elimines ni sustituyas funcionalidades existentes de otro proyecto.
-11. No inventes hechos históricos ni resultados de pruebas.
-12. Todo sistema debe tener criterios de aceptación verificables.
-13. Cada versión debe poder ejecutarse y probarse.
-14. No avances a la siguiente fase si quedan errores críticos en la anterior.
-15. Si detectas una contradicción en esta especificación, documenta el problema y propone la solución más sencilla y segura.
+4.  Construir un MVP de 10–20 provincias con economía, población, construcción, guardado y progreso offline.
 
----
+5.  Añadir comercio, guerra, diplomacia y ampliación histórica solo cuando la base sea estable.
 
-2. IDENTIDAD Y SEPARACIÓN DE PROYECTOS
+6.  Probar cada entrega y exportar versiones de Android regularmente.
 
-Ya existe otro videojuego llamado Reinos.
+## Sobre el objetivo de coste cero
 
-Ese proyecto es independiente y debe permanecer intacto.
+El objetivo es que desarrollar, ejecutar y jugar no requiera servicios de pago: Godot, GDScript, almacenamiento local y recursos con licencias compatibles. Los planes gratuitos de herramientas externas pueden tener límites y la publicación en tiendas puede tener condiciones o tasas propias; no debe asumirse que todo servicio es gratuito para siempre.
 
-El nuevo videojuego se llama exclusivamente Reinos Tycoon.
+# 1. TU PAPEL COMO DESARROLLADOR
 
-Repositorio previsto: "reinos-tycoon".
+Actúa como un equipo multidisciplinar formado por un director técnico de videojuegos, programador sénior de Godot/GDScript, diseñador de juegos de estrategia y gestión Idle, especialista en economía de simulación, historiador medieval, diseñador de interfaces Android y responsable de pruebas y documentación.
 
-No reutilices, sobrescribas, renombres ni elimines archivos del proyecto Reinos. No asumas que sus sistemas, código o recursos son reutilizables.
+Tu responsabilidad es ayudarme a construir el videojuego completo Reinos Tycoon, no solo diseñarlo. Convierte esta especificación en un proyecto real, implementable, documentado, probado y ampliable.
 
-Si se identifica alguna posibilidad de reutilización, presenta una propuesta separada y espera autorización antes de aplicarla.
+## Reglas fundamentales
 
-Todo lo creado en este encargo pertenece a Reinos Tycoon.
+- El proyecto debe ser independiente y llamarse Reinos Tycoon.
 
-Antes de programar:
+- El coste obligatorio de desarrollo, ejecución y juego debe ser 0 €.
 
-1. Confirma que estás trabajando en el repositorio correcto.
-2. Comprueba la estructura real del proyecto.
-3. Verifica el motor y las herramientas disponibles.
-4. Crea o documenta una copia de seguridad inicial.
-5. Establece una primera versión identificable.
-6. No realices cambios destructivos sin autorización.
+- El juego debe funcionar sin conexión a Internet y Android es la plataforma prioritaria.
 
-Si el repositorio todavía no existe, prepara los archivos iniciales y explícame cómo crear el repositorio gratuito en GitHub.
+- La simulación debe ser profunda, pero el código debe seguir siendo mantenible.
 
----
+- Los datos históricos deben estar separados de la lógica del juego.
 
-3. VISIÓN DEL VIDEOJUEGO
+- No construyas todos los sistemas a la vez ni sacrifiques estabilidad por añadir funciones.
 
-Reinos Tycoon será un juego de estrategia, construcción, economía, gestión territorial y progreso Idle ambientado aproximadamente alrededor del año 1000 d. C.
+- No inventes hechos históricos ni resultados de pruebas.
 
-El jugador comenzará controlando un territorio pequeño y deberá transformarlo progresivamente en una potencia regional, un reino extenso o una federación de territorios.
+- Cada sistema debe tener criterios de aceptación verificables.
 
-La experiencia debe combinar:
+- Si trabajas sin acceso al repositorio, no afirmes que has modificado archivos; solicita los archivos necesarios.
 
-- Gestión económica.
-- Construcción y mejora de asentamientos.
-- Agricultura y producción industrial.
-- Población y necesidades.
-- Gestión de trabajadores.
-- Almacenamiento y distribución de recursos.
-- Comercio regional e internacional.
-- Rutas terrestres, fluviales y marítimas.
-- Desarrollo tecnológico.
-- Administración provincial.
-- Diplomacia.
-- Ejércitos y guerra.
-- Conquista e integración territorial.
-- Automatización.
-- Progreso durante la ausencia del jugador.
-- Objetivos a largo plazo.
-- Eventos históricos y emergentes.
-- Desarrollo de dinastías como sistema avanzado.
+# 2. IDENTIDAD Y SEPARACIÓN DE PROYECTOS
 
-No debe ser un simple clicker basado en pulsar botones para conseguir monedas.
+Ya existe otro videojuego llamado Reinos. Ese proyecto es independiente y debe permanecer intacto. El nuevo videojuego se llama exclusivamente Reinos Tycoon y tendrá su propio repositorio, recomendado: reinos-tycoon.
 
-El jugador debe tomar decisiones económicas y estratégicas que tengan consecuencias comprensibles.
+No reutilices, sobrescribas, renombres ni elimines archivos del proyecto Reinos. No asumas que sus sistemas son reutilizables. Si identificas alguna posibilidad de reutilización, presenta una propuesta separada y espera autorización.
 
-Bucle principal
+Antes de programar, confirma el repositorio correcto, comprueba la estructura, verifica el motor y las herramientas disponibles, crea o documenta una copia de seguridad inicial y evita cambios destructivos sin autorización.
 
-El bucle de juego será:
+# 3. VISIÓN DEL VIDEOJUEGO
+
+Reinos Tycoon será un juego de estrategia, construcción, economía, gestión territorial y progreso Idle ambientado aproximadamente alrededor del año 1000 d. C. El jugador comenzará con un territorio pequeño y podrá convertirlo en una potencia regional, un reino extenso o una federación.
+
+La experiencia combinará gestión económica, asentamientos, agricultura, industria, población, trabajadores, almacenamiento, comercio, logística, tecnología, administración, diplomacia, ejércitos, guerra, conquista, automatización, progreso offline y objetivos a largo plazo.
+
+## Bucle principal
 
 Producción → recursos → población → necesidades → excedentes → comercio → ingresos → infraestructura → tecnología → capacidad militar y administrativa → expansión → integración → automatización → nuevas oportunidades.
 
-La expansión debe crear nuevos problemas que obliguen al jugador a mejorar su economía, sus rutas, sus reservas y su administración.
+Conquistar un territorio no debe equivaler a obtener inmediatamente todos sus beneficios. La expansión debe generar nuevas necesidades de logística, administración y estabilidad.
 
-Conquistar un territorio no debe equivaler a obtener inmediatamente todos sus beneficios.
-
-Experiencia objetivo
-
-El juego debe ofrecer:
+## Experiencia objetivo
 
 - Progreso perceptible en los primeros minutos.
+
 - Decisiones interesantes durante las primeras horas.
-- Automatización progresiva.
-- Desarrollo territorial a medio plazo.
+
+- Automatización progresiva y desarrollo territorial a medio plazo.
+
 - Objetivos que puedan prolongarse durante meses de juego.
-- Sistemas combinables que permitan partidas diferentes.
-- Capacidad de jugar de manera activa o regresar tras varias horas.
-- Ausencias sin castigos desproporcionados.
 
-No impongas una duración artificial. El objetivo es que el mundo y la economía sigan teniendo interés a largo plazo.
+- Partidas interesantes tanto jugando activamente como regresando tras varias horas.
 
----
+# 4. PRINCIPIOS DE DISEÑO
 
-4. PRINCIPIOS DE DISEÑO
+- Profundidad con reglas comprensibles: explicar por qué una fábrica no produce, qué recurso falta o por qué una ruta no es rentable.
 
-4.1 Profundidad con reglas comprensibles
+- Especialización territorial: las provincias deben diferenciarse por geografía, recursos, población, infraestructura y política.
 
-Cada sistema debe poder explicarse al jugador mediante información visible.
+- Consecuencias reales: reclutar afecta al trabajo civil; la guerra interrumpe rutas; los puentes reducen costes; las conquistas aumentan los costes administrativos.
 
-Si una fábrica no produce, el juego debe indicar por qué.
+- Automatización progresiva: desbloquear tareas automáticas como recompensa, con límites y prioridades.
 
-Si una ciudad pasa hambre, debe mostrar qué recurso falta.
+- Evitar complejidad inútil: utilizar modelos agregados en vez de simular cada persona u objeto.
 
-Si una ruta comercial deja de ser rentable, debe explicar el coste, los precios y las pérdidas.
+# 5. AMBIENTACIÓN HISTÓRICA Y CRONOLOGÍA
 
-Si un ejército pierde, debe ofrecer un resumen de los factores relevantes.
+La fecha de referencia será aproximadamente el año 1000 d. C. El conjunto inicial de datos debe utilizar una fecha explícita y no mezclar entidades de siglos diferentes.
 
-4.2 Especialización territorial
+Distingue hechos documentados, reconstrucciones históricas, inferencias geográficas, simplificaciones jugables y decisiones de diseño. No inventes fuentes, fronteras, asentamientos ni recursos. Representa la incertidumbre política mediante control directo, vasallaje, influencia y fronteras no consolidadas.
 
-Las provincias deben diferenciarse por su geografía, recursos, población, infraestructura y situación política.
+## Poderes políticos que investigar
 
-No deben existir provincias idénticas que solo cambien de nombre.
+- Islas británicas: Inglaterra, Escocia, Gales e Irlanda.
 
-4.3 Consecuencias reales
+- Península ibérica: Califato de Córdoba y poderes cristianos ibéricos.
 
-Los sistemas deben estar conectados.
+- Europa occidental y central: Francia, Sacro Imperio e Italia.
 
-Ejemplos:
+- Balcanes y mundo bizantino.
 
-- Reclutar trabajadores puede reducir la producción agrícola.
-- Una mala cosecha puede reducir las reservas y aumentar los precios.
-- Una guerra puede interrumpir el comercio.
-- Un puente puede reducir el coste de una ruta.
-- Una mina necesita mano de obra, combustible y transporte.
-- Un puerto puede facilitar el comercio y el abastecimiento.
-- Una conquista puede aumentar los ingresos y, al mismo tiempo, los costes administrativos.
-- Una provincia insegura puede perder población y comercio.
+- Rus de Kiev, Polonia y Hungría.
 
-4.4 Automatización progresiva
+- Norte de África, Califato abasí y poderes regionales de Oriente Próximo e Irán.
 
-El jugador debe poder automatizar tareas repetitivas, pero no debe disponer de control automático perfecto desde el principio.
+- Samaníes, Karajánidas, Gaznávidas y otros poderes centroasiáticos, verificando cronología.
 
-La automatización será una recompensa de desarrollo.
+- Song del Norte, Liao, Goryeo, Japón del periodo Heian y poderes regionales de India.
 
-4.5 Evitar la complejidad inútil
+Esta lista es un plan de investigación, no una lista definitiva de entidades simultáneas. Verifica cada entidad y su situación política en la fecha seleccionada.
 
-No simules individuos, objetos físicos o movimientos de mercancías unidad por unidad cuando un modelo agregado produzca resultados suficientes.
+# 6. GEOGRAFÍA Y MAPA DEL MUNDO
 
-Prioriza modelos económicos coherentes y eficientes.
+El mundo final debe extenderse desde Europa occidental hasta Asia oriental, incluyendo islas británicas, Iberia, Europa central y oriental, Escandinavia, Balcanes, Mediterráneo, norte de África, Anatolia, Cáucaso, Mesopotamia, Persia, Arabia, Asia Central, India, China, Corea y Japón.
 
----
+Representa montañas, llanuras, bosques, estepas, desiertos, ríos, lagos, costas, islas, pasos, oasis, tierras agrícolas y puertos. La geografía debe afectar al transporte, la producción, el abastecimiento y la defensa.
 
-5. AMBIENTACIÓN HISTÓRICA Y CRONOLOGÍA
+El objetivo final puede incluir cientos de provincias, si rendimiento y calidad lo permiten. El MVP comienza con 10–20. La ampliación debe hacerse mediante datos, no reescribiendo la lógica.
 
-La fecha de referencia será aproximadamente el año 1000 d. C.
+## Capas de información
 
-La primera versión histórica debe utilizar una fecha de referencia explícita, por ejemplo el año 1000, y no mezclar automáticamente entidades de siglos distintos.
+- Política.
 
-La cronología será ampliable, pero no se implementará una simulación completa de todos los siglos desde el principio.
+- Geografía.
 
-Reglas históricas
+- Recursos.
 
-Distingue siempre:
+- Producción.
 
-- Hechos documentados.
-- Reconstrucciones históricas.
-- Inferencias geográficas.
-- Simplificaciones jugables.
-- Decisiones de diseño.
+- Comercio.
 
-No inventes fuentes, fronteras, asentamientos ni recursos históricos.
+- Rutas y abastecimiento.
 
-Las fronteras del periodo medieval pueden ser inciertas o disputadas. Representa esa incertidumbre mediante control directo, vasallaje, influencia y fronteras no consolidadas.
+- Militar.
 
-No proyectes las fronteras de los estados actuales sobre el mapa medieval.
+- Seguridad y lealtad.
 
-Poderes políticos que investigar
+- Población.
 
-Investiga las entidades que correspondan cronológicamente a la fecha seleccionada, incluyendo cuando proceda:
-
-- Inglaterra, Escocia, Gales e Irlanda.
-- Califato de Córdoba y poderes cristianos ibéricos.
-- Reino de Francia y Sacro Imperio.
-- Italia y poderes regionales.
-- Imperio bizantino y Bulgaria.
-- Rus de Kiev.
-- Polonia y Hungría.
-- Poderes del norte de África.
-- Califato abasí y dinastías regionales de Oriente Próximo.
-- Poderes iranios.
-- Samaníes, Karajánidas, Gaznávidas y otros poderes de Asia Central según sus fechas de existencia.
-- Dinastía Song del Norte y Liao.
-- Goryeo.
-- Japón del periodo Heian.
-- Reinos y dinastías regionales de India.
-
-Esta lista es un plan de investigación, no una lista definitiva de entidades simultáneas.
-
-Antes de incorporar una entidad al mapa, verifica su existencia y situación política en la fecha de referencia.
-
----
-
-6. GEOGRAFÍA Y MAPA DEL MUNDO
-
-Objetivo final
-
-El mundo debe extenderse progresivamente desde Europa occidental hasta Asia oriental, incluyendo las regiones relevantes para el comercio, la guerra y el desarrollo histórico del periodo.
-
-Debe contemplar:
-
-- Islas británicas.
-- Península ibérica.
-- Europa occidental y central.
-- Escandinavia.
-- Europa oriental.
-- Balcanes.
-- Mediterráneo.
-- Norte de África.
-- Anatolia.
-- Cáucaso.
-- Mesopotamia.
-- Persia.
-- Arabia.
-- Asia Central.
-- Norte y sur del subcontinente indio.
-- Norte de China.
-- Sur de China.
-- Corea.
-- Japón.
-- Regiones de estepa y corredores comerciales intermedios.
-
-Geografía física
-
-El mapa debe representar:
-
-- Montañas.
-- Llanuras.
-- Bosques.
-- Estepas.
-- Desiertos.
-- Ríos.
-- Lagos.
-- Costas.
-- Islas.
-- Pasos montañosos.
-- Oasis.
-- Tierras agrícolas.
-- Puertos naturales.
-- Regiones mineras.
-
-Los principales sistemas geográficos deben afectar a la economía y la logística.
-
-Las montañas pueden dificultar el transporte; los ríos pueden facilitarlo; los desiertos pueden exigir abastecimiento; las costas pueden permitir rutas marítimas.
-
-No todos los terrenos deben ser atravesables por todas las unidades.
-
-Escala
-
-El objetivo final es disponer de cientos de provincias si el rendimiento y la calidad del contenido lo permiten.
-
-No fijes un número definitivo antes de probar el motor.
-
-El MVP comenzará con 10–20 provincias. La estructura debe permitir ampliar el mapa mediante datos sin reescribir la lógica.
-
-Capas de información
-
-El mapa tendrá, progresivamente:
-
-1. Capa política.
-2. Capa geográfica.
-3. Capa de recursos.
-4. Capa de producción.
-5. Capa comercial.
-6. Capa de rutas y abastecimiento.
-7. Capa militar.
-8. Capa de seguridad y lealtad.
-9. Capa de población.
-10. Capa de infraestructura.
+- Infraestructura.
 
 Cada capa debe poder activarse y desactivarse.
 
----
+# 7. IDENTIDAD VISUAL
 
-7. IDENTIDAD VISUAL
+Dirección artística: atlas medieval de alta calidad con pergamino envejecido, tinta, relieve, montañas y bosques ilustrados, ríos reconocibles, fronteras pintadas, símbolos de ciudades y fortalezas, emblemas originales y rutas.
 
-El estilo deseado es un atlas medieval de alta calidad.
+Paleta: sepias, ocres, marrones, verdes apagados, azules grisáceos, colores diferenciados para los poderes y tonos intensos para alertas críticas.
 
-Debe transmitir:
+Evita estética infantil o futurista, interfaz excesivamente recargada y efectos que perjudiquen el rendimiento.
 
-- Pergamino envejecido.
-- Tinta y líneas dibujadas.
-- Relieve geográfico.
-- Montañas y bosques ilustrados.
-- Ríos reconocibles.
-- Fronteras pintadas.
-- Símbolos de ciudades y fortalezas.
-- Emblemas originales de los poderes políticos.
-- Rutas terrestres y marítimas.
-- Etiquetas geográficas legibles.
+## Niveles de zoom
 
-Paleta
+- Continental: reinos, regiones, ciudades y rutas principales.
 
-Prioriza:
+- Provincial: límites, recursos, asentamientos, caminos, puentes y fortalezas.
 
-- Sepias.
-- Ocres.
-- Marrones.
-- Verdes apagados.
-- Azules grisáceos.
-- Colores diferenciados para los poderes políticos.
-- Tonos más intensos para alertas críticas.
+- Local: edificios, campos y talleres cuando sea viable.
 
-Evitar
+No es obligatorio crear una vista 3D. La prioridad es claridad, rendimiento y coherencia visual.
 
-- Aspecto infantil.
-- Estética futurista.
-- Interfaz excesivamente recargada.
-- Exceso de efectos.
-- Grandes animaciones que perjudiquen el rendimiento.
-- Mapas donde las fronteras y los nombres sean ilegibles.
+# 8. PROVINCIAS Y TERRITORIOS
 
-Niveles de zoom
+Cada provincia debe tener un identificador estable y una ficha ampliable con nombre, variantes históricas, región, terreno, clima, superficie útil, fertilidad, agua, bosques, recursos, población, vivienda, mano de obra, seguridad, lealtad, infraestructura, edificios, almacenes, producción, consumo, comercio, rutas, gobernador, guarnición, control político, impuestos, costes administrativos, fuentes y confianza.
 
-Continental: reinos, regiones, grandes ciudades y rutas principales.
+## Especialización
 
-Provincial: límites provinciales, recursos, asentamientos, carreteras, puentes y fortalezas.
+Ejemplos: granero regional, centro ganadero, zona forestal, distrito minero, ciudad artesanal, puerto comercial, paso militar, oasis, centro religioso o capital administrativa. Una provincia puede combinar funciones y la especialización debe surgir de la geografía, infraestructura y decisiones del jugador.
 
-Local: edificios, campos, talleres y elementos de producción cuando el nivel de detalle lo permita.
+# 9. SISTEMA DE RECURSOS
 
-No es obligatorio crear una vista local tridimensional. La prioridad es una representación eficiente, coherente y atractiva.
+## Categorías
 
----
+- Alimentos: trigo, cebada, centeno, avena, arroz cuando corresponda, legumbres, verduras, frutas, pescado, carne, huevos, leche, queso y miel.
 
-8. PROVINCIAS Y TERRITORIOS
+- Agua: pozos, ríos aprovechables, cisternas y canales; puede modelarse como capacidad local, no siempre como mercancía.
 
-Cada provincia tendrá un identificador estable.
+- Bosques: troncos, madera, leña y carbón vegetal.
 
-Su ficha debe poder incluir:
+- Minerales: hierro, cobre, estaño, plomo, plata y oro, distribuidos según geología y evidencia.
 
-- Nombre.
-- Variantes históricas del nombre.
-- Región.
-- Terreno.
-- Clima.
-- Superficie útil.
-- Fertilidad.
-- Disponibilidad de agua.
-- Bosques.
-- Recursos potenciales.
-- Recursos explotados.
-- Población.
-- Vivienda.
-- Mano de obra.
-- Seguridad.
-- Lealtad.
-- Infraestructura.
-- Edificios.
-- Almacenes.
-- Producción.
-- Consumo.
-- Importaciones.
-- Exportaciones.
-- Rutas.
-- Gobernador.
-- Guarnición.
-- Control político.
-- Impuestos.
-- Costes administrativos.
-- Fuentes históricas.
-- Nivel de confianza de los datos.
+- Construcción: piedra, arcilla, ladrillos, cal y tejas.
 
-Especialización
+- Textiles: lana, lino, algodón, seda, tintes y tejidos.
 
-Ejemplos de provincias especializadas:
+- Ganadería: caballos, bueyes, ovejas, cabras, cerdos y camellos cuando sean apropiados.
 
-- Granero regional.
-- Centro ganadero.
-- Zona forestal.
-- Distrito minero.
-- Ciudad artesanal.
-- Puerto comercial.
-- Paso militar.
-- Oasis.
-- Centro religioso.
-- Capital administrativa.
+- Manufacturas: harina, pan, herramientas, cuero, cerámica, vidrio y papel cuando corresponda.
 
-Una provincia puede combinar varias funciones.
+- Comercio especializado: especias, incienso, perfumes, pieles y bienes de lujo documentados.
 
-La especialización debe surgir de la geografía, la infraestructura y las decisiones del jugador.
+- Institucionales: moneda, conocimiento, legitimidad e influencia; no todos son mercancías físicas.
 
----
-
-9. SISTEMA DE RECURSOS
-
-Diseña un catálogo ampliable de mercancías.
-
-9.1 Alimentos
-
-- Trigo.
-- Cebada.
-- Centeno.
-- Avena.
-- Arroz donde corresponda.
-- Legumbres.
-- Verduras.
-- Frutas.
-- Pescado.
-- Carne.
-- Huevos.
-- Leche.
-- Queso.
-- Miel.
-
-9.2 Agua
-
-- Agua de pozo.
-- Agua de río aprovechable.
-- Cisternas.
-- Canales.
-- Infraestructura hidráulica.
-
-El agua puede modelarse como capacidad y disponibilidad local, no necesariamente como mercancía transportable en todos los casos.
-
-9.3 Recursos forestales
-
-- Troncos.
-- Madera.
-- Leña.
-- Carbón vegetal.
-
-9.4 Minerales
-
-- Hierro.
-- Cobre.
-- Estaño.
-- Plomo.
-- Plata.
-- Oro.
-
-Los depósitos deben depender de la geología y de la evidencia disponible. No coloques todos los minerales en todas las regiones.
-
-9.5 Construcción
-
-- Piedra.
-- Arcilla.
-- Ladrillos.
-- Cal.
-- Tejas.
-
-9.6 Textiles
-
-- Lana.
-- Lino.
-- Algodón.
-- Seda.
-- Tintes.
-- Tejidos.
-
-Su distribución debe corresponder a las regiones y tecnologías apropiadas.
-
-9.7 Ganadería
-
-- Caballos.
-- Bueyes.
-- Ovejas.
-- Cabras.
-- Cerdos.
-- Camellos donde sean apropiados.
-
-Los animales pueden representar ganado productivo, capacidad de transporte o recursos militares.
-
-9.8 Manufacturas
-
-- Harina.
-- Pan.
-- Herramientas.
-- Cuero.
-- Cerámica.
-- Vidrio.
-- Papel cuando corresponda.
-
-9.9 Comercio especializado
-
-- Especias.
-- Incienso.
-- Perfumes.
-- Pieles.
-- Productos de lujo documentados.
-
-9.10 Recursos institucionales
-
-- Moneda.
-- Conocimiento.
-- Legitimidad.
-- Influencia diplomática.
-
-No trates todos estos recursos como mercancías físicas.
-
-Reglas
-
-Cada recurso tendrá:
-
-- ID.
-- Nombre traducible.
-- Categoría.
-- Unidad abstracta.
-- Posibles fuentes de producción.
-- Usos.
-- Requisitos de almacenamiento.
-- Durabilidad, si corresponde.
-- Distribución regional.
-- Valor de referencia.
-- Fuente histórica cuando sea necesaria.
-- Nivel de confianza.
+Cada recurso tendrá ID, nombre traducible, categoría, unidad abstracta, fuentes de producción, usos, requisitos de almacenamiento, durabilidad si procede, distribución regional, valor de referencia, fuente y grado de confianza.
 
 El catálogo final puede contener decenas de recursos. El MVP debe comenzar con 8–12 mercancías esenciales.
 
----
+# 10. ECONOMÍA Y CADENAS DE PRODUCCIÓN
 
-10. ECONOMÍA Y CADENAS DE PRODUCCIÓN
+La economía debe respetar la conservación de recursos. Balance: existencias finales = iniciales + producción + importaciones − consumo − exportaciones − pérdidas. Las transferencias internas deben registrarse para evitar duplicaciones.
 
-La economía debe respetar la conservación de recursos.
+## Cadenas principales
 
-Ningún edificio puede producir mercancías sin disponer de sus requisitos.
+- Agrícola: cultivo → cosecha → granero → molino → harina → panadería → consumo o mercado.
 
-La fórmula conceptual de balance provincial será:
+- Forestal: bosque → tala → troncos → transformación → madera o leña → construcción y consumo.
 
-Existencias finales = existencias iniciales + producción + importaciones − consumo − exportaciones − pérdidas.
+- Metalúrgica: mineral → combustible → fundición → metal trabajado → herrería → herramientas y armas.
 
-Las transferencias internas deben registrarse correctamente para evitar duplicar recursos.
+- Textil: materia prima apropiada → transformación → tejido → mercado o consumo.
 
-Cadena agrícola
+Cada edificio define coste inicial, requisitos, mano de obra, insumos, producción base, intervalo, mantenimiento, almacenamiento, mejoras, efectos y condiciones de parada.
 
-Cultivo → cosecha → granero → molino → harina → panadería → consumo o mercado.
+La agricultura tiene temporadas; las minas pueden agotarse; los bosques se regeneran; pastos y animales requieren capacidad, alimento y agua; los productos perecederos pueden deteriorarse.
 
-Cadena forestal
+# 11. POBLACIÓN Y TRABAJO
 
-Bosque → tala → troncos → aserrado o transformación → madera o leña → construcción y consumo.
+La población se modela de forma agregada por provincia y categoría: campesinos, artesanos, comerciantes y transportistas, funcionarios, nobles, clero según contexto y soldados.
 
-Cadena metalúrgica
+Necesidades: alimentación, agua, combustible, vivienda, seguridad, vestimenta, empleo y estabilidad. Variables: población, trabajadores disponibles y asignados, capacidad residencial, bienestar, seguridad, descontento, crecimiento, migración y mortalidad abstracta cuando sea necesaria.
 
-Mineral → combustible → fundición → metal trabajado → herrería → herramientas y armas.
+El sistema de prioridades laborales debe ser configurable y visible. Las necesidades esenciales, producción alimentaria, agua y mantenimiento deben competir con industria, comercio, administración y ejército. Reclutar demasiado reduce la disponibilidad civil.
 
-Cadena textil
+Las crisis deben ser graduales: hambre, emigración, menor productividad y descontento. Deben existir alertas y posibilidades de recuperación.
 
-Ganadería o cultivo apropiado → materia prima → transformación → tejido → mercado o consumo.
+# 12. ASENTAMIENTOS Y CONSTRUCCIÓN
 
-Edificios productivos
+Tipos: aldea, pueblo, ciudad, capital regional, puerto, castillo, fortaleza, puesto comercial y puesto caravanero. No todas las provincias necesitan una gran ciudad.
 
-Cada edificio debe definir:
+Familias de edificios: residenciales, agrícolas, almacenamiento, agua, forestales, mineros, industriales, comerciales, administrativos, culturales/religiosos, militares e infraestructura.
 
-- Coste inicial.
-- Requisitos de construcción.
-- Mano de obra.
-- Insumos.
-- Producción base.
-- Intervalo de producción.
-- Coste de mantenimiento.
-- Almacenamiento.
-- Mejoras.
-- Efectos sobre otros sistemas.
-- Condiciones de parada.
+Cada construcción debe mostrar precio, recursos necesarios, tiempo restante, efecto esperado, requisitos, mano de obra y mantenimiento. No permitir construcciones imposibles. Las mejoras deben ser comprensibles y no crear inflación descontrolada.
 
-Estacionalidad
+# 13. ALMACENAMIENTO Y DISTRIBUCIÓN
 
-La agricultura debe tener temporadas y cosechas.
+Las provincias y edificios respetan su capacidad. Si un almacén se llena, la producción se detiene, reduce o dirige a otro destino permitido. Las transferencias nunca deben duplicar recursos.
 
-El calendario y la intensidad estacional deben ser simplificaciones jugables, salvo que exista información histórica suficiente para un modelo más preciso.
+La interfaz muestra existencias, capacidad, producción, consumo, importaciones, exportaciones, tiempo estimado hasta agotamiento, excedentes y déficits. El jugador debe identificar qué recurso limita el desarrollo.
 
-Agotamiento y regeneración
+# 14. COMERCIO Y LOGÍSTICA
 
-- Las minas pueden agotarse.
-- Los bosques pueden regenerarse.
-- Los pastos tienen capacidad.
-- Los animales requieren agua y alimento.
-- Los productos perecederos pueden deteriorarse.
-- Las manufacturas necesitan insumos y transporte.
+El comercio utiliza una red de conexiones entre provincias y nodos. Incluye caminos, puentes, ríos navegables, puertos, caravanas, carros, animales de carga, camellos en zonas apropiadas, rutas marítimas, oasis y puestos caravaneros.
 
----
+Coste y duración dependen de distancia, terreno, infraestructura, transporte, capacidad, seguridad, peajes, estación, guerra e interrupciones.
 
-11. POBLACIÓN Y TRABAJO
+Los precios responden a oferta, demanda y transporte, usando un modelo acotado y estable.
 
-La población será agregada por provincia y por categorías.
+## Órdenes automáticas
 
-Categorías iniciales:
+- Mantener reservas mínimas.
 
-- Campesinos.
-- Artesanos.
-- Comerciantes y transportistas.
-- Funcionarios.
-- Nobles.
-- Clero y comunidades religiosas según corresponda.
-- Soldados.
+- Exportar excedentes.
 
-No es necesario representar individualmente a cada persona.
+- Importar recursos bajo umbral.
 
-Necesidades
+- Priorizar abastecimiento urbano.
 
-- Alimentación.
-- Agua.
-- Combustible.
-- Vivienda.
-- Seguridad.
-- Vestimenta.
-- Empleo.
-- Estabilidad.
+- Abastecer ejércitos.
 
-Variables
+- Limitar gastos.
 
-- Población total.
-- Trabajadores disponibles.
-- Trabajadores asignados.
-- Capacidad residencial.
-- Bienestar.
-- Seguridad.
-- Descontento.
-- Crecimiento.
-- Migración.
-- Mortalidad abstracta cuando sea necesaria para el modelo.
+- Suspender rutas no rentables.
 
-Prioridades laborales
+Cada ruta muestra origen, destino, mercancía, cantidad, capacidad, tiempo, coste, ingresos previstos, estado, riesgo y rentabilidad. Una ruta interrumpida no transporta mercancías.
 
-El sistema debe priorizar de forma configurable:
+# 15. DIPLOMACIA
 
-1. Necesidades esenciales.
-2. Producción alimentaria.
-3. Agua y mantenimiento.
-4. Edificios e industria.
-5. Comercio y transporte.
-6. Administración.
-7. Ejército.
+Relaciones posibles: paz, guerra, no agresión, acuerdo comercial, alianza, permiso de paso, tributo, vasallaje, reclamación territorial, indemnización, devolución territorial y negociación de paz.
 
-La prioridad exacta debe ser configurable y visible.
+Las opciones dependen de la situación política y reglas del juego. No todas las entidades deben compartir títulos o instituciones. La diplomacia tiene costes, condiciones y consecuencias. Las alianzas no garantizan participación automática en todas las guerras.
 
-Reclutar demasiado debe reducir la disponibilidad de trabajadores civiles.
+# 16. GUERRA, EJÉRCITOS Y CONQUISTA
 
-Crisis
+Unidades progresivas: milicias, infantería, arqueros, caballería, ingenieros, guarniciones, mercenarios y fuerzas navales cuando el alcance lo justifique. Disponibilidad variable por región y época.
 
-La escasez debe tener consecuencias graduales.
+Las tropas requieren población reclutable, moneda, equipamiento, alimento, transporte, mantenimiento y tiempo de preparación.
 
-El hambre no debe producir automáticamente la desaparición de una provincia por un único intervalo de cálculo.
+Las batallas consideran tamaño, composición, equipo, experiencia, moral, general, terreno, fortificaciones, abastecimiento, fatiga, tecnología, refuerzos y situación estratégica.
 
-Debe haber avisos, reservas, oportunidades de importar y decisiones para recuperarse.
+Los asedios consideran fortificaciones, suministros, duración, desgaste, refuerzos, crisis abstractas, negociación y rendición.
 
----
+Conquistar cambia el control político, pero no elimina población, costes administrativos, inseguridad, necesidades logísticas ni tiempo de integración. La guerra debe poder resultar costosa.
 
-12. ASENTAMIENTOS Y CONSTRUCCIÓN
+# 17. ADMINISTRACIÓN, GOBERNADORES Y DINASTÍAS
 
-Tipos de asentamiento:
+La administración provincial podrá priorizar producción, seguridad, recaudación, comercio, desarrollo y lealtad.
 
-- Aldea.
-- Pueblo.
-- Ciudad.
-- Capital regional.
-- Puerto.
-- Castillo.
-- Fortaleza.
-- Puesto comercial.
-- Puesto caravanero.
+Los gobernadores pueden tener rasgos y capacidades sin exigir centenares de personajes complejos. La legitimidad puede depender de seguridad, fiscalidad, estabilidad, relaciones políticas, sucesión, trato territorial, resultados militares y contexto cultural.
 
-No todas las provincias necesitan una gran ciudad.
+La diversidad cultural no debe penalizarse automáticamente. En una fase avanzada pueden incorporarse personajes, edad, rasgos, relaciones, sucesión, reclamaciones y alianzas matrimoniales cuando sean históricamente apropiadas. No retrasar el MVP por estos sistemas.
 
-Familias de edificios
+# 18. TECNOLOGÍA Y PROGRESIÓN
 
-Residenciales
+Árboles: agricultura y población; industria y construcción; comercio y logística; administración y cultura; guerra y diplomacia.
 
-Viviendas y ampliaciones de capacidad.
+Cada mejora tiene un efecto concreto. Evita tecnologías anacrónicas y distingue el progreso abstracto del año exacto de invención. La progresión debe desbloquear capacidades y decisiones relevantes, no limitarse a porcentajes.
 
-Agrícolas
+# 19. SISTEMA IDLE Y PROGRESO OFFLINE
 
-Granjas, campos y explotaciones ganaderas.
+El juego progresa con la aplicación cerrada sin servidor. Al guardar, registra una marca temporal; al cargar, calcula el tiempo transcurrido y simula los sistemas relevantes por intervalos controlados.
 
-Almacenamiento
+Comienza con un límite configurable de 8–12 horas, como decisión de balance. Simula producción, consumo, almacenamiento, construcciones, comercio sencillo, crecimiento agregado, mantenimiento, eventos y automatizaciones autorizadas.
 
-Graneros, depósitos y almacenes especializados.
+Controla tiempos negativos, cambios extremos de reloj, operaciones repetidas y límites máximos. Si existe incoherencia temporal, usa un comportamiento seguro.
 
-Agua
+Al regresar, muestra tiempo transcurrido, recursos producidos y consumidos, construcciones terminadas, cambios de existencias, alertas, incidentes y estado provincial.
 
-Pozos, cisternas, canales y sistemas de abastecimiento.
+# 20. AUTOMATIZACIÓN
 
-Forestales
+Desbloquea progresivamente capataces de producción, responsables de almacenes, maestros de caravanas, gobernadores, administradores fiscales y responsables militares.
 
-Leñadores y aserraderos cuando corresponda.
+Cada automatización debe tener órdenes, límites y prioridades. Evita que venda todas las reservas o consuma todo el tesoro sin advertencia. El jugador puede suspender, editar y revisar órdenes.
 
-Mineros
+# 21. EVENTOS Y MUNDO VIVO
 
-Minas y dependencias de transformación.
+Eventos: mala cosecha, cosecha excepcional, inundación, sequía, descubrimiento de recurso, interrupción de ruta, bandolerismo, disputa sucesoria, oportunidad comercial, alianza, amenaza fronteriza, rebelión y crisis de abastecimiento.
 
-Industriales
+Cada evento tiene condiciones, consecuencias y opciones. No depende de API de IA. Utiliza reglas, datos históricos y aleatoriedad controlada. Evita una frecuencia excesiva de crisis.
 
-Molinos, herrerías, talleres y manufacturas.
+# 22. IA DE REINOS RIVALES
 
-Comerciales
+La IA funciona mediante reglas locales y decisiones deterministas o semialeatorias, sin modelos de lenguaje obligatorios.
 
-Mercados, almacenes comerciales, puertos y puestos de intercambio.
+Puede desarrollar economía, construir, mantener reservas, comerciar, mejorar infraestructura, proteger fronteras, reclutar, evaluar amenazas, buscar alianzas, atacar con ventaja y negociar cuando la guerra sea costosa.
 
-Administrativos
+La IA respeta las reglas económicas del jugador y no genera recursos o ejércitos gratuitos. En el MVP se limita a decisiones económicas y territoriales sencillas.
 
-Edificios de gestión y recaudación.
+# 23. INTERFAZ Y EXPERIENCIA ANDROID
 
-Culturales y religiosos
+Android es la plataforma prioritaria. Requisitos: botones grandes, paneles adaptables, texto legible, zoom y desplazamiento fluidos, selección fiable, información sin hover, navegación clara, alertas, gestión de errores, guardado y consumo razonable de batería.
 
-Edificios adecuados a la región y a la cronología.
+Valora modo horizontal y conserva un diseño usable en vertical cuando sea viable. No fuerces orientación sin justificarla.
 
-Militares
+## Pantallas progresivas
 
-Cuarteles, fortificaciones, arsenales y estructuras de apoyo.
+- Mapa del mundo.
 
-Infraestructura
+- Vista y ficha provincial.
 
-Carreteras, puentes, puertos y mejoras logísticas.
+- Economía y recursos.
 
-Reglas de construcción
+- Población y trabajadores.
 
-Cada construcción debe mostrar:
+- Edificios y construcción.
 
-- Precio.
-- Recursos necesarios.
-- Tiempo restante.
-- Efecto esperado.
-- Requisitos.
-- Mano de obra.
-- Costes de mantenimiento.
+- Comercio y rutas.
 
-No permitas iniciar construcciones imposibles.
+- Ejército.
 
-Las mejoras deben tener rendimientos comprensibles y no generar inflación descontrolada.
+- Diplomacia.
 
----
+- Tecnología.
 
-13. ALMACENAMIENTO Y DISTRIBUCIÓN
+- Administración.
 
-Cada provincia y edificio debe respetar sus capacidades.
+- Eventos y alertas.
 
-Si un almacén está lleno, la producción debe detenerse, reducirse o dirigirse a otro destino permitido.
+- Resumen offline.
 
-No permitas que los recursos se dupliquen al transferirlos entre almacenes.
+- Opciones y guardado.
 
-Debe existir una vista que muestre:
+Las alertas prioritarias incluyen hambre, falta de agua, almacenes llenos, falta de insumos, rutas interrumpidas, ejército sin suministros, construcción bloqueada, tesoro insuficiente y provincia insegura. Las alertas importantes deben abrir la pantalla pertinente.
 
-- Exist
+# 24. ARQUITECTURA TÉCNICA
+
+Utiliza Godot 4.x estable y GDScript salvo razón técnica demostrable para otra tecnología. Verifica la versión adecuada para Android y las herramientas disponibles antes de fijarla.
+
+Separa aplicación, interfaz, mapa, estado de partida, economía, recursos, población, edificios, producción, almacenamiento, comercio, logística, guerra, diplomacia, administración, IA, progresión, persistencia, datos históricos y pruebas.
+
+Principios: datos separados de lógica, IDs estables, evitar reglas duplicadas y dependencias circulares, simulación por intervalos, no recalcular rutas innecesariamente, evitar reconstrucciones globales de interfaz, validar datos y versionar guardados.
+
+Evalúa soluciones nativas de Godot antes de incorporar bibliotecas. Los recursos, edificios, recetas, provincias, rutas, tecnologías y poderes políticos deben definirse mediante datos siempre que sea razonable.
+
+# 25. GUARDADO, CARGA Y RECUPERACIÓN
+
+Utiliza almacenamiento local gratuito. Guarda versión del formato, marca temporal, estado del jugador, provincias, inventarios, población, edificios, trabajadores, producción, consumo, construcciones, rutas, órdenes, tecnología, diplomacia, ejércitos, eventos relevantes y semilla aleatoria cuando corresponda.
+
+Requisitos: guardar manualmente y automáticamente, recuperarse de interrupciones, validar archivos, evitar destruir guardados válidos, mostrar errores, permitir copias anteriores cuando existan y migrar formatos antiguos de forma segura.
+
+No añadas cuentas, sincronización en la nube ni servidores obligatorios.
+
+# 26. OBJETIVO DE COSTE CERO
+
+Prioriza Godot, GDScript, GitHub gratuito, herramientas gratuitas, recursos propios o con licencia compatible, almacenamiento local y exportación Android local.
+
+No añadas API de IA de pago, servidores, backend o bases de datos remotas obligatorias, suscripciones para jugar, servicios facturables, recursos comerciales de pago, analítica o telemetría obligatoria, anuncios obligatorios, compras necesarias ni DRM.
+
+Registra procedencia y licencias de recursos externos. No asumas que cualquier imagen de Internet es reutilizable.
+
+Distingue desarrollo, exportación APK, distribución directa, publicación en tienda y alojamiento web. Comprueba tasas y condiciones vigentes antes de recomendar canales. El objetivo es generar y probar APK sin infraestructura o herramientas de pago obligatorias.
+
+# 27. ALCANCE DEL MVP
+
+El primer objetivo es demostrar que el núcleo funciona, no construir toda Eurasia.
+
+- 10–20 provincias y dos o tres poderes políticos.
+
+- Mapa seleccionable y dos o tres tipos de asentamiento.
+
+- Población abstracta, trabajadores y 8–12 recursos.
+
+- Entre 4 y 6 edificios productivos esenciales.
+
+- Construcción, producción, consumo, almacenamiento y necesidades.
+
+- Escasez y recuperación, mejoras, guardado y carga.
+
+- Progreso offline e interfaz Android.
+
+- Datos históricos iniciales documentados.
+
+El prototipo debe incluir una explotación agrícola, reservas de alimentos, población que consume, transformación de materia prima, construcción con costes, trabajadores limitados, una crisis de escasez, posibilidad de recuperación, guardado y progreso offline.
+
+Solo se considera funcional si puede ejecutarse y jugarse durante un periodo prolongado sin errores críticos de economía, guardado o interfaz.
+
+# 28. FASES COMPLETAS DEL PROYECTO
+
+- Fase 0 — Preparación: repositorio, documentación, versión Godot, estructura, convenciones, pruebas, exportación Android y coste cero.
+
+- Fase 1 — Núcleo jugable: estado, mapa, selección provincial, recursos, almacenes, población, trabajadores, edificios, producción, consumo, construcción y guardado.
+
+- Fase 2 — Economía avanzada: estacionalidad, cadenas agrícola/forestal/minera, mantenimiento, necesidades, escasez y mejoras.
+
+- Fase 3 — Progreso offline: marca temporal, simulación por intervalos, límite, resumen, control de inconsistencias y pruebas.
+
+- Fase 4 — Comercio: conexiones, costes, capacidad, precios, importaciones, exportaciones, reservas, automatización e interrupciones.
+
+- Fase 5 — Mundo político: rivales, relaciones, IA económica, fronteras, reclamaciones, acuerdos y conflictos.
+
+- Fase 6 — Guerra: reclutamiento, mantenimiento, movimiento, abastecimiento, batallas, asedios, conquista e integración.
+
+- Fase 7 — Ampliación histórica: regiones, provincias, entidades, recursos, asentamientos, rutas y capas del mapa.
+
+- Fase 8 — Automatización y progresión: encargados, gobernadores, mejoras, tecnología, especialización, eventos, objetivos y dinastías.
+
+- Fase 9 — Pulido: rendimiento, accesibilidad, tutorial, equilibrio, interfaz, sonido, errores, pruebas y distribución.
+
+Las fases pueden subdividirse. No deben convertirse en grandes cambios imposibles de revisar.
+
+# 29. PRUEBAS OBLIGATORIAS
+
+## Economía
+
+- Edificios respetan costes y no producen sin insumos.
+
+- Trabajadores no superan la población disponible.
+
+- Recursos no aparecen de la nada ni se duplican.
+
+- Almacenes respetan capacidad.
+
+- Déficits afectan a la economía y la producción puede recuperarse.
+
+## Población
+
+- La población consume recursos.
+
+- Asignación laboral válida.
+
+- La escasez tiene consecuencias.
+
+- Las reservas ayudan a superar crisis.
+
+- El reclutamiento reduce disponibilidad laboral.
+
+## Comercio y guerra
+
+- El vendedor tiene mercancías y el comprador fondos.
+
+- El transporte respeta capacidad y coste.
+
+- Las rutas interrumpidas no operan.
+
+- Reclutar cuesta recursos.
+
+- Los ejércitos necesitan mantenimiento y suministros.
+
+- La conquista cambia el control y conserva costes de integración.
+
+## Persistencia y offline
+
+- Guardar y cargar conserva estado.
+
+- Archivos incompletos no destruyen automáticamente guardados válidos.
+
+- Versiones antiguas se migran o rechazan de forma segura.
+
+- Tiempos negativos no producen recompensas.
+
+- El progreso respeta el límite y no duplica recursos.
+
+## Android
+
+- Inicio, interfaz táctil, zoom, desplazamiento y selección.
+
+- Paneles, guardado y reanudación.
+
+- Rendimiento y memoria controlados.
+
+No marques una prueba como superada si no se ha ejecutado. Si no hay dispositivo o entorno de exportación, documenta la limitación y proporciona instrucciones manuales.
+
+# 30. RENDIMIENTO Y ESCALABILIDAD
+
+Diseña para cientos de provincias sin sobredimensionar el MVP. No simules cada habitante, no actualices la economía cada fotograma, no recalcules todas las rutas si nada ha cambiado y evita reconstruir todas las provincias ante un cambio local.
+
+Mide rendimiento antes de optimizar. Prueba conjuntos progresivos de 20, 100 y más provincias. No declares que el juego admite cientos hasta haberlo comprobado.
+
+# 31. DOCUMENTACIÓN DEL REPOSITORIO
+
+- README.md: descripción, requisitos, instalación, ejecución, exportación Android y estado.
+
+- docs/MASTER_DESIGN.md: visión, sistemas, mecánicas y alcance final.
+
+- docs/HISTORICAL_DATA.md: entidades, cronología, geografía, recursos, fuentes e incertidumbre.
+
+- docs/SIMULATION_SPEC.md: economía, población, producción, comercio, guerra y offline.
+
+- docs/ARCHITECTURE.md: estructura, módulos, dependencias y flujo de datos.
+
+- docs/DATA_SCHEMA.md: provincias, recursos, edificios, recetas, rutas y poderes.
+
+- docs/ROADMAP.md: fases, dependencias y estado.
+
+- docs/TEST_PLAN.md: pruebas, resultados, errores y pendientes.
+
+- docs/FREE_OPERATION.md: herramientas, licencias, costes y dependencias.
+
+- CHANGELOG.md: cambios por versión.
+
+- THIRD_PARTY_LICENSES.md: recursos y licencias de terceros.
+
+Adapta la estructura si existe una razón técnica, pero conserva la información necesaria. No crees documentos vacíos; deben ser útiles y mantenerse actualizados.
+
+# 32. INVESTIGACIÓN HISTÓRICA Y FUENTES
+
+Prioriza publicaciones académicas, instituciones patrimoniales, museos, proyectos de investigación, atlas especializados, fuentes arqueológicas, universidades y UNESCO cuando sea relevante.
+
+Fuentes iniciales para investigar conexiones y rutas:
+
+- UNESCO Silk Roads: https://www.unesco.org/en/silk-roads/about-silk-roads
+
+- UNESCO Chang'an–Tian Shan: https://whc.unesco.org/en/list/1442/
+
+- UNESCO Zarafshan–Karakum: https://whc.unesco.org/en/list/1675/
+
+Estas fuentes no bastan para verificar todas las fronteras, recursos y asentamientos del año 1000. Para cada conjunto de datos registra fuente, URL, fecha de consulta, afirmación respaldada, alcance de evidencia, confianza y simplificaciones.
+
+No confundas una ruta comercial documentada con la existencia de un recurso en todas las provincias que atraviesa. No inventes cifras precisas cuando solo existan estimaciones.
+
+# 33. DATOS Y EQUILIBRIO
+
+Distingue datos históricos —cronología, entidades, geografía, cultivos, rutas y tecnologías— de parámetros de juego —velocidad de producción, costes, duración, capacidad, límite offline y fórmulas de balance—.
+
+No presentes parámetros de juego como estadísticas históricas. Usa tablas y pruebas. Evita inflación infinita, producción exponencial sin límites, recursos imposibles, crisis inevitables, guerras sin coste, conquistas sin administración, edificios inútiles y tecnologías que eliminen todas las decisiones.
+
+# 34. USABILIDAD Y TUTORIAL
+
+El tutorial debe enseñar progresivamente a seleccionar provincias, consultar recursos, construir, asignar trabajadores, producir, mantener reservas, satisfacer necesidades, mejorar edificios, resolver escasez, guardar, regresar tras una ausencia y más adelante comerciar y expandirse.
+
+No muestres todas las explicaciones de golpe. Introduce complejidad cuando sea relevante y explica los efectos antes de confirmar decisiones importantes.
+
+# 35. ACCESIBILIDAD Y CALIDAD DE VIDA
+
+Incluye progresivamente texto legible, contraste suficiente, iconos coherentes, información que no dependa solo del color, pausa cuando corresponda, confirmación de acciones destructivas, indicadores de carga, mensajes claros, registro de acontecimientos, resumen económico, comparación de provincias y velocidades de simulación seguras.
+
+No añadas notificaciones externas obligatorias ni permisos innecesarios.
+
+# 36. REGLAS PARA MODIFICAR EL CÓDIGO
+
+- Explicar objetivo y archivos implicados.
+
+- Comprobar dependencias y proponer el cambio mínimo.
+
+- Implementar y ejecutar pruebas disponibles.
+
+- Corregir errores y revisar impacto en guardado y Android.
+
+- Documentar resultados reales y lo no probado.
+
+- Proporcionar instrucciones de validación manual.
+
+- No reemplazar archivos enteros si basta un cambio localizado.
+
+- No duplicar sistemas ni cambiar dependencias sin razón.
+
+- No dejar botones ficticios sin identificarlos como pendientes.
+
+# 37. CONTROL DE VERSIONES
+
+Usa Git y commits pequeños con mensajes claros. Cada fase termina con cambios revisados, pruebas ejecutadas, documentación actualizada, versión identificable, resumen y problemas conocidos. No realices borrados masivos ni reescrituras del historial sin autorización. No publiques automáticamente.
+
+# 38. CRITERIOS DE FINALIZACIÓN
+
+El producto final debe tener un juego Idle funcional, mundo ampliable, economía, población, construcción, producción, almacenamiento, comercio, logística, diplomacia, guerra, conquista, administración, progresión, automatización, eventos, offline y guardado fiable.
+
+El contenido debe estar documentado y cronológicamente coherente. La técnica debe incluir arquitectura modular, datos separados, rendimiento medido, persistencia segura, pruebas reproducibles y exportación Android comprobada.
+
+No debe haber servidores, APIs, suscripciones, compras o telemetría obligatorios. Las licencias deben estar verificadas.
+
+No declares terminado el proyecto solo porque existan documentos. Debe haber una versión jugable y verificable.
+
+# 39. PRIMER ENCARGO A CLAUDE
+
+## Entrega A — Confirmación
+
+Resume lo entendido sobre Reinos Tycoon, su independencia del otro proyecto, el coste cero y la prioridad Android.
+
+## Entrega B — Verificación del entorno
+
+Determina si tienes acceso real al repositorio, archivos y Godot. Si no, explica qué puedes hacer y qué debo realizar yo.
+
+## Entrega C — Plan
+
+Desglosa el proyecto en tareas pequeñas, por dependencia y prioridad. Identifica qué se puede probar sin Android y qué requiere APK.
+
+## Entrega D — Archivos iniciales
+
+Prepara documentación y estructura inicial sin complejidad innecesaria.
+
+## Entrega E — Primer prototipo
+
+Define un prototipo de región pequeña con provincias seleccionables, economía, población, producción, construcción y guardado. Establece aceptación y pruebas antes de implementar.
+
+## Entrega F — Validación
+
+Presenta resultados reales y solicita autorización antes de acciones destructivas o de ampliar alcance. Recomienda la siguiente tarea concreta cuando una entrega esté terminada.
+
+# 40. INSTRUCCIÓN FINAL
+
+Mi objetivo es crear Reinos Tycoon, un juego histórico Idle Tycoon profundo, atractivo, estable, ampliable y jugable en Android, ambientado en Eurasia alrededor del año 1000 d. C.
+
+Quiero un proyecto que pueda mantener a largo plazo sin pagar servicios obligatorios. No quiero una demostración visual vacía, un documento sin código, una economía rota ni cientos de sistemas incompletos.
+
+Prioriza: 1) correctitud, 2) estabilidad, 3) coste cero obligatorio, 4) jugabilidad, 5) calidad histórica, 6) mantenimiento, 7) rendimiento Android, 8) escalabilidad, 9) calidad visual y 10) ampliación progresiva.
+
+Empieza con las entregas A, B y C. No inventes resultados, no afirmes tener herramientas que no tienes y no inicies una reescritura completa sin verificar el entorno. Convierte esta especificación en un videojuego real mediante entregas comprobables.
+
+# ANEXO — INSTRUCCIÓN DE SEGURIDAD PARA CADA ENTREGA
+
+Añade este bloque al final de cada solicitud de implementación para mantener el trabajo acotado y verificable:
+
+Trabaja en una entrega pequeña y verificable.
+
+Antes de modificar código, indica los archivos que vas a cambiar y el motivo.
+
+Después, resume los cambios y ejecuta las pruebas disponibles.
+
+Comunica los resultados reales; no inventes pruebas.
+
+No continúes si quedan errores críticos.
+
+No reescribas archivos completos cuando baste con un cambio localizado.
+
+Conserva las funcionalidades existentes.
+
+No introduzcas ningún coste obligatorio.
+
+Si te falta información, pide el archivo concreto que necesites.
+
+# Checklist antes de empezar
+
+- [ ] He creado o voy a crear un repositorio independiente llamado reinos-tycoon.
+
+- [ ] El proyecto original Reinos permanecerá intacto.
+
+- [ ] Claude ha confirmado qué herramientas puede usar realmente.
+
+- [ ] La versión de Godot y los requisitos de Android están documentados.
+
+- [ ] Los primeros documentos están creados y no vacíos.
+
+- [ ] El MVP tiene criterios de aceptación y pruebas.
+
+- [ ] No hay dependencias de pago obligatorias.
+
+- [ ] Los recursos externos tienen licencias compatibles.
