@@ -10,7 +10,7 @@ Estado a 2026-10-21 (v0.0.3):
 - 0.8 hecha: `docs/MVP_PROTOTYPE.md` aprobado por el usuario el 2026-10-21 (al ordenar empezar la Fase 1). La región no está investigada.
 - Fase 1: en curso desde 2026-10-21.
 - Fase 1: cerrada con salvedades el 2026-10-21 (ver más abajo).
-- Fase 2: en curso desde 2026-10-21 (2.1 empezada).
+- Fase 2: borrador sin aprobar y sin código; antes va el rediseño visual (tabla V1–V6, abajo).
 - Fase 3 en adelante: pendiente.
 
 Leyenda de pruebas:
@@ -59,9 +59,20 @@ Las tareas 1.1 a 1.7 no necesitan pantalla. Se pueden hacer antes del mapa.
 - [PC] `tests/test_closure.gd`: 2 años de juego con las 5 provincias y un jugador automático; 12 guardados y cargas en 6000 pasos con resultado idéntico al de la partida sin interrupciones; 40 cierres y reaperturas con ausencias de 0 s a 24 h y con el reloj hacia atrás, comparados paso a paso con una partida de referencia; un año de juego a ×600 a través de la pantalla real (autoguardado incluido); ajuste de ratón desde el toque. Hallazgo: D-020 (tope de edificios).
 - [APK] A11 confirmado por el usuario el 2026-10-21 («Sí, se puede») y A12 medido (0,65 ms por paso). Quedan sin confirmar en el móvil los puntos 3, 4, 6, 8 y 9 de la lista de `TEST_PLAN.md`; ninguno ha dado un fallo.
 - **Fase 1 cerrada con salvedades el 2026-10-21**: criterio de cierre cumplido (A11 confirmado y sin fallos críticos comunicados), pero con esos puntos pendientes de ver. Los puntos pendientes se comprobarán cuando el usuario pruebe las siguientes versiones.
-- El usuario pide un **rediseño visual** («no me gusta cómo se ve… todo en general») y está pendiente de recibir su imagen de referencia; no cambia el cierre de la fase 1 (que es de funcionamiento) pero hay que hacerlo.
+- El usuario pide un **rediseño visual** («no me gusta cómo se ve… todo en general», con una imagen de referencia de una ciudad medieval 3D de poco polígono). No cambia el cierre de la fase 1 (que es de funcionamiento) pero hay que hacerlo. Decisión D-025.
 
-## Fase 2 — borrador para aprobar (NO empezada)
+### Rediseño visual (propuesta; no estaba en el documento maestro)
+
+| ID | Tarea | Prueba | Listo cuando |
+|---|---|---|---|
+| V1 | Maqueta de una provincia en 3D con modelos CC0 (hecha el 2026-10-21) | [PC] estructura, a ojo el aspecto | el usuario aprueba el aspecto en la imagen |
+| V2 | Una provincia real en 3D: cada edificio del juego se asigna a un modelo, las obras a andamios, el diseño sale de los datos de forma determinista | [PC] | el mismo estado de la provincia da siempre el mismo dibujo; ningún edificio se queda sin modelo |
+| V3 | Cámara y toque: girar/acercar con el dedo y tocar un edificio para ver su ficha | [APK] | se maneja bien en el móvil |
+| V4 | Estaciones: paleta por estación (necesita 2.1) | [PC] y a ojo | se ve el cambio de estación sin cambiar modelos |
+| V5 | Mapa general de provincias con el mismo estilo (decidir si 3D o 2D) | [APK] | decisión del usuario |
+| V6 | Medir en el móvil: fotogramas por segundo, memoria, tamaño del APK y batería | [APK] | cifras anotadas en `TEST_PLAN.md`; si no llega, bajar detalle |
+
+## Fase 2 — borrador para aprobar (NO empezada, sin código)
 
 Según la sección 28 del documento maestro: estacionalidad, cadenas agrícola/forestal/minera, mantenimiento, necesidades, escasez y mejoras. Troceado propuesto (cada tarea con sus pruebas en verde antes de seguir). Los datos siguen siendo parámetros de juego provisionales, sin pretensión histórica; la región sigue sin investigarse.
 
@@ -76,7 +87,7 @@ Según la sección 28 del documento maestro: estacionalidad, cadenas agrícola/f
 | 2.7 | Interfaz de la fase 2: estación, necesidades y mejoras en la ficha | [APK] | se ve y se toca bien en el móvil |
 | 2.8 | Cierre de la fase 2: partida larga con estaciones | [PC] y [APK] | como 1.10, sin errores críticos |
 
-Las tres decisiones previas (año, estaciones por cultivo y minería) se tomaron con la investigación del 2026-10-21: D-022 y D-023. La fase 1 se cerró con salvedades el 2026-10-21; la 2.1 empieza en esa fecha.
+Las tres decisiones previas (año, estaciones por cultivo y minería) se tomaron con la investigación del 2026-10-21: D-022 y D-023. La fase 1 se cerró con salvedades el 2026-10-21. La 2.1 espera al rediseño visual (o se hace en paralelo si el usuario lo prefiere).
 
 ## Fases 2 a 9
 

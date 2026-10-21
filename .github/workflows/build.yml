@@ -38,6 +38,18 @@ jobs:
           mkdir -p logs
           docker run --rm "$GODOT_IMAGE" godot --headless --version 2>&1 | tee logs/version.txt
 
+      # Los modelos 3D (.gltf) y las texturas hay que importarlos antes de poder cargarlos:
+      # en un clon limpio no existe la carpeta .godot con el resultado de la importación.
+      - name: Importar recursos
+        timeout-minutes: 5
+        run: |
+          set -o pipefail
+          mkdir -p logs
+          docker run --rm -v "$PWD:/work" -w /work "$GODOT_IMAGE" \
+            timeout 240 godot --headless --path game --import 2>&1 | tee logs/importacion-pruebas.txt || true
+          # El código de salida de --import no es fiable (en la exportación también se ignora);
+          # si la importación fallara, las pruebas de test_diorama.gd no cargarían los modelos y fallarían.
+
       - name: Ejecutar pruebas
         timeout-minutes: 8
         run: |

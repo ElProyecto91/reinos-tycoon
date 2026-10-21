@@ -197,6 +197,17 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Versión del proyecto 0.0.5; el pie de pantalla pasa a «provincias históricas, cifras de ejemplo».
 - Estado: **provisional**.
 
+## D-025. Aspecto visual: ciudad en 3D de poco polígono con modelos CC0
+
+- Problema: el usuario no está a gusto con el aspecto actual (pantalla de texto y mapa esquemático) y pide algo como una ciudad medieval en 3D de poco polígono, con terreno por niveles, murallas, casas, molinos, campos y bosque.
+- Conectores: se buscó en el registro de conectores y solo hay herramientas de diseño 2D (Figma, Canva, Adobe…); ninguno sirve para modelos 3D. La fuente práctica es un paquete de modelos libre de pago en GitHub.
+- Decisión: usar el paquete **KayKit Medieval Hexagon Pack** (CC0; `THIRD_PARTY_LICENSES.md`). Casillas hexagonales de 2 de ancho; la vista es un diorama de casillas (`scripts/view/diorama.gd`), definido por dos capas de texto (terreno y objetos) que se validan antes de construir. Solo dibuja: no toca la simulación.
+- Césped: la paleta original lo trae amarillo-verdoso; se recolorea a verde con un guion reproducible (`tools/recolor_paleta.py`). Las estaciones (tarea 2.1/2.2) podrán cambiar de paleta sin tocar los modelos.
+- Compuerta: la maqueta se enseña al usuario **antes** de conectarla a la pantalla del juego.
+- Sin medir: rendimiento en el móvil (Redmi Note 13 5G), tamaño final del APK y consumo de batería. Solo se ha renderizado por software en el entorno del asistente, que no sirve de medida del móvil.
+- Pendiente: cómo se asignan los edificios del juego a los modelos, cámara con el dedo, y mostrar una provincia real (no la maqueta fija).
+- Estado: **maqueta hecha; pendiente de la aprobación del usuario**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.
