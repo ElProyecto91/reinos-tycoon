@@ -10,10 +10,38 @@ const SUPPORTED_FORMAT_VERSION := 1
 const GOODS_CATEGORIES: Array[String] = ["food", "forestry", "manufactured", "institutional"]
 const BUILDING_CATEGORIES: Array[String] = ["residential", "agricultural", "storage", "forestry", "industrial"]
 
+const DEFAULT_GOODS_PATH := "res://data/goods.json"
+const DEFAULT_BUILDINGS_PATH := "res://data/buildings.json"
+const DEFAULT_RULES_PATH := "res://data/rules.json"
+
+## Reglas numéricas (entero obligatorio): nombre -> [mínimo, máximo]
+const RULE_INTS := {
+	"base_capacity": [0, 100000000],
+	"base_housing": [0, 1000000],
+	"labor_percent": [0, 100],
+	"min_population": [1, 1000000],
+	"max_projects": [1, 100],
+	"tax_per_person": [0, 1000000],
+	"food_per_person": [0, 1000000],
+	"hunger_warning_steps": [0, 1000000],
+	"starvation_steps": [1, 1000000],
+	"starvation_loss_percent": [0, 100],
+	"unrest_max": [1, 1000000],
+	"unrest_rise": [0, 1000000],
+	"unrest_fall": [0, 1000000],
+	"unrest_slow_threshold": [0, 1000000],
+	"min_productivity_percent": [0, 100],
+	"growth_interval": [1, 1000000],
+	"growth_percent": [0, 100],
+	"growth_unrest_limit": [0, 1000000],
+}
+
 ## Mercancías por id: id -> {id, name, category, unit, physical}
 var goods: Dictionary = {}
 ## Edificios por id: id -> campos normalizados (cantidades como enteros)
 var buildings: Dictionary = {}
+## Reglas de juego normalizadas (enteros) más "currency" y "food_goods"
+var rules: Dictionary = {}
 ## Errores acumulados de la última carga o validación
 var errors: Array[String] = []
 
@@ -24,22 +52,39 @@ func _init() -> void:
 	_id_regex.compile("^[a-z][a-z0-9_]*$")
 
 
-## Carga los dos archivos. Devuelve true si todo es válido; si no, deja los motivos en `errors`.
-func load_files(goods_path: String, buildings_path: String) -> bool:
+## Carga los archivos estándar del juego (mercancías, edificios y reglas).
+func load_defaults() -> bool:
+	return load_files(DEFAULT_GOODS_PATH, DEFAULT_BUILDINGS_PATH, DEFAULT_RULES_PATH)
+
+
+## Carga los archivos. Si `rules_path` está vacío no se cargan reglas.
+## Devuelve true si todo es válido; si no, deja los motivos en `errors`.
+func load_files(goods_path: String, buildings_path: String, rules_path: String = "") -> bool:
 	goods = {}
 	buildings = {}
+	rules = {}
 	errors = []
 	var goods_root = _read_json_file(goods_path)
 	var buildings_root = _read_json_file(buildings_path)
+	var rules_root = null
+	if rules_path != "":
+		rules_root = _read_json_file(rules_path)
 	if not errors.is_empty():
 		return false
 	var goods_list: Array = extract_list(goods_root, "goods", goods_path)
 	var buildings_list: Array = extract_list(buildings_root, "buildings", buildings_path)
+	var rules_object: Dictionary = {}
+	if rules_path != "":
+		rules_object = extract_object(rules_root, "rules", rules_path)
 	if not errors.is_empty():
 		return false
 	if not build_goods(goods_list):
 		return false
-	return build_buildings(buildings_list)
+	if not build_buildings(buildings_list):
+		return false
+	if rules_path != "":
+		return build_rules(rules_object)
+	return true
 
 
 ## Convierte texto JSON en datos. Devuelve null y anota el error si no es JSON válido.
@@ -65,6 +110,79 @@ func extract_list(root: Variant, key: String, label: String) -> Array:
 		errors.append("%s: falta la lista \"%s\"" % [label, key])
 		return []
 	return list
+
+
+## Igual que extract_list, pero devuelve un objeto.
+func extract_object(root: Variant, key: String, label: String) -> Dictionary:
+	if typeof(root) != TYPE_DICTIONARY:
+		errors.append("%s: la raíz debe ser un objeto" % label)
+		return {}
+	if not _is_integer_number(root.get("format_version", null)) or int(root["format_version"]) != SUPPORTED_FORMAT_VERSION:
+		errors.append("%s: format_version debe ser %d" % [label, SUPPORTED_FORMAT_VERSION])
+		return {}
+	var obj = root.get(key, null)
+	if typeof(obj) != TYPE_DICTIONARY:
+		errors.append("%s: falta el objeto \"%s\"" % [label, key])
+		return {}
+	return obj
+
+
+## Valida las reglas (necesita `goods` ya cargado) y rellena `rules`.
+func build_rules(raw: Dictionary) -> bool:
+	var before := errors.size()
+	var result := {}
+	for key in RULE_INTS.keys():
+		var limits: Array = RULE_INTS[key]
+		var value = raw.get(key, null)
+		if not _is_integer_number(value) or int(value) < limits[0] or int(value) > limits[1]:
+			errors.append("regla \"%s\": debe ser un entero entre %d y %d" % [key, limits[0], limits[1]])
+			continue
+		result[key] = int(value)
+	for key in raw.keys():
+		if not RULE_INTS.has(key) and key != "currency" and key != "food_goods":
+			errors.append("regla \"%s\": nombre desconocido (¿error de escritura?)" % str(key))
+	var currency = raw.get("currency", null)
+	if typeof(currency) != TYPE_STRING or not goods.has(currency):
+		errors.append("regla \"currency\": debe ser el id de una mercancía existente")
+	elif goods[currency]["physical"]:
+		errors.append("regla \"currency\": la moneda no puede ser una mercancía física")
+	else:
+		result["currency"] = currency
+	var food = raw.get("food_goods", null)
+	var food_list: Array = []
+	if typeof(food) != TYPE_ARRAY or food.is_empty():
+		errors.append("regla \"food_goods\": debe ser una lista no vacía de {good, value}")
+	else:
+		var seen := {}
+		for i in range(food.size()):
+			var item = food[i]
+			var where := "regla \"food_goods\" #%d" % (i + 1)
+			if typeof(item) != TYPE_DICTIONARY:
+				errors.append("%s: debe ser un objeto" % where)
+				continue
+			var good = item.get("good", null)
+			if typeof(good) != TYPE_STRING or not goods.has(good):
+				errors.append("%s: mercancía desconocida" % where)
+				continue
+			if not goods[good]["physical"]:
+				errors.append("%s: el alimento debe ser una mercancía física" % where)
+				continue
+			if seen.has(good):
+				errors.append("%s: mercancía repetida (%s)" % [where, good])
+				continue
+			seen[good] = true
+			var value = item.get("value", null)
+			if not _is_integer_number(value) or int(value) <= 0:
+				errors.append("%s: \"value\" debe ser un entero positivo" % where)
+				continue
+			food_list.append({"good": good, "value": int(value)})
+	if errors.size() == before:
+		if result["unrest_slow_threshold"] >= result["unrest_max"]:
+			errors.append("regla \"unrest_slow_threshold\": debe ser menor que unrest_max")
+		else:
+			result["food_goods"] = food_list
+			rules = result
+	return errors.size() == before
 
 
 ## Valida la lista de mercancías y rellena `goods`. Devuelve true si no hubo errores nuevos.
@@ -98,6 +216,10 @@ func build_goods(list: Array) -> bool:
 		if typeof(entry.get("physical", null)) != TYPE_BOOL:
 			errors.append("%s: \"physical\" debe ser verdadero o falso" % where)
 			ok = false
+		var share = entry.get("storage_share_percent", null)
+		if not _is_integer_number(share) or int(share) < 0 or int(share) > 100:
+			errors.append("%s: \"storage_share_percent\" debe ser un entero entre 0 y 100" % where)
+			ok = false
 		if ok:
 			goods[id] = {
 				"id": id,
@@ -105,7 +227,15 @@ func build_goods(list: Array) -> bool:
 				"category": category,
 				"unit": entry["unit"],
 				"physical": entry["physical"],
+				"share": int(share),
 			}
+	if errors.size() == before:
+		var total := 0
+		for good_id in goods.keys():
+			if goods[good_id]["physical"]:
+				total += goods[good_id]["share"]
+		if total > 100:
+			errors.append("mercancías: la suma de storage_share_percent de las físicas es %d y no puede pasar de 100" % total)
 	return errors.size() == before
 
 
@@ -137,6 +267,7 @@ func build_buildings(list: Array) -> bool:
 			errors.append("%s: categoría no válida (%s)" % [where, _join(BUILDING_CATEGORIES)])
 			ok = false
 		var workers = _int_field(entry, "workers", 0, where)
+		var build_workers = _int_field(entry, "build_workers", 0, where)
 		var build_steps = _int_field(entry, "build_steps", 1, where)
 		var cycle_steps = _int_field(entry, "cycle_steps", 1, where)
 		var storage_capacity = _int_field(entry, "storage_capacity", 0, where)
@@ -145,7 +276,7 @@ func build_buildings(list: Array) -> bool:
 		var inputs = _amount_map(entry, "inputs", where, true)
 		var outputs = _amount_map(entry, "outputs", where, true)
 		var upkeep = _amount_map(entry, "upkeep", where, true)
-		var parsed := [workers, build_steps, cycle_steps, storage_capacity, housing, build_cost, inputs, outputs, upkeep]
+		var parsed := [workers, build_workers, build_steps, cycle_steps, storage_capacity, housing, build_cost, inputs, outputs, upkeep]
 		if parsed.has(null):
 			ok = false
 		elif not inputs.is_empty() and outputs.is_empty():
@@ -157,6 +288,7 @@ func build_buildings(list: Array) -> bool:
 				"name": entry["name"],
 				"category": category,
 				"workers": workers,
+				"build_workers": build_workers,
 				"build_cost": build_cost,
 				"build_steps": build_steps,
 				"inputs": inputs,

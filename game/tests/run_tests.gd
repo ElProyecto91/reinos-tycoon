@@ -12,6 +12,11 @@ const TEST_FILES: Array[String] = [
 	"res://tests/test_smoke.gd",
 	"res://tests/test_game_data.gd",
 	"res://tests/test_store.gd",
+	"res://tests/test_population.gd",
+	"res://tests/test_production.gd",
+	"res://tests/test_construction.gd",
+	"res://tests/test_scarcity.gd",
+	"res://tests/test_long_run.gd",
 ]
 const SELFTEST_FILE := "res://tests/selftest_fail.gd"
 

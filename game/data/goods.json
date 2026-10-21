@@ -1,12 +1,12 @@
 {
 	"format_version": 1,
-	"status": "Parámetros de juego provisionales. No son datos históricos.",
+	"status": "Parámetros de juego provisionales. No son datos históricos. storage_share_percent: parte máxima de la capacidad del almacén que puede ocupar esa mercancía (la suma de las físicas no pasa de 100, así ninguna puede bloquear todo el almacén).",
 	"goods": [
-		{"id": "wheat", "name": "Trigo", "category": "food", "unit": "unidad abstracta", "physical": true},
-		{"id": "flour", "name": "Harina", "category": "manufactured", "unit": "unidad abstracta", "physical": true},
-		{"id": "bread", "name": "Pan", "category": "manufactured", "unit": "unidad abstracta", "physical": true},
-		{"id": "wood", "name": "Madera", "category": "forestry", "unit": "unidad abstracta", "physical": true},
-		{"id": "firewood", "name": "Leña", "category": "forestry", "unit": "unidad abstracta", "physical": true},
-		{"id": "coin", "name": "Moneda", "category": "institutional", "unit": "moneda abstracta", "physical": false}
+		{"id": "wheat", "name": "Trigo", "category": "food", "unit": "unidad abstracta", "storage_share_percent": 30, "physical": true},
+		{"id": "flour", "name": "Harina", "category": "manufactured", "unit": "unidad abstracta", "storage_share_percent": 10, "physical": true},
+		{"id": "bread", "name": "Pan", "category": "manufactured", "unit": "unidad abstracta", "storage_share_percent": 30, "physical": true},
+		{"id": "wood", "name": "Madera", "category": "forestry", "unit": "unidad abstracta", "storage_share_percent": 15, "physical": true},
+		{"id": "firewood", "name": "Leña", "category": "forestry", "unit": "unidad abstracta", "storage_share_percent": 15, "physical": true},
+		{"id": "coin", "name": "Moneda", "category": "institutional", "unit": "moneda abstracta", "storage_share_percent": 0, "physical": false}
 	]
 }

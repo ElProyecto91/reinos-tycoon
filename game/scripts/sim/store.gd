@@ -5,14 +5,19 @@ extends RefCounted
 ## se crean ni se pierden recursos:
 ##   existencias = iniciales + producción + importaciones - consumo - exportaciones - pérdidas
 ##
-## La capacidad es única y se reparte entre las mercancías físicas. Las mercancías
-## no físicas (moneda) no ocupan espacio.
+## La capacidad es única y se reparte entre las mercancías físicas. Además, cada
+## mercancía física puede ocupar como mucho su parte ("share", en porcentaje de la
+## capacidad); si la suma de partes no pasa de 100, ninguna mercancía puede dejar el
+## almacén sin sitio para las demás. Las mercancías no físicas (moneda) no ocupan espacio.
+
+const Fixed := preload("res://scripts/sim/fixed.gd")
 
 const PRODUCED := "produced"
 const IMPORTED := "imported"
 const CONSUMED := "consumed"
 const EXPORTED := "exported"
 const LOST := "lost"
+const UNLIMITED := 1 << 60
 
 const INCOMING: Array[String] = [PRODUCED, IMPORTED]
 const OUTGOING: Array[String] = [CONSUMED, EXPORTED, LOST]
@@ -48,6 +53,34 @@ func used_space() -> int:
 
 func free_space() -> int:
 	return maxi(capacity - used_space(), 0)
+
+
+## Cantidad máxima de esa mercancía física según su parte de la capacidad.
+func limit(good_id: String) -> int:
+	if not _goods.has(good_id) or not _goods[good_id]["physical"]:
+		return 0
+	return Fixed.percent_of(capacity, _goods[good_id].get("share", 100))
+
+
+## Cuánto más cabe de esa mercancía (por espacio total y por su parte). La no física no tiene tope.
+func room(good_id: String) -> int:
+	if not _goods.has(good_id):
+		return 0
+	if not _goods[good_id]["physical"]:
+		return UNLIMITED
+	return mini(free_space(), maxi(limit(good_id) - _stock[good_id], 0))
+
+
+## true si todas las cantidades caben a la vez. `extra_free` suma espacio que se va a liberar.
+func can_fit(amounts: Dictionary, extra_free: int = 0) -> bool:
+	var total := 0
+	for good_id in amounts.keys():
+		if not _goods.has(good_id) or not _goods[good_id]["physical"]:
+			continue
+		if amounts[good_id] > maxi(limit(good_id) - _stock[good_id], 0):
+			return false
+		total += amounts[good_id]
+	return total <= free_space() + extra_free
 
 
 ## Cambia la capacidad. Se rechaza si dejaría las existencias por encima de ella.
@@ -124,6 +157,9 @@ func check_conservation() -> Array[String]:
 			problems.append("%s: existencias %d, esperadas %d" % [good_id, _stock[good_id], expected])
 		if _stock[good_id] < 0:
 			problems.append("%s: existencias negativas" % good_id)
+	for good_id in _stock.keys():
+		if _goods[good_id]["physical"] and _stock[good_id] > limit(good_id):
+			problems.append("%s: existencias %d por encima de su parte de almacén %d" % [good_id, _stock[good_id], limit(good_id)])
 	if used_space() > capacity:
 		problems.append("espacio usado %d por encima de la capacidad %d" % [used_space(), capacity])
 	return problems
@@ -137,6 +173,4 @@ func _accept(good_id: String, amount: int) -> int:
 	if amount < 0:
 		last_error = "la cantidad no puede ser negativa"
 		return 0
-	if _goods[good_id]["physical"]:
-		return mini(amount, free_space())
-	return amount
+	return mini(amount, room(good_id))

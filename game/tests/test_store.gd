@@ -171,3 +171,69 @@ func test_conservation_over_10000_pseudorandom_steps() -> void:
 	for good in goods:
 		assert_true(store.stock(good) >= 0, "existencias negativas de %s" % good)
 	done()
+
+
+func _shared_goods() -> Dictionary:
+	return {
+		"wheat": {"physical": true, "share": 50},
+		"flour": {"physical": true, "share": 30},
+		"coin": {"physical": false, "share": 0},
+	}
+
+
+func test_limit_is_share_of_capacity() -> void:
+	var store = load(STORE).new(_shared_goods(), 10000)
+	assert_eq(store.limit("wheat"), 5000, "50 % de 10000")
+	assert_eq(store.limit("flour"), 3000, "30 % de 10000")
+	assert_eq(store.limit("coin"), 0, "la moneda no tiene parte de almacén")
+	done()
+
+
+func test_good_cannot_exceed_its_share() -> void:
+	var store = load(STORE).new(_shared_goods(), 10000)
+	assert_eq(store.add("wheat", 8000, "produced"), 5000, "solo cabe su parte")
+	assert_eq(store.add("wheat", 1, "produced"), 0, "su parte está llena")
+	assert_eq(store.add("flour", 4000, "produced"), 3000, "la harina tiene su propia parte")
+	assert_eq(store.free_space(), 2000, "queda sitio total, pero ninguna de las dos puede usarlo")
+	assert_true(store.check_conservation().is_empty(), "coherente")
+	done()
+
+
+func test_share_grows_with_capacity() -> void:
+	var store = load(STORE).new(_shared_goods(), 10000)
+	store.add("wheat", 5000, "produced")
+	store.set_capacity(20000)
+	assert_eq(store.room("wheat"), 5000, "con más capacidad cabe más trigo")
+	done()
+
+
+func test_can_fit_checks_total_and_each_share() -> void:
+	var store = load(STORE).new(_shared_goods(), 10000)
+	assert_true(store.can_fit({"wheat": 5000, "flour": 3000}), "caben juntas")
+	assert_true(not store.can_fit({"wheat": 5001}), "una supera su parte")
+	assert_true(store.can_fit({"coin": 999999}), "la moneda no cuenta")
+	store.add("wheat", 5000, "produced")
+	store.add("flour", 3000, "produced")
+	assert_true(not store.can_fit({"wheat": 1}), "trigo lleno")
+	assert_true(store.can_fit({}), "nada siempre cabe")
+	done()
+
+
+func test_can_fit_counts_extra_free_space() -> void:
+	var goods := {"a": {"physical": true, "share": 100}, "b": {"physical": true, "share": 100}}
+	var store = load(STORE).new(goods, 1000)
+	store.add("a", 1000, "produced")
+	assert_true(not store.can_fit({"b": 400}), "sin sitio")
+	assert_true(store.can_fit({"b": 400}, 400), "con 400 que se liberan sí")
+	assert_true(not store.can_fit({"b": 400}, 399), "con 399 no")
+	done()
+
+
+func test_conservation_flags_stock_above_share() -> void:
+	var store = load(STORE).new(_shared_goods(), 10000)
+	store.add("wheat", 5000, "produced")
+	store._stock["wheat"] += 1
+	store._ledger["wheat"]["produced"] += 1
+	var problems: Array[String] = store.check_conservation()
+	assert_eq(problems.size(), 1, "solo se detecta pasarse de la parte, el libro cuadra")
+	done()

@@ -83,6 +83,15 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Consecuencias conocidas: (1) JSON entrega todos los números como decimales (`1000` llega como `1000.0`); el cargador los acepta solo si son enteros exactos y los convierte a `int`. Lo mismo habrá que hacer al leer partidas guardadas (tarea 1.7). (2) La interfaz tendrá que dividir entre 1000 para mostrar. (3) Un `int` de Godot es de 64 bits: no hay riesgo de desbordamiento con estas magnitudes.
 - Estado: **adoptada; verificada por las pruebas de las tareas 1.1 y 1.2 cuando pasen en CI**.
 
+## D-013. Reglas de la simulación de la fase 1
+
+- Un paso de simulación equivale a una hora de juego; un día son 24 pasos y los "30 días" del criterio A10 son 720 pasos. Es una convención de pruebas, no una decisión de ritmo real: cuántos segundos reales dura un paso se decidirá con el progreso offline y la medición en el móvil (A9, A12).
+- Cada mercancía física puede ocupar como mucho una parte de la capacidad (`storage_share_percent` en `goods.json`), y la suma de las partes no puede pasar de 100. Motivo: sin ese tope, una mercancía que sobra (madera, harina) llena el almacén, los productores de alimento se bloquean y la provincia muere de hambre con el almacén lleno. Pasó en el diseño sobre el papel antes de escribir una línea.
+- La producción se detiene (no se pierde) cuando el resultado no cabe: el ciclo espera con el trabajo hecho y el edificio muestra `storage_full`. Los insumos se gastan al empezar el ciclo y solo si el resultado cabría.
+- Hambre: primero aviso (3 pasos), después descontento que sube según la falta de alimento, y solo tras 24 pasos seguidos de hambre se pierde población (2 % por paso, mínimo 1, sin bajar de 10). El descontento reduce la producción hasta un 30 % y baja 15 por paso cuando hay comida. No hay azar.
+- Los números (raciones, impuestos, costes, ciclos) son provisionales y se ajustarán con partidas reales; ninguno es un dato histórico.
+- Estado: **provisional**; el comportamiento queda cubierto por las pruebas, el equilibrio no.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

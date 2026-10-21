@@ -1,0 +1,29 @@
+{
+	"format_version": 1,
+	"status": "Parámetros de juego provisionales. No son datos históricos. Cantidades en milésimas; tiempos en pasos de simulación (un paso equivale a una hora de juego; el día tiene 24 pasos).",
+	"rules": {
+		"currency": "coin",
+		"base_capacity": 60000,
+		"base_housing": 100,
+		"labor_percent": 50,
+		"min_population": 10,
+		"max_projects": 3,
+		"tax_per_person": 8,
+		"food_per_person": 10,
+		"food_goods": [
+			{"good": "bread", "value": 1500},
+			{"good": "wheat", "value": 800}
+		],
+		"hunger_warning_steps": 3,
+		"starvation_steps": 24,
+		"starvation_loss_percent": 2,
+		"unrest_max": 1000,
+		"unrest_rise": 25,
+		"unrest_fall": 15,
+		"unrest_slow_threshold": 300,
+		"min_productivity_percent": 30,
+		"growth_interval": 12,
+		"growth_percent": 2,
+		"growth_unrest_limit": 200
+	}
+}
