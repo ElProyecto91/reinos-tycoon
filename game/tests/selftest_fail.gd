@@ -5,3 +5,4 @@ extends "res://tests/test_case.gd"
 
 func test_intentional_failure() -> void:
 	assert_true(false, "este fallo es intencionado")
+	done()

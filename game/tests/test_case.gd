@@ -3,6 +3,13 @@ extends RefCounted
 ## y define métodos cuyo nombre empieza por "test_".
 
 var failures: Array[String] = []
+## Cada prueba debe llamar a done() como última línea. Si no llega (por un error de
+## ejecución a mitad de la prueba), el ejecutor la cuenta como fallo en vez de darla por buena.
+var finished: bool = false
+
+
+func done() -> void:
+	finished = true
 
 
 func assert_true(condition: bool, message: String) -> void:

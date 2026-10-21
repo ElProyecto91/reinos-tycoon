@@ -10,6 +10,8 @@ extends SceneTree
 
 const TEST_FILES: Array[String] = [
 	"res://tests/test_smoke.gd",
+	"res://tests/test_game_data.gd",
+	"res://tests/test_store.gd",
 ]
 const SELFTEST_FILE := "res://tests/selftest_fail.gd"
 
@@ -23,16 +25,27 @@ func _init() -> void:
 	var total := 0
 	var failed := 0
 	for path in files:
-		var test_case = load(path).new()
+		var script = load(path)
+		if script == null:
+			# Un archivo que no compila cuenta como fallo, no como "cero pruebas".
+			total += 1
+			failed += 1
+			printerr("FALLO %s: no se pudo cargar el archivo (error de sintaxis o ruta)" % path.get_file())
+			continue
+		var test_case = script.new()
 		for method in test_case.get_method_list():
 			var method_name: String = method["name"]
 			if not method_name.begins_with("test_"):
 				continue
 			total += 1
 			test_case.failures.clear()
+			test_case.finished = false
 			test_case.call(method_name)
-			if test_case.failures.is_empty():
+			if test_case.failures.is_empty() and test_case.finished:
 				print("OK    %s::%s" % [path.get_file(), method_name])
+			elif test_case.failures.is_empty():
+				failed += 1
+				printerr("FALLO %s::%s: la prueba no llegó al final (error de ejecución; ver SCRIPT ERROR en el registro)" % [path.get_file(), method_name])
 			else:
 				failed += 1
 				for failure in test_case.failures:

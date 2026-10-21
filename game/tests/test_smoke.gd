@@ -5,8 +5,10 @@ extends "res://tests/test_case.gd"
 
 func test_basic_arithmetic() -> void:
 	assert_eq(2 + 2, 4, "2 + 2 debe ser 4")
+	done()
 
 
 func test_project_version_defined() -> void:
 	var version: String = ProjectSettings.get_setting("application/config/version", "")
 	assert_true(version != "", "application/config/version debe estar definida")
+	done()

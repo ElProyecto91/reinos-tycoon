@@ -72,7 +72,16 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Problema: el asistente no puede leer la pestaña Actions (el token de `gh` del entorno es inválido), así que cada fallo exigía capturas del usuario.
 - Decisión: el flujo guarda sus registros como artefactos y un último trabajo publica un resumen y los registros en la rama `ci-results` (una sola confirmación, sobrescrita en cada ejecución). El asistente la lee con `git fetch`. Esa rama la escribe solo el flujo.
 - Riesgos: el trabajo usa permiso de escritura sobre el repositorio (solo ese trabajo); los registros son públicos si el repositorio lo es. No hay secretos en los registros.
-- Estado: **por verificar con la primera ejecución que lo incluya**.
+- Estado: **verificada el 2026-10-21 con la ejecución #4 (commit 730010a)**: la rama `ci-results` se creó, contiene `RESUMEN.txt` y los registros, y se leen desde aquí con `git fetch origin ci-results`.
+- Lo que ese registro confirmó de D-006 y D-007: Godot 4.7.2.stable.official en la imagen; plantillas `4.7.2.stable`; JDK 17.0.19; SDK en `/usr/lib/android-sdk`; clave de depuración en `/root/debug.keystore`; las rutas y variables supuestas eran correctas. Dato nuevo: Godot no encontró Build-Tools que coincidieran con el SDK objetivo y firmó con **33.0.2**, no con 35.0.1; el APK salió firmado y pesa unos 28 MB. Aviso inocuo en todas las ejecuciones: falta `libfontconfig.so.1` (no afecta al modo sin ventana).
+- Prueba de que el ejecutor detecta fallos (con `--selftest-fail`): 3 pruebas, 1 fallo, código de salida 1.
+
+## D-012. Cantidades enteras en milésimas
+
+- Decisión: toda cantidad de la simulación (existencias, costes, producción, consumo, capacidad) es un entero en milésimas de unidad: 1000 = 1 unidad. Los tiempos son enteros en pasos de simulación. No se usan decimales (`float`) en la economía.
+- Motivo: con decimales, la conservación (existencias finales = iniciales + producción + importaciones - consumo - exportaciones - pérdidas) solo se cumpliría "más o menos" y el criterio A1 no se podría comprobar de forma exacta. Con enteros se comprueba con igualdad.
+- Consecuencias conocidas: (1) JSON entrega todos los números como decimales (`1000` llega como `1000.0`); el cargador los acepta solo si son enteros exactos y los convierte a `int`. Lo mismo habrá que hacer al leer partidas guardadas (tarea 1.7). (2) La interfaz tendrá que dividir entre 1000 para mostrar. (3) Un `int` de Godot es de 64 bits: no hay riesgo de desbordamiento con estas magnitudes.
+- Estado: **adoptada; verificada por las pruebas de las tareas 1.1 y 1.2 cuando pasen en CI**.
 
 ## Orden de entregas
 
