@@ -124,6 +124,15 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Límites conocidos: no hay eventos, comercio ni automatizaciones que simular offline (todavía no existen). El reloj lo aporta quien llama; leer la hora del móvil y guardarla se conecta en la interfaz. Quien adelante el reloj del móvil gana como máximo 10 h por carga (juego de un jugador, sin servidor).
 - Estado: **provisional**.
 
+## D-017. Mapa de ejemplo y selección con el dedo (tarea 1.8)
+
+- `data/map.json` define 5 provincias de **ejemplo** («Provincia de prueba A…E»): nombres, posiciones y vecindades inventados para el prototipo, sin pretensión histórica; la región real (D-005) sigue sin investigarse. El formato admite hasta 20 provincias (límite del MVP).
+- Se valida al cargar: ids únicos, posiciones dentro del mapa, vecindad mutua y sin bucles, mapa conexo y estado inicial coherente (edificios y mercancías existentes, población mínima). Un mapa inválido no se carga a medias.
+- Selección táctil: cada provincia tiene una zona circular de toque (radio 110 unidades de mapa, de 1000×1600). Se exige que los centros estén al menos a dos radios para que un toque nunca sea ambiguo. Prueba: barrido de toda la cuadrícula del mapa sin ningún punto en dos zonas.
+- La partida nueva se crea desde el mapa (`GameMap.new_world`); si una existencia inicial no cabe en el almacén se rechaza con un mensaje, sin devolver un mundo a medias.
+- Observado en una simulación de 4 meses de juego (2880 pasos): las 5 provincias de ejemplo se mantienen estables, sin descontento. B, C y E no tienen panadería y comen trigo directamente; es un reparto provisional, no un equilibrio de diseño.
+- Estado: **provisional**. El dibujo del mapa y la ficha de provincia son la tarea 1.9.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

@@ -1,0 +1,54 @@
+{
+	"format_version": 1,
+	"status": "MAPA DE EJEMPLO del prototipo. Los nombres, posiciones y vecindades NO son históricos y no representan ninguna región real: la región del MVP aún no está investigada (D-005). Coordenadas en unidades de mapa (1000 de ancho por 1600 de alto, pensado para móvil en vertical). Cantidades en milésimas de unidad. Todos los valores son provisionales.",
+	"width": 1000,
+	"height": 1600,
+	"touch_radius": 110,
+	"provinces": [
+		{
+			"id": "prueba_a", "name": "Provincia de prueba A", "x": 500, "y": 300,
+			"neighbors": ["prueba_b", "prueba_c"],
+			"start": {
+				"population": 100,
+				"buildings": ["granary", "farm", "farm", "mill", "bakery", "woodcutter"],
+				"stock": {"bread": 12000, "wheat": 6000, "firewood": 5000, "wood": 5000, "coin": 20000}
+			}
+		},
+		{
+			"id": "prueba_b", "name": "Provincia de prueba B", "x": 220, "y": 640,
+			"neighbors": ["prueba_a", "prueba_d"],
+			"start": {
+				"population": 80,
+				"buildings": ["granary", "farm", "farm", "farm", "mill"],
+				"stock": {"bread": 9000, "wheat": 4000, "wood": 2000, "coin": 15000}
+			}
+		},
+		{
+			"id": "prueba_c", "name": "Provincia de prueba C", "x": 780, "y": 640,
+			"neighbors": ["prueba_a", "prueba_d"],
+			"start": {
+				"population": 60,
+				"buildings": ["granary", "woodcutter", "woodcutter", "farm"],
+				"stock": {"bread": 9000, "wheat": 2000, "wood": 6000, "firewood": 4000, "coin": 12000}
+			}
+		},
+		{
+			"id": "prueba_d", "name": "Provincia de prueba D", "x": 500, "y": 980,
+			"neighbors": ["prueba_b", "prueba_c", "prueba_e"],
+			"start": {
+				"population": 140,
+				"buildings": ["granary", "farm", "farm", "mill", "bakery", "woodcutter", "house", "house"],
+				"stock": {"bread": 15000, "wheat": 6000, "firewood": 6000, "wood": 8000, "coin": 25000}
+			}
+		},
+		{
+			"id": "prueba_e", "name": "Provincia de prueba E", "x": 500, "y": 1340,
+			"neighbors": ["prueba_d"],
+			"start": {
+				"population": 40,
+				"buildings": ["farm", "woodcutter"],
+				"stock": {"bread": 6000, "wood": 3000, "firewood": 2000, "coin": 8000}
+			}
+		}
+	]
+}
