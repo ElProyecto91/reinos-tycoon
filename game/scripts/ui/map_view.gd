@@ -8,12 +8,12 @@ signal province_selected(province_id: String)
 
 const Texts := preload("res://scripts/ui/texts.gd")
 
-const COLOR_BACKGROUND := Color("#1f3a2f")
-const COLOR_LINK := Color("#4f6f63")
-const COLOR_NODE := Color("#3f7d62")
-const COLOR_NODE_SELECTED := Color("#5fae8a")
-const COLOR_TEXT := Color("#f2f5f3")
-const COLOR_WARNING := Color("#e0b44c")
+const COLOR_BACKGROUND := Color("#3a3326")
+const COLOR_LINK := Color("#7d6e52")
+const COLOR_NODE := Color("#8a6a3a")
+const COLOR_NODE_SELECTED := Color("#c99a4a")
+const COLOR_TEXT := Color("#f2e8d5")
+const COLOR_WARNING := Color("#e8c36a")
 const COLOR_DANGER := Color("#e5654f")
 const COLOR_RING := Color("#ffffff")
 ## Radio visible respecto al radio de toque

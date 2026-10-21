@@ -10,8 +10,8 @@ signal changed
 const Texts := preload("res://scripts/ui/texts.gd")
 
 const COLOR_DANGER := "#e5654f"
-const COLOR_WARNING := "#e0b44c"
-const COLOR_MUTED := "#9fb0c3"
+const COLOR_WARNING := "#e0b04c"
+const COLOR_MUTED := "#b9a98e"
 const COLOR_OK := "#6cc08b"
 
 var _data = null

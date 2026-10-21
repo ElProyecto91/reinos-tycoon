@@ -105,7 +105,7 @@ const WALL_CORNER := [3, 1]
 # Símbolos permitidos en las tres capas del diorama.
 const TERRAIN_SYMBOLS := "w012"                    # agua, o suelo con 0, 1 o 2 niveles de altura
 const PATH_SYMBOLS := ".rRcCmgb"                   # nada, río, camino, muralla, puerta, puente (ver _path_ground)
-const THING_SYMBOLS := ".ThtsHMNQFWLCoOEYSDRxXyzKVZIUJlPG"  # ver _thing()
+const THING_SYMBOLS := ".ThtsHMNQFWLCoOEYSDRxXyzKVZIUJlPGaAigp"  # ver _thing(); a, A, i, g, p: huerta, huerta con noria, olivar, granero y panadería (los dibuja la vista de época; aquí son campo, arboleda y casas)
 
 var faction := "blue"
 ## Pone una torre en cada esquina de la muralla.
@@ -467,8 +467,12 @@ func _thing(q: int, r: int, o: String, y: float) -> void:
 			place("mountain_b", p, rot)
 		"Q":
 			place("mountain_c", p, rot)
-		"F":
+		"F", "a", "A":
 			place("grain", p, 0.0)
+		"i":
+			place("trees_s", p, rot)
+		"g", "p":
+			place("home_b", p, rot)
 		"W":
 			place("windmill", p, rot)
 		"V":

@@ -9,10 +9,12 @@ extends Control
 const SessionScript := preload("res://scripts/sim/game_session.gd")
 const MapViewScript := preload("res://scripts/ui/map_view.gd")
 const ProvincePanelScript := preload("res://scripts/ui/province_panel.gd")
+const ProvinceViewScript := preload("res://scripts/ui/province_view.gd")
 const Texts := preload("res://scripts/ui/texts.gd")
 const UpdateCheck := preload("res://scripts/update/update_check.gd")
 
 const SAVE_PATH := "user://partida.json"
+const SETTINGS_PATH := "user://ajustes.json"
 const AUTOSAVE_SECONDS := 15.0
 ## Multiplicador de tiempo real (0 = pausa). Con 60 s por paso, ×60 es un paso por segundo.
 const SPEEDS: Array[int] = [0, 1, 60, 600]
@@ -20,20 +22,31 @@ const SPEED_LABELS: Array[String] = ["Pausa", "×1", "×60", "×600"]
 const MAX_STEPS_PER_FRAME := 30
 const BUTTON_HEIGHT := 88
 
-const COLOR_BACKGROUND := Color("#161d29")
-const COLOR_PANEL := Color("#202a3a")
-const COLOR_BUTTON := Color("#2f3d54")
-const COLOR_BUTTON_PRESSED := Color("#46597a")
-const COLOR_BUTTON_DISABLED := Color("#252e3d")
-const COLOR_ACCENT := Color("#e0b44c")
-const COLOR_TEXT := Color("#eef2f7")
-const COLOR_TEXT_DISABLED := Color("#7c8a9d")
+## Colores cálidos (tierra, pergamino y oro viejo) para que la interfaz no choque con el paisaje 3D.
+const COLOR_BACKGROUND := Color("#17130e")
+const COLOR_PANEL := Color("#241d15")
+const COLOR_BUTTON := Color("#3b3024")
+const COLOR_BUTTON_PRESSED := Color("#5a4631")
+const COLOR_BUTTON_DISABLED := Color("#2a221a")
+const COLOR_ACCENT := Color("#d8a24a")
+const COLOR_TEXT := Color("#f2e8d5")
+const COLOR_TEXT_DISABLED := Color("#8d806b")
+const COLOR_CHIP := Color(0.07, 0.05, 0.03, 0.66)
 
 ## Sesión de juego; si es null se crea la normal. Las pruebas inyectan la suya.
 var session = null
 ## Hora Unix fija para pruebas; con -1 se usa la del dispositivo.
 var fixed_now: int = -1
 var game_version: String = "?"
+## Si es false no se dibuja la vista 3D de la provincia (la usan las pruebas que no la necesitan y el
+## jugador, desde el menú, si en su móvil no se ve bien o va lento).
+var enable_3d: bool = true
+## Sombras de la vista 3D (también se cambian desde el menú).
+var shadows_enabled: bool = true
+## Dónde se guardan los ajustes de pantalla; vacío = no se leen ni se guardan (pruebas).
+var settings_path: String = SETTINGS_PATH
+## Provincia que se muestra al arrancar (si existe en el mapa). Vacía: ninguna.
+var start_province: String = "cordoba"
 
 var _speed_index: int = 2
 var _step_accumulator: float = 0.0
@@ -44,6 +57,14 @@ var _time_label: Label
 var _version_label: Label
 var _speed_buttons: Array[Button] = []
 var _map_view: Control
+var _province_view: Control
+var _center: MarginContainer
+var _map_button: Button
+var _view_title: Label
+var _view_note: Label
+var _chip_title: Control
+var _chip_note: Control
+var _selected_id: String = ""
 var _panel: VBoxContainer
 var _scroll: ScrollContainer
 var _modal_layer: Control = null
@@ -57,6 +78,7 @@ func _ready() -> void:
 	background.color = COLOR_BACKGROUND
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(background)
+	_load_settings()
 	if session == null:
 		session = SessionScript.new(SAVE_PATH, game_version)
 	if not session.start(_now()):
@@ -64,6 +86,8 @@ func _ready() -> void:
 		return
 	_build_ui()
 	_ready_ok = true
+	if start_province != "" and session.world.find_province(start_province) != null:
+		_on_province_selected(start_province)
 	_refresh_all()
 	if session.notice != "":
 		_show_modal("Aviso", session.notice, [{"text": "Entendido"}])
@@ -102,9 +126,14 @@ func _build_ui() -> void:
 	_time_label = Label.new()
 	_time_label.add_theme_color_override("font_color", COLOR_ACCENT)
 	title_box.add_child(_time_label)
+	_map_button = Button.new()
+	_map_button.text = "Mapa"
+	_map_button.custom_minimum_size = Vector2(150, BUTTON_HEIGHT)
+	_map_button.pressed.connect(_on_map_button_pressed)
+	top.add_child(_map_button)
 	var menu_button := Button.new()
 	menu_button.text = "Menú"
-	menu_button.custom_minimum_size = Vector2(170, BUTTON_HEIGHT)
+	menu_button.custom_minimum_size = Vector2(150, BUTTON_HEIGHT)
 	menu_button.pressed.connect(_on_menu_pressed)
 	top.add_child(menu_button)
 
@@ -122,13 +151,41 @@ func _build_ui() -> void:
 		_speed_buttons.append(button)
 	_update_speed_buttons()
 
+	# Zona central: o la vista 3D de la provincia elegida o el mapa de provincias para elegir otra.
+	_center = MarginContainer.new()
+	_center.custom_minimum_size = Vector2(0, 420)
+	_center.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_center.size_flags_stretch_ratio = 10.0
+	_center.clip_contents = true
+	root.add_child(_center)
+	_province_view = ProvinceViewScript.new()
+	_province_view.sombras = shadows_enabled
+	_center.add_child(_province_view)
 	_map_view = MapViewScript.new()
-	_map_view.custom_minimum_size = Vector2(0, 420)
-	_map_view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_map_view.size_flags_stretch_ratio = 10.0
 	_map_view.setup(session.map, session.world)
 	_map_view.province_selected.connect(_on_province_selected)
-	root.add_child(_map_view)
+	_center.add_child(_map_view)
+	var chips := VBoxContainer.new()
+	chips.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	chips.add_theme_constant_override("separation", 0)
+	_center.add_child(chips)
+	_view_title = Label.new()
+	_view_title.add_theme_font_size_override("font_size", 34)
+	_view_title.add_theme_color_override("font_color", COLOR_TEXT)
+	_chip_title = _chip(_view_title)
+	_chip_title.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	chips.add_child(_chip_title)
+	var spacer := Control.new()
+	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	chips.add_child(spacer)
+	_view_note = Label.new()
+	_view_note.add_theme_font_size_override("font_size", 22)
+	_view_note.add_theme_color_override("font_color", COLOR_TEXT)
+	_chip_note = _chip(_view_note)
+	_chip_note.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	chips.add_child(_chip_note)
+	_show_map(false)
 
 	_scroll = ScrollContainer.new()
 	_scroll.custom_minimum_size = Vector2(0, 300)
@@ -148,6 +205,37 @@ func _build_ui() -> void:
 	_version_label.add_theme_color_override("font_color", COLOR_TEXT_DISABLED)
 	_version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	root.add_child(_version_label)
+
+
+## Etiqueta sobre fondo oscuro semitransparente para rotular la vista 3D.
+func _chip(label: Label) -> PanelContainer:
+	var chip := PanelContainer.new()
+	chip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var box := StyleBoxFlat.new()
+	box.bg_color = COLOR_CHIP
+	box.set_corner_radius_all(12)
+	box.content_margin_left = 16.0
+	box.content_margin_right = 16.0
+	box.content_margin_top = 6.0
+	box.content_margin_bottom = 6.0
+	chip.add_theme_stylebox_override("panel", box)
+	chip.add_child(label)
+	return chip
+
+
+## Cambia la zona central entre el mapa (elegir provincia) y la vista 3D de la provincia elegida.
+func _show_map(show_map: bool) -> void:
+	var has_selection := _selected_id != ""
+	if not enable_3d or not has_selection:
+		show_map = true
+	_map_view.visible = show_map
+	_province_view.visible = enable_3d and not show_map
+	_chip_title.visible = enable_3d and not show_map
+	_chip_note.visible = enable_3d and not show_map and _view_note.text != ""
+	if _map_button != null:
+		_map_button.text = "Provincia" if show_map else "Mapa"
+		_map_button.disabled = show_map and (not has_selection or not enable_3d)
 
 
 func _make_theme() -> Theme:
@@ -238,6 +326,25 @@ func _refresh_all() -> void:
 	_time_label.text = session.time_text()
 	_map_view.queue_redraw()
 	_panel.refresh()
+	_refresh_view()
+
+
+## Pone al día la vista 3D y sus rótulos con la provincia elegida (solo reconstruye si cambió lo que se ve).
+func _refresh_view() -> void:
+	if _selected_id == "":
+		return
+	var province = session.world.find_province(_selected_id)
+	if province == null:
+		return
+	if enable_3d:
+		_province_view.mostrar(province)
+	_view_title.text = "%s · %d habitantes" % [province.display_name, province.population]
+	var hidden: Dictionary = _province_view.ocultos() if enable_3d else {}
+	var total := 0
+	for n in hidden.values():
+		total += int(n)
+	_view_note.text = "" if total == 0 else "%d edificio(s) u obra(s) fuera de vista (están en la ficha)" % total
+	_chip_note.visible = enable_3d and _province_view.visible and total > 0
 
 
 func _neighbor_names(province_id: String) -> Array:
@@ -252,12 +359,20 @@ func _neighbor_names(province_id: String) -> Array:
 func _on_province_selected(province_id: String) -> void:
 	var province = session.world.find_province(province_id)
 	if province != null:
+		_selected_id = province_id
 		_panel.show_province(province, _neighbor_names(province_id))
 		_scroll.scroll_vertical = 0
+		_show_map(false)
+		_refresh_view()
+
+
+func _on_map_button_pressed() -> void:
+	_show_map(not _map_view.visible)
 
 
 func _on_panel_changed() -> void:
 	_map_view.queue_redraw()
+	_refresh_view()
 
 
 func _on_speed_pressed(index: int) -> void:
@@ -276,6 +391,8 @@ func _on_menu_pressed() -> void:
 		{"text": "Guardar ahora", "action": _on_save_pressed},
 		{"text": "Buscar actualización", "action": _on_update_pressed},
 		{"text": "Medir velocidad", "action": _on_measure_pressed},
+		{"text": "Vista 3D: %s" % ("sí" if enable_3d else "no"), "action": _on_toggle_3d_pressed},
+		{"text": "Sombras de la vista 3D: %s" % ("sí" if shadows_enabled else "no"), "action": _on_toggle_shadows_pressed},
 		{"text": "Partida nueva", "action": _on_new_game_pressed},
 		{"text": "Cerrar"},
 	])
@@ -326,6 +443,54 @@ func _on_measure_pressed() -> void:
 	_show_modal("Velocidad de la simulación", Texts.speed_text(session.measure_speed(600)), [{"text": "Cerrar"}])
 
 
+## Ajustes de pantalla (vista 3D y sombras): un JSON pequeño aparte de la partida, para que quien no
+## vea bien el 3D en su móvil pueda quitarlo sin perder nada. Un archivo ilegible se ignora.
+func _load_settings() -> void:
+	if settings_path == "" or not FileAccess.file_exists(settings_path):
+		return
+	var datos: Dictionary = interpretar_ajustes(FileAccess.get_file_as_string(settings_path))
+	enable_3d = datos.get("view_3d", enable_3d)
+	shadows_enabled = datos.get("shadows", shadows_enabled)
+
+
+## Del texto de un archivo de ajustes devuelve solo lo válido: las claves «view_3d» y «shadows» que sean
+## verdadero o falso. Texto que no es JSON, JSON que no es un objeto o valores de otro tipo se ignoran.
+static func interpretar_ajustes(texto: String):  # sin tipo de retorno a propósito: si fallase por dentro, devolvería null y la prueba lo vería (con «-> Dictionary» Godot devuelve un diccionario vacío y el fallo pasaría inadvertido)
+	var json := JSON.new()
+	if json.parse(texto) != OK:
+		return {}
+	var parsed = json.data
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return {}
+	var salida := {}
+	for clave in ["view_3d", "shadows"]:
+		if typeof(parsed.get(clave)) == TYPE_BOOL:
+			salida[clave] = parsed[clave]
+	return salida
+
+
+func _save_settings() -> void:
+	if settings_path == "":
+		return
+	var file := FileAccess.open(settings_path, FileAccess.WRITE)
+	if file == null:
+		return  # no es grave: el ajuste solo vale esta vez
+	file.store_string(JSON.stringify({"view_3d": enable_3d, "shadows": shadows_enabled}))
+
+
+func _on_toggle_3d_pressed() -> void:
+	enable_3d = not enable_3d
+	_save_settings()
+	_show_map(false)
+	_refresh_view()
+
+
+func _on_toggle_shadows_pressed() -> void:
+	shadows_enabled = not shadows_enabled
+	_save_settings()
+	_province_view.set_sombras(shadows_enabled)
+
+
 func _on_save_pressed() -> void:
 	_save_now(true)
 
@@ -342,6 +507,9 @@ func _confirm_new_game() -> void:
 		_show_modal("Error", "No se pudo crear la partida nueva:\n" + "\n".join(session.errors), [{"text": "Entendido"}])
 		return
 	_map_view.setup(session.map, session.world)
+	_selected_id = ""
+	_province_view.mostrar(null)
+	_show_map(true)
 	_panel.show_province(null, [])
 	_save_now(false)
 	_refresh_all()

@@ -66,7 +66,9 @@ Las tareas 1.1 a 1.7 no necesitan pantalla. Se pueden hacer antes del mapa.
 | ID | Tarea | Prueba | Listo cuando |
 |---|---|---|---|
 | V1 | Maqueta de una provincia en 3D con modelos CC0 (hecha el 2026-10-21; v2 con relieve, río, caminos, muralla y atmósfera el mismo día) | [PC] estructura, a ojo el aspecto | el usuario aprueba el aspecto en la imagen |
-| V2 | Una provincia real en 3D: cada edificio del juego se asigna a un modelo, las obras a andamios, el diseño sale de los datos de forma determinista | [PC] | el mismo estado de la provincia da siempre el mismo dibujo; ningún edificio se queda sin modelo |
+| V1c | Aspecto de época: edificios, murallas, puente y paisaje de la Península hacia el 1000, con fuentes (D-026) | [PC] estructura, a ojo el aspecto | hecha en local (2026-10-21); el usuario aún no la ha visto en el móvil |
+| V2 | Una provincia real en 3D: cada edificio del juego se asigna a un modelo, las obras a andamios, el diseño sale de los datos de forma determinista | [PC] | **hecha en local (2026-10-21, D-026)**: mismo estado, mismo dibujo; una prueba exige un hueco para cada edificio del juego. Falta verla en el móvil |
+| V1d | Castillos y fortalezas hacia el año 1000 (petición del usuario: «todos… por ejemplo el de Sigüenza»): registro con fuente, nivel de confianza y provincia; dibujo como hitos | [PC] y a ojo | cada castillo dibujado tiene fuente; los que no se puedan respaldar quedan fuera y listados como tales |
 | V3 | Cámara y toque: girar/acercar con el dedo y tocar un edificio para ver su ficha | [APK] | se maneja bien en el móvil |
 | V4 | Estaciones: paleta por estación (necesita 2.1) | [PC] y a ojo | se ve el cambio de estación sin cambiar modelos |
 | V5 | Mapa general de provincias con el mismo estilo (decidir si 3D o 2D) | [APK] | decisión del usuario |

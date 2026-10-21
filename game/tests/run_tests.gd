@@ -25,6 +25,8 @@ const TEST_FILES: Array[String] = [
 	"res://tests/test_offline.gd",
 	"res://tests/test_map.gd",
 	"res://tests/test_diorama.gd",
+	"res://tests/test_epoca.gd",
+	"res://tests/test_vista_provincia.gd",
 	"res://tests/test_session.gd",
 	"res://tests/test_ui_logic.gd",
 	"res://tests/test_closure.gd",
@@ -34,6 +36,9 @@ const SELFTEST_FILE := "res://tests/selftest_fail.gd"
 
 
 func _init() -> void:
+	# Un fotograma de espera: durante _init el árbol aún no está en marcha, y las pruebas de la pantalla
+	# principal necesitan añadir nodos al árbol (con _ready y todo) como en el juego.
+	await process_frame
 	var summary = _run_all()
 	if summary == null:
 		printerr("El ejecutor de pruebas se interrumpió por un error de ejecución.")
