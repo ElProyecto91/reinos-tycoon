@@ -56,5 +56,5 @@ Orden de las tareas 1.1 a 1.10 del ROADMAP: primero la simulación sin pantalla 
 
 ## Pendiente
 
-1. Investigar la región con fuentes (sección 32). La elección de la Península Ibérica hacia el año 1000 se da por aceptada, pero no está respaldada por investigación.
+1. ~~Investigar la región con fuentes (sección 32).~~ Hecho en parte el 2026-10-21: ver `REGION_IBERIA_1000.md` y `HISTORICAL_SOURCES.md`. Quedan huecos (economía de León y Castilla, Pamplona y condados catalanes, cifras de población, minas) listados al final de la ficha.
 2. Ajustar mercancías, edificios y criterios si las pruebas lo aconsejan.

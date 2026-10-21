@@ -168,6 +168,26 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Efecto observado con el jugador automático en 2 años: cuatro provincias llegan al tope (30) y una (B) no llega a construir nada por falta de madera y moneda en sus existencias; es una propiedad de los datos de ejemplo.
 - Estado: **provisional**.
 
+## D-021. Región del prototipo investigada: Iberia, julio del año 1000 (cierra D-005 en parte)
+
+- La Península Ibérica hacia el año 1000 se mantiene como región del prototipo y ahora tiene respaldo: fecha de referencia **julio del año 1000**, poderes, divisiones del califato y cinco provincias del juego (Córdoba, Toledo, Zaragoza, Castilla, León). Todo con fuente y confianza en `HISTORICAL_SOURCES.md` y `REGION_IBERIA_1000.md`.
+- Se distingue dato histórico de parámetro de juego (sec. 33): las poblaciones, edificios y existencias iniciales siguen siendo **parámetros provisionales**.
+- Límites honestos: la investigación se hizo con páginas web resumidas por una herramienta de lectura, no con los libros completos; varias fuentes son enciclopedias (confianza media); faltan la economía de León y Castilla, Pamplona, los condados catalanes y cifras de población. Una discrepancia de fechas (Castilla) queda anotada en H-07.
+- Estado: **provisional**, a la espera de que el usuario revise la ficha.
+
+## D-022. Año de 365 días y estaciones por mes (decisión de fase 2 anticipada)
+
+- Un año de juego son 365 días = 8760 pasos (un paso = una hora, D-013). El calendario de Córdoba de 961 (H-10) reparte las labores agrícolas en los doce meses del año, de ahí el criterio de mes. Las estaciones por mes (primavera marzo–mayo, verano junio–agosto, otoño septiembre–noviembre, invierno diciembre–febrero) son una **convención del juego**: la fuente no da fechas de inicio.
+- Estacionalidad **por cultivo**, no igual para todos: para el trigo, siembra de septiembre a diciembre y cosecha de mayo a julio, según el calendario de Córdoba. Fuera de Córdoba es una extrapolación sin fuente propia (se marcará así en los datos).
+- No se implementa todavía: es la tarea 2.1/2.2 y espera al cierre de la fase 1 (A11).
+- Estado: **propuesta**, sin código.
+
+## D-023. Cadena minera aplazada
+
+- No se ha encontrado una fuente fiable de la distribución de minas hacia el año 1000 (solo un artículo divulgativo de confianza baja sobre Almadén y una ficha de vídeo sin datos). Incluirla ahora sería inventar (sec. 32: «no inventes cifras precisas»).
+- La tarea 2.4 del borrador de la fase 2 se limita a la cadena forestal hasta que haya fuentes de minería.
+- Estado: **aplazada**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

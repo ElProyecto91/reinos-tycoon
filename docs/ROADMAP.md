@@ -64,16 +64,16 @@ Según la sección 28 del documento maestro: estacionalidad, cadenas agrícola/f
 
 | ID | Tarea | Prueba | Listo cuando |
 |---|---|---|---|
-| 2.1 | Calendario derivado del contador de pasos: día, estación y año (un paso = una hora; **la duración del año y de las estaciones es una decisión pendiente**) | [PC] | la estación se calcula solo desde el paso (no se guarda) y se muestra en la barra superior |
-| 2.2 | Estacionalidad agrícola: porcentaje de producción por estación y mercancía, en datos validados | [PC] | A1 (conservación) y A10 siguen en verde; la cosecha varía con la estación; la crisis A7 sigue recuperándose |
+| 2.1 | Calendario derivado del contador de pasos: día, mes, estación y año (un paso = una hora; año de 365 días = 8760 pasos y estaciones por mes, D-022) | [PC] | la estación se calcula solo desde el paso (no se guarda) y se muestra en la barra superior |
+| 2.2 | Estacionalidad agrícola por mes y por cultivo (trigo: siembra de septiembre a diciembre, cosecha de mayo a julio según el calendario de Córdoba, D-022), en datos validados | [PC] | A1 (conservación) y A10 siguen en verde; la cosecha varía con la estación; la crisis A7 sigue recuperándose |
 | 2.3 | Necesidad estacional de leña (calefacción) con escasez gradual como la del hambre | [PC] | sin leña hay aviso y después descontento gradual; se recupera |
-| 2.4 | Cadena forestal ampliada y cadena minera genérica (mineral, metal, herramientas) con edificios nuevos | [PC] | no producen sin insumos y muestran por qué; **las provincias con mina dependen de la región, aún sin investigar** |
+| 2.4 | Cadena forestal ampliada (la minera queda aplazada hasta tener fuentes, D-023) | [PC] | no producen sin insumos y muestran por qué |
 | 2.5 | Mantenimiento en mercancías además de moneda (por ejemplo herramientas) | [PC] | un edificio sin mantenimiento se detiene y lo dice (el estado `no_upkeep` ya existe) |
 | 2.6 | Mejoras de edificio (nivel 2) con coste y efecto visibles | [PC] | no se mejora sin recursos; el efecto se aplica una sola vez |
 | 2.7 | Interfaz de la fase 2: estación, necesidades y mejoras en la ficha | [APK] | se ve y se toca bien en el móvil |
 | 2.8 | Cierre de la fase 2: partida larga con estaciones | [PC] y [APK] | como 1.10, sin errores críticos |
 
-Decisiones que necesito de ti antes de 2.1: duración del año de juego (por ejemplo 360 días = 8640 pasos), si las estaciones afectan a todos los cultivos igual, y si quieres la cadena minera ya o después de investigar la región.
+Las tres decisiones previas (año, estaciones por cultivo y minería) se tomaron con la investigación del 2026-10-21: D-022 y D-023. Siguen sin empezar hasta cerrar la fase 1 (A11).
 
 ## Fases 2 a 9
 
