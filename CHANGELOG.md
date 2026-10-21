@@ -45,3 +45,4 @@
 - Copia del documento maestro (cortada en la sección 13).
 - Registro de decisiones pendientes.
 - Sin código. Sin proyecto de Godot. Nada ejecutado ni probado.
+- Versión 0.0.9 (G2, a petición del usuario: «ejércitos»): reclutamiento con coste real (D-029): cuartel nuevo, armas por soldado, mantenimiento en moneda con aviso e impago que sube el descontento; sección «Ejército» en la ficha (Reclutar 5 / Licenciar 5); cuartel y soldados de guardia en la vista 3D. **Sin combate ni conquista todavía.** 292 pruebas en local; sabotajes S45 a S54 (el S54, vista que no recibe los soldados, **pasó sin fallo la primera vez** y ahora se detecta).

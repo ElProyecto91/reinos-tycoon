@@ -245,6 +245,16 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Vista 3D: cada tipo tiene huecos en la plantilla, **sobre terreno desbrozable** (bosque, monte, huerta, olivar); nunca sobre monumentos, caminos ni ríos. En el norte el olivar se dibuja como huerto (limitación: el juego no modela el clima).
 - Estado: **provisional**.
 
+## D-029. Ejércitos con coste real (G2, versión 0.0.9)
+
+- Reclutar exige: un **cuartel** (edificio nuevo, 10 soldados por cuartel), **armas** (500 por soldado, las fabrica la herrería) y **trabajadores libres** (salen de la mano de obra). Las armas se consumen y no se devuelven al licenciar.
+- Cada soldado cuesta **moneda por paso** (20 milésimas). Si no hay para todos, se paga lo que haya, sube el descontento y aparece el aviso «Los soldados no cobran».
+- Reglas nuevas **opcionales** (valor 0 = sin esa exigencia): `recruits_per_barracks`, `recruit_weapons`, `recruit_upkeep`. El formato de guardado no cambia (`recruits` ya se guardaba).
+- **Aún no hay combate, conquista ni movimiento de ejércitos**: los soldados solo cuestan y se ven. Todas las cifras son parámetros de juego provisionales, no históricos.
+- Límite conocido: el almacén de armas (5 % del total) permite reclutar unos 6 soldados de golpe; hay que reclutar por lotes.
+- Vista 3D: el cuartel (patio con empalizada, sala, maniquí, lanzas, estandarte rojo) y una figura de guardia con casco y lanza por cada 5 soldados (tope 8) junto a él.
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

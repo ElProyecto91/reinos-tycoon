@@ -13,6 +13,8 @@ const COLOR_DANGER := "#e5654f"
 const COLOR_WARNING := "#e0b04c"
 const COLOR_MUTED := "#b9a98e"
 const COLOR_OK := "#6cc08b"
+## Soldados que se reclutan o licencian con cada pulsación.
+const LOTE_SOLDADOS := 5
 
 var _data = null
 var _province = null
@@ -27,6 +29,9 @@ var _stock: RichTextLabel
 var _buildings: RichTextLabel
 var _projects: RichTextLabel
 var _feedback: Label
+var _army: RichTextLabel
+var _recruit_button: Button
+var _release_button: Button
 var _build_buttons := {}
 
 
@@ -49,6 +54,21 @@ func setup(game_data) -> void:
 	_buildings = _text_block()
 	_heading("Obras en curso", 28)
 	_projects = _text_block()
+	_heading("Ejército", 28)
+	_army = _text_block()
+	var army_row := HBoxContainer.new()
+	army_row.add_theme_constant_override("separation", 10)
+	_body.add_child(army_row)
+	_recruit_button = Button.new()
+	_recruit_button.custom_minimum_size = Vector2(0, 96)
+	_recruit_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_recruit_button.pressed.connect(_on_recruit_pressed)
+	army_row.add_child(_recruit_button)
+	_release_button = Button.new()
+	_release_button.custom_minimum_size = Vector2(0, 96)
+	_release_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_release_button.pressed.connect(_on_release_pressed)
+	army_row.add_child(_release_button)
 	_heading("Construir", 28)
 	_feedback = Label.new()
 	_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -78,6 +98,18 @@ func current_province_id() -> String:
 ## Texto de los botones de construcción y su estado, para las pruebas.
 func build_button(type_id: String) -> Button:
 	return _build_buttons.get(type_id, null)
+
+
+func army_text() -> String:
+	return _army.text
+
+
+func recruit_button() -> Button:
+	return _recruit_button
+
+
+func release_button() -> Button:
+	return _release_button
 
 
 func feedback_text() -> String:
@@ -114,6 +146,7 @@ func refresh() -> void:
 	_stock.text = _stock_text(p)
 	_buildings.text = _buildings_text(p)
 	_projects.text = _projects_text(p)
+	_update_army(p)
 	_update_build_buttons(p)
 
 
@@ -154,6 +187,30 @@ func _buildings_text(p) -> String:
 	return "\n".join(lines)
 
 
+func _update_army(p) -> void:
+	var rules: Dictionary = _data.rules
+	var per: int = int(rules.get("recruits_per_barracks", 0))
+	var weapons: int = int(rules.get("recruit_weapons", 0))
+	var upkeep: int = int(rules.get("recruit_upkeep", 0))
+	var lines: Array[String] = []
+	if per > 0:
+		lines.append("Soldados: %d de %d (cuarteles: %d)" % [p.recruits, p.recruit_capacity(), p.count_buildings("barracks")])
+	else:
+		lines.append("Soldados: %d" % p.recruits)
+	if weapons > 0 or upkeep > 0:
+		var cost := "Cada soldado cuesta %s de armas" % Texts.amount(weapons)
+		cost += " y %s de moneda por paso." % Texts.amount(upkeep)
+		lines.append("[color=%s]%s[/color]" % [COLOR_MUTED, cost])
+	if p.soldiers_unpaid:
+		lines.append("[color=%s]! No hay moneda para pagarles.[/color]" % COLOR_WARNING)
+	_army.text = "\n".join(lines)
+	var lote: int = LOTE_SOLDADOS
+	_recruit_button.text = "Reclutar %d" % lote
+	_release_button.text = "Licenciar %d" % lote
+	_recruit_button.disabled = false
+	_release_button.disabled = p.recruits < lote
+
+
 func _projects_text(p) -> String:
 	if p.projects.is_empty():
 		return "Ninguna."
@@ -182,6 +239,28 @@ func _update_build_buttons(p) -> void:
 			note = "  (faltan recursos)"
 		button.text = "Construir %s%s\nCoste: %s · %d pasos" % [t["name"], note, Texts.goods_text(_data, t["build_cost"]), t["build_steps"]]
 		button.disabled = no_room or full or not can_afford
+
+
+func _on_recruit_pressed() -> void:
+	if _province == null:
+		return
+	if _province.recruit(LOTE_SOLDADOS):
+		_feedback.text = "Reclutados %d soldados." % LOTE_SOLDADOS
+	else:
+		_feedback.text = "No se pudo reclutar: %s." % _province.last_error
+	refresh()
+	changed.emit()
+
+
+func _on_release_pressed() -> void:
+	if _province == null:
+		return
+	if _province.release_recruits(LOTE_SOLDADOS):
+		_feedback.text = "Licenciados %d soldados." % LOTE_SOLDADOS
+	else:
+		_feedback.text = "No se pudo licenciar: %s." % _province.last_error
+	refresh()
+	changed.emit()
 
 
 func _on_build_pressed(type_id: String) -> void:

@@ -425,3 +425,31 @@ static func telar(m: Malla, seed: int, sur: bool) -> void:
 	for k in 4:
 		m.box(Vector3(-0.46 + 0.10 * float(k), 0.045, 0.262), Vector3(0.075, 0.075, 0.004), U.TOLDOS[(seed + k) % U.TOLDOS.size()])
 
+
+
+## Cuartel: patio con empalizada, sala larga con tejado, maniquí de prácticas, armero con lanzas y estandarte.
+static func cuartel(m: Malla, seed: int, sur: bool) -> void:
+	var col := U.jit(U.TAPIAL if sur else U.PIEDRA_NORTE, 0.04, seed)
+	# Sala larga al fondo.
+	m.box(Vector3(0.0, 0, -0.24), Vector3(0.62, 0.15, 0.22), col)
+	m.gable(Vector3(0.0, 0.15, -0.24), Vector3(0.68, 0.11, 0.26), U.TEJA if sur else U.PAJA)
+	m.box(Vector3(0.0, 0, -0.125), Vector3(0.10, 0.10, 0.012), U.MADERA)
+	# Empalizada del patio (postes y travesaños) en tres lados.
+	for k in 7:
+		var px := -0.36 + 0.12 * float(k)
+		m.box(Vector3(px, 0, 0.34), Vector3(0.025, 0.09, 0.025), U.MADERA)
+	for s in [-1.0, 1.0]:
+		for k in 4:
+			m.box(Vector3(s * 0.36, 0, 0.34 - 0.12 * float(k + 1)), Vector3(0.025, 0.09, 0.025), U.MADERA)
+	m.box(Vector3(0.0, 0.05, 0.34), Vector3(0.74, 0.012, 0.012), U.MADERA_CLARA)
+	# Maniquí de prácticas: poste, travesaño y cabeza.
+	m.box(Vector3(-0.17, 0, 0.12), Vector3(0.02, 0.15, 0.02), U.MADERA)
+	m.box(Vector3(-0.17, 0.09, 0.12), Vector3(0.10, 0.018, 0.018), U.MADERA)
+	m.blob(Vector3(-0.17, 0.165, 0.12), 0.026, 6, 3, U.MADERA_CLARA, 0.5)
+	# Armero: lanzas apoyadas.
+	for k in 4:
+		m.box(Vector3(0.20 + 0.035 * float(k), 0, 0.10), Vector3(0.008, 0.20, 0.008), U.MADERA_CLARA)
+		m.box(Vector3(0.20 + 0.035 * float(k), 0.20, 0.10), Vector3(0.014, 0.024, 0.014), Color(0.72, 0.72, 0.74))
+	# Estandarte rojo.
+	m.box(Vector3(0.28, 0, -0.04), Vector3(0.012, 0.32, 0.012), U.MADERA)
+	m.box(Vector3(0.315, 0.22, -0.04), Vector3(0.07, 0.09, 0.004), Color(0.66, 0.14, 0.12))

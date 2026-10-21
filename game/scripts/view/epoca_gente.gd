@@ -21,6 +21,7 @@ var caminantes: Array = []         # [{mi, pts, largo, s, sentido, espera, vel, 
 var obreros: Array = []            # [{mi, base, fase}]
 var parados: Array = []            # gente del mercado
 var humos: Array = []              # [{mi, base, fase}]
+var guardias: Array = []           # soldados de guardia junto al cuartel
 var _ciudad = null
 var _sur := true
 var _reloj := 0.0
@@ -39,6 +40,7 @@ func configurar(ciudad, datos: Dictionary, sur: bool) -> void:
 	obreros.clear()
 	parados.clear()
 	humos.clear()
+	guardias.clear()
 	_reloj = 0.0
 
 	var rutas: Array = datos["rutas"]
@@ -68,6 +70,16 @@ func configurar(ciudad, datos: Dictionary, sur: bool) -> void:
 		mi2.rotation.y = a2 + PI * 0.5
 		add_child(mi2)
 		parados.append({"mi": mi2, "base": mi2.position, "fase": float(j) * 2.3})
+	var n_g := int(datos.get("guardias", 0))
+	if n_g > 0:
+		var qc: Vector2i = datos["cuartel"]
+		for j in n_g:
+			var a3 := TAU * float(j) / float(n_g) + 0.3
+			var mi5 := _soldado(j)
+			mi5.position = _pos(qc.x, qc.y) + Vector3(cos(a3), 0, sin(a3)) * (0.62 + 0.10 * float(j % 2))
+			mi5.rotation.y = atan2(cos(a3), sin(a3))
+			add_child(mi5)
+			guardias.append({"mi": mi5, "base": mi5.position, "fase": float(j) * 1.9})
 	for c2 in datos["humos"]:
 		var base2 := _pos(c2.x, c2.y) + Vector3(0.34, 0.30, 0.0)
 		for j in 3:
@@ -189,6 +201,9 @@ func avanzar(dt: float) -> void:
 		var mi3: MeshInstance3D = p["mi"]
 		mi3.rotation.y += sin(_reloj * 0.8 + float(p["fase"])) * dt * 0.6
 		mi3.position = (p["base"] as Vector3) + Vector3(0, 0.004 * sin(_reloj * 2.0 + float(p["fase"])), 0)
+	for g in guardias:
+		var mi6: MeshInstance3D = g["mi"]
+		mi6.position = (g["base"] as Vector3) + Vector3(0, 0.003 * sin(_reloj * 1.6 + float(g["fase"])), 0)
 	for h in humos:
 		var t := fposmod(_reloj * 0.28 + float(h["fase"]), 1.0)
 		var mi4: MeshInstance3D = h["mi"]
@@ -224,6 +239,27 @@ func _persona(semilla: int) -> MeshInstance3D:
 		_mallas[clave] = m.to_mesh()
 	var mi := MeshInstance3D.new()
 	mi.mesh = _mallas[clave]
+	mi.material_override = Malla.material()
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mi.scale = Vector3.ONE * ESCALA
+	return mi
+
+
+## Soldado: túnica roja, casco gris, lanza alta y escudo; mira hacia fuera del cuartel.
+func _soldado(semilla: int) -> MeshInstance3D:
+	if not _mallas.has("soldado"):
+		var m := Malla.new()
+		m.ao = 0.0
+		m.tinte = 0.0
+		m.cyl(Vector3.ZERO, 0.045, 0.032, 0.115, 6, Color(0.62, 0.13, 0.11))
+		m.blob(Vector3(0, 0.145, 0), 0.034, 6, 4, PIEL)
+		m.dome(Vector3(0, 0.15, 0), 0.039, 6, 2, Color(0.55, 0.56, 0.60), 0.9)
+		m.box(Vector3(0.06, 0, 0.0), Vector3(0.010, 0.26, 0.010), U.MADERA_CLARA)
+		m.box(Vector3(0.06, 0.26, 0.0), Vector3(0.016, 0.03, 0.016), Color(0.78, 0.78, 0.80))
+		m.box(Vector3(-0.055, 0.03, 0.02), Vector3(0.012, 0.075, 0.06), Color(0.30, 0.22, 0.14))
+		_mallas["soldado"] = m.to_mesh()
+	var mi := MeshInstance3D.new()
+	mi.mesh = _mallas["soldado"]
 	mi.material_override = Malla.material()
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mi.scale = Vector3.ONE * ESCALA

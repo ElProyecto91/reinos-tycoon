@@ -42,6 +42,7 @@ const HUECO_DE := {
 	"market": "mercado",
 	"mine": "mina",
 	"smithy": "herreria",
+	"barracks": "cuartel",
 }
 
 ## Habitantes que representa cada manzana del caserío (parámetro de aspecto, no de simulación).
@@ -49,6 +50,9 @@ const HABITANTES_POR_MANZANA := 30
 ## Habitantes que representa cada aldeano que se ve caminando (parámetro de aspecto) y tope.
 const HABITANTES_POR_CAMINANTE := 12
 const MAX_CAMINANTES := 16
+## Soldados que representa cada figura de guardia junto al cuartel (parámetro de aspecto) y tope.
+const SOLDADOS_POR_FIGURA := 5
+const MAX_GUARDIAS := 8
 
 
 ## Aspecto («cordoba», «toledo», «zaragoza» o «norte») de una provincia; vacío si no se conoce.
@@ -72,7 +76,7 @@ static func manzanas(poblacion: int, viviendas: int, huecos: int) -> int:
 ## Devuelve {"cells": {Vector2i: {...}}, "radio", "foco": Vector3, "ocultos": {tipo: n}}.
 ## «ocultos» cuenta edificios u obras que no caben en la plantilla (siguen existiendo en el juego,
 ## solo que no se dibujan).
-static func plan(aspecto: String, buildings: Array, projects: Array, population: int) -> Dictionary:
+static func plan(aspecto: String, buildings: Array, projects: Array, population: int, soldados: int = 0) -> Dictionary:
 	var t := plantilla(aspecto)
 	var cells: Dictionary = (t["base"] as Dictionary).duplicate(true)
 	var huecos: Dictionary = t["huecos"]
@@ -110,13 +114,16 @@ static func plan(aspecto: String, buildings: Array, projects: Array, population:
 				celdas_obra.append(lista[idx][0])
 			else:
 				ocultos[tipo] = int(ocultos.get(tipo, 0)) + 1
+	var cuartel_cell = null
+	if int(visibles.get("cuartel", 0)) > 0:
+		cuartel_cell = huecos["cuartel"][0][0]
 	var horno_cells: Array = []
 	var hornos: Array = huecos["panaderia"]
 	for i in range(int(visibles.get("panaderia", 0))):
 		horno_cells.append(hornos[i][0])
 	return {
 		"cells": cells, "radio": RADIO, "foco": t["foco"], "ocultos": ocultos,
-		"gente": gente(t, visibles, celdas_obra, horno_cells, population),
+		"gente": gente(t, visibles, celdas_obra, horno_cells, population, soldados, cuartel_cell),
 	}
 
 
@@ -124,7 +131,7 @@ static func plan(aspecto: String, buildings: Array, projects: Array, population:
 ##   rutas: caminos de ida y vuelta (puntos [q, r] o [q, r, borde, fracción]) cuyos requisitos se cumplen,
 ##   caminantes: cuántos aldeanos las recorren, obras: casillas con obra (llevan obreros),
 ##   humos: casillas con horno encendido, mercado: casilla del mercado y cuántas personas hay en él.
-static func gente(t: Dictionary, visibles: Dictionary, celdas_obra: Array, horno_cells: Array, poblacion: int) -> Dictionary:
+static func gente(t: Dictionary, visibles: Dictionary, celdas_obra: Array, horno_cells: Array, poblacion: int, soldados: int = 0, cuartel = null) -> Dictionary:
 	var rutas: Array = []
 	for r in t["rutas"]:
 		var req = r["req"]
@@ -137,6 +144,9 @@ static func gente(t: Dictionary, visibles: Dictionary, celdas_obra: Array, horno
 		"humos": horno_cells,
 		"mercado": t["mercado"],
 		"gente_mercado": t["gente_mercado"],
+		# Sin cuartel dibujado no hay guardias a la vista (los soldados siguen existiendo en el juego).
+		"guardias": 0 if cuartel == null else clampi(ceili(float(maxi(soldados, 0)) / float(SOLDADOS_POR_FIGURA)), 0, MAX_GUARDIAS),
+		"cuartel": cuartel if cuartel != null else Vector2i(0, 0),
 	}
 
 
@@ -222,6 +232,7 @@ static func _sur() -> Dictionary:
 		"mercado": _huecos([[3, -1, "E"]]),
 		"mina": _huecos([[1, -4, "n"], [3, -4, "n"]]),
 		"herreria": _huecos([[2, -4, "Z"], [4, -4, "Z"]]),
+		"cuartel": _huecos([[-1, 3, "u"]]),
 	}
 	var rutas := [
 		# Camino de la puerta al puente y por la calzada hasta el fondo.
@@ -285,6 +296,7 @@ static func _norte() -> Dictionary:
 		"mercado": _huecos([[3, -3, "E"]]),
 		"mina": _huecos([[2, -4, "n"], [4, -4, "n"]]),
 		"herreria": _huecos([[4, -2, "Z"], [4, -3, "Z"]]),
+		"cuartel": _huecos([[3, -1, "u"], [4, -1, "u"]]),
 	}
 	var rutas := [
 		# Vuelta por los campos de cereal.

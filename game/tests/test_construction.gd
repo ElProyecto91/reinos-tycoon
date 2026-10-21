@@ -80,6 +80,8 @@ func test_construction_is_rejected_without_coin() -> void:
 
 func test_construction_is_rejected_without_workers() -> void:
 	var data = new_data()
+	data.rules["recruits_per_barracks"] = 0   # prueba de mano de obra: sin cuartel ni armas
+	data.rules["recruit_weapons"] = 0
 	var p = _builder_province(data)
 	assert_true(p.recruit(50), "reclutar a toda la mano de obra")
 	assert_eq(p.available_workers(), 0, "no queda nadie")

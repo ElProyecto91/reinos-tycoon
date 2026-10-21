@@ -26,6 +26,8 @@ func _busy_world(data):
 	a.start_construction("house")
 	a.start_construction("granary")
 	a.add_modifier("wheat", 50, 40)
+	b.add_building("barracks")
+	b.store.seed_initial("weapons", 2500)
 	b.recruit(5)
 	world.run_steps(3)
 	return world
@@ -50,6 +52,8 @@ func _crisis_world(data):
 	d.store.seed_initial("coin", 9000)
 	world.run_steps(50)
 	c.start_construction("house")
+	c.add_building("barracks")
+	c.store.seed_initial("weapons", 2500)
 	c.recruit(5)
 	c.add_modifier("wheat", 50, 40)
 	world.run_steps(2)

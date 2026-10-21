@@ -141,7 +141,7 @@ func mostrar(province) -> void:
 		push_warning("Provincia sin aspecto 3D: " + str(province.id))
 		_limpiar()
 		return
-	var plan := Layout.plan(aspecto_nuevo, province.buildings, province.projects, province.population)
+	var plan := Layout.plan(aspecto_nuevo, province.buildings, province.projects, province.population, province.recruits)
 	var firma_nueva := Layout.firma(aspecto_nuevo, plan)
 	if firma_nueva == _firma:
 		var fg := Layout.firma_gente(plan)

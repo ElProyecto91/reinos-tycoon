@@ -42,7 +42,7 @@ func test_real_files_load_without_errors() -> void:
 	var ok: bool = data.load_files(GOODS_PATH, BUILDINGS_PATH, RULES_PATH)
 	assert_true(ok, "los archivos reales deben cargarse: %s" % _errors_text(data))
 	assert_eq(data.goods.size(), 12, "número de mercancías")
-	assert_eq(data.buildings.size(), 13, "número de edificios")
+	assert_eq(data.buildings.size(), 14, "número de edificios")
 	assert_eq(data.rules["currency"], "coin", "la moneda de las reglas")
 	done()
 
@@ -52,7 +52,7 @@ func test_prototype_ids_are_stable() -> void:
 	data.load_files(GOODS_PATH, BUILDINGS_PATH)
 	for id in ["wheat", "flour", "bread", "wood", "firewood", "coin", "olives", "oil", "wool", "cloth", "iron", "weapons"]:
 		assert_true(data.goods.has(id), "falta la mercancía \"%s\"" % id)
-	for id in ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy"]:
+	for id in ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy", "barracks"]:
 		assert_true(data.buildings.has(id), "falta el edificio \"%s\"" % id)
 	done()
 
@@ -405,4 +405,29 @@ func test_real_goods_shares_add_up_to_at_most_100() -> void:
 			total += data.goods[good_id]["share"]
 	assert_true(total <= 100, "las partes de almacén de las mercancías reales suman %d" % total)
 	assert_true(data.goods["wheat"]["share"] > 0, "el trigo tiene parte de almacén")
+	done()
+
+
+func test_army_rules_are_optional_but_validated() -> void:
+	var data = _rules_data()
+	var rules := _valid_rules()
+	assert_true(data.build_rules(rules), "sin reglas de ejército valen (por defecto 0): %s" % _errors_text(data))
+	assert_eq(int(data.rules.get("recruit_weapons", -1)), 0, "el valor por defecto es 0")
+	for key in ["recruits_per_barracks", "recruit_weapons", "recruit_upkeep"]:
+		var mala := _valid_rules()
+		mala[key] = -1
+		var d2 = _rules_data()
+		assert_true(not d2.build_rules(mala), "%s negativo se rechaza" % key)
+		assert_true(_errors_text(d2).contains(key), "el error nombra %s" % key)
+		var fraccion := _valid_rules()
+		fraccion[key] = 1.5
+		var d3 = _rules_data()
+		assert_true(not d3.build_rules(fraccion), "%s fraccionario se rechaza" % key)
+	var buena := _valid_rules()
+	buena["recruits_per_barracks"] = 10
+	buena["recruit_weapons"] = 500
+	buena["recruit_upkeep"] = 20
+	var d4 = _rules_data()
+	assert_true(d4.build_rules(buena), "valores válidos: %s" % _errors_text(d4))
+	assert_eq(int(d4.rules["recruits_per_barracks"]), 10, "se guardan")
 	done()

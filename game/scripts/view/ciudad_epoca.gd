@@ -14,7 +14,7 @@ extends "res://scripts/view/diorama.gd"
 ##   W       noria con huerta (sur) o cereal (norte): no hay molinos de viento (sin fuente)
 ##   V       molino de agua (junto al río); L aserradero; Z herrería; E mercado
 ##   p g S   panadería (horno), granero y obra en curso
-##   B e q n almazara, telar, aprisco de ovejas y mina
+##   B e q n u almazara, telar, aprisco de ovejas, mina y cuartel
 ##   h H M N Q colinas y montes propios (matorral y roca)
 ## Lo demás (minas, andamios, utensilios) sigue siendo de KayKit.
 
@@ -225,6 +225,10 @@ func _thing(q: int, r: int, o: String, y: float) -> void:
 			etiqueta = "telar"
 			Urbano.suelo_urbano(m, d["suelo"])
 			Urbano.telar(m, seed, d["seco"])
+		"u":
+			etiqueta = "cuartel"
+			Urbano.suelo_urbano(m, d["suelo"])
+			Urbano.cuartel(m, seed, d["seco"])
 		"q":
 			etiqueta = "aprisco"
 			Campo.aprisco(m, seed)

@@ -22,6 +22,7 @@ func _init() -> void:
 	var obras: String = args[3] if args.size() > 3 else ""
 	var mapa: bool = (args[4] == "1") if args.size() > 4 else false
 	var pasos: int = int(args[5]) if args.size() > 5 else 0
+	var soldados: int = int(args[6]) if args.size() > 6 else 0
 
 	DirAccess.make_dir_recursive_absolute(DIR)
 	for f in DirAccess.open(DIR).get_files():
@@ -44,6 +45,10 @@ func _init() -> void:
 		p.store.seed_initial("coin", 50000)
 		if not p.start_construction(tipo):
 			printerr("No se pudo empezar la obra ", tipo, ": ", p.last_error)
+	if soldados > 0:
+		p.store.seed_initial("weapons", 3000)
+		if not p.recruit(soldados):
+			printerr("No se pudo reclutar: ", p.last_error)
 	if pasos > 0:
 		main.session.world.run_steps(pasos)
 	main._refresh_all()

@@ -9,6 +9,9 @@
 		"min_population": 10,
 		"max_projects": 3,
 		"max_buildings": 30,
+		"recruits_per_barracks": 10,
+		"recruit_weapons": 500,
+		"recruit_upkeep": 20,
 		"tax_per_person": 8,
 		"food_per_person": 10,
 		"food_goods": [

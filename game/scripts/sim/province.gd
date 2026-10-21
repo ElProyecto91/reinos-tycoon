@@ -33,10 +33,13 @@ const ALERT_STARVATION := "starvation"
 const ALERT_STORAGE_FULL := "storage_full"
 const ALERT_NO_WORKERS := "no_workers"
 const ALERT_WASTE := "waste"
+const ALERT_SOLDIERS_UNPAID := "soldiers_unpaid"
 
 const STATUSES: Array[String] = [STATUS_IDLE, STATUS_RUNNING, STATUS_DISABLED, STATUS_NO_WORKERS, STATUS_MISSING_INPUTS, STATUS_NO_UPKEEP, STATUS_STORAGE_FULL]
-const ALERTS: Array[String] = [ALERT_HUNGER_WARNING, ALERT_UNREST, ALERT_STARVATION, ALERT_STORAGE_FULL, ALERT_NO_WORKERS, ALERT_WASTE]
+const ALERTS: Array[String] = [ALERT_HUNGER_WARNING, ALERT_UNREST, ALERT_STARVATION, ALERT_STORAGE_FULL, ALERT_NO_WORKERS, ALERT_WASTE, ALERT_SOLDIERS_UNPAID]
 const BIG := 1000000000000
+## Mercancía que gasta cada recluta (la cantidad está en rules.recruit_weapons).
+const RECRUIT_GOOD := "weapons"
 
 var id: String = ""
 var display_name: String = ""
@@ -64,6 +67,8 @@ var alerts: Array[String] = []
 var wasted: Dictionary = {}
 ## Porcentaje de alimento que faltó en el último paso (0 = todos alimentados)
 var food_shortage_percent: int = 0
+## ¿Faltó moneda para pagar a los soldados en el último paso?
+var soldiers_unpaid: bool = false
 ## Motivo del último rechazo de una acción (vacío si fue válida)
 var last_error: String = ""
 var store = null
@@ -181,11 +186,30 @@ func set_enabled(uid: int, enabled: bool) -> bool:
 	return true
 
 
+## Soldados que caben en los cuarteles (BIG si las reglas no piden cuartel).
+func recruit_capacity() -> int:
+	var per: int = _rules.get("recruits_per_barracks", 0)
+	if per <= 0:
+		return BIG
+	return count_buildings("barracks") * per
+
+
+## Recluta soldados: salen de la mano de obra libre, caben en los cuarteles y cada uno gasta armas.
+## No cambia nada si no se cumple alguna condición.
 func recruit(count: int) -> bool:
 	last_error = ""
 	if count < 0 or count > available_workers():
 		last_error = "no hay tantos trabajadores libres para reclutar"
 		return false
+	if recruits + count > recruit_capacity():
+		last_error = "los cuarteles no tienen sitio para tantos soldados"
+		return false
+	var weapons: int = count * int(_rules.get("recruit_weapons", 0))
+	if weapons > 0 and store.stock(RECRUIT_GOOD) < weapons:
+		last_error = "faltan armas"
+		return false
+	if weapons > 0:
+		store.remove(RECRUIT_GOOD, weapons, StoreScript.CONSUMED)
 	recruits += count
 	return true
 
@@ -250,6 +274,7 @@ func step() -> void:
 	if auto_staff:
 		_staff_automatically()
 	_collect_taxes()
+	_pay_soldiers()
 	_consume_food()
 	_advance_projects()
 	for b in buildings:
@@ -331,6 +356,18 @@ func _collect_taxes() -> void:
 	var amount: int = population * _rules["tax_per_person"]
 	if amount > 0:
 		store.add(_rules["currency"], amount, StoreScript.PRODUCED)
+
+
+## Cada soldado cuesta moneda por paso. Si no hay para todos, se paga lo que haya y sube el descontento.
+func _pay_soldiers() -> void:
+	soldiers_unpaid = false
+	var due: int = recruits * int(_rules.get("recruit_upkeep", 0))
+	if due <= 0:
+		return
+	var paid: int = store.remove(_rules["currency"], due, StoreScript.CONSUMED)
+	if paid < due:
+		soldiers_unpaid = true
+		unrest = mini(unrest + int(_rules["unrest_rise"]), _rules["unrest_max"])
 
 
 func _advance_projects() -> void:
@@ -484,6 +521,8 @@ func _update_alerts() -> void:
 			alerts.append(ALERT_UNREST)
 		else:
 			alerts.append(ALERT_HUNGER_WARNING)
+	if soldiers_unpaid:
+		alerts.append(ALERT_SOLDIERS_UNPAID)
 	var full := false
 	var idle_workers := false
 	for b in buildings:

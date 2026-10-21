@@ -8,7 +8,7 @@ extends RefCounted
 
 const SUPPORTED_FORMAT_VERSION := 1
 const GOODS_CATEGORIES: Array[String] = ["food", "forestry", "manufactured", "materials", "institutional"]
-const BUILDING_CATEGORIES: Array[String] = ["residential", "agricultural", "storage", "forestry", "industrial", "pastoral", "mining", "commercial"]
+const BUILDING_CATEGORIES: Array[String] = ["residential", "agricultural", "storage", "forestry", "industrial", "pastoral", "mining", "commercial", "military"]
 
 const DEFAULT_GOODS_PATH := "res://data/goods.json"
 const DEFAULT_BUILDINGS_PATH := "res://data/buildings.json"
@@ -37,6 +37,15 @@ const RULE_INTS := {
 	"growth_unrest_limit": [0, 1000000],
 	"step_seconds": [1, 86400],
 	"offline_limit_seconds": [0, 172800],
+}
+
+## Reglas opcionales (valen 0 si no están): nombre -> [mínimo, máximo].
+## recruits_per_barracks: soldados que aloja cada cuartel (0 = no hace falta cuartel);
+## recruit_weapons: armas (milésimas) que gasta cada recluta; recruit_upkeep: moneda por soldado y paso.
+const RULE_OPTIONAL_INTS := {
+	"recruits_per_barracks": [0, 100000],
+	"recruit_weapons": [0, 100000000],
+	"recruit_upkeep": [0, 1000000],
 }
 
 ## Mercancías por id: id -> {id, name, category, unit, physical}
@@ -141,8 +150,15 @@ func build_rules(raw: Dictionary) -> bool:
 			errors.append("regla \"%s\": debe ser un entero entre %d y %d" % [key, limits[0], limits[1]])
 			continue
 		result[key] = int(value)
+	for key in RULE_OPTIONAL_INTS.keys():
+		var limits2: Array = RULE_OPTIONAL_INTS[key]
+		var value2 = raw.get(key, 0)
+		if not _is_integer_number(value2) or int(value2) < limits2[0] or int(value2) > limits2[1]:
+			errors.append("regla \"%s\": debe ser un entero entre %d y %d" % [key, limits2[0], limits2[1]])
+			continue
+		result[key] = int(value2)
 	for key in raw.keys():
-		if not RULE_INTS.has(key) and key != "currency" and key != "food_goods":
+		if not RULE_INTS.has(key) and not RULE_OPTIONAL_INTS.has(key) and key != "currency" and key != "food_goods":
 			errors.append("regla \"%s\": nombre desconocido (¿error de escritura?)" % str(key))
 	var currency = raw.get("currency", null)
 	if typeof(currency) != TYPE_STRING or not goods.has(currency):

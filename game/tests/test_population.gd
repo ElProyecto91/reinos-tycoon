@@ -12,6 +12,8 @@ func test_labor_force_is_half_of_population() -> void:
 
 func test_assigned_workers_never_exceed_available() -> void:
 	var data = new_data()
+	data.rules["recruits_per_barracks"] = 0   # prueba de mano de obra: sin cuartel ni armas
+	data.rules["recruit_weapons"] = 0
 	var p = new_province(data, 100)
 	p.auto_staff = false
 	var f1: int = p.add_building("farm")
@@ -57,6 +59,8 @@ func test_assigning_fewer_workers_frees_them() -> void:
 
 func test_recruiting_reduces_available_workers() -> void:
 	var data = new_data()
+	data.rules["recruits_per_barracks"] = 0   # prueba de mano de obra: sin cuartel ni armas
+	data.rules["recruit_weapons"] = 0
 	var p = new_province(data, 100)
 	assert_true(p.recruit(10), "reclutar 10")
 	assert_eq(p.recruits, 10, "diez reclutas")

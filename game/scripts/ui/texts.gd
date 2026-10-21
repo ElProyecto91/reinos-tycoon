@@ -23,9 +23,10 @@ const ALERT_TEXT := {
 	"storage_full": "Almacén lleno: la producción se detiene",
 	"no_workers": "Hay edificios sin trabajadores",
 	"waste": "Se desperdicia producción por falta de espacio",
+	"soldiers_unpaid": "Los soldados no cobran: sube el descontento",
 }
 const ALERT_SEVERITY := {
-	"hunger_warning": 1, "unrest": 1, "starvation": 2, "storage_full": 0, "no_workers": 1, "waste": 0,
+	"hunger_warning": 1, "unrest": 1, "starvation": 2, "storage_full": 0, "no_workers": 1, "waste": 0, "soldiers_unpaid": 1,
 }
 
 
