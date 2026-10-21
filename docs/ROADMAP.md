@@ -4,7 +4,7 @@ Estado de todas las tareas: **pendiente**. Nada está implementado ni probado.
 
 Leyenda de pruebas:
 - **[DOC]** no se ejecuta nada; se revisa un documento.
-- **[PC]** se puede probar en ordenador, sin Android (Godot en modo sin ventana).
+- **[PC]** prueba automática sin Android (Godot en modo sin ventana). Como no hay ordenador, se ejecuta en GitHub Actions.
 - **[APK]** exige exportar un APK y abrirlo en un móvil real.
 
 Idea de orden: la simulación (economía, población, almacén, guardado, offline) no depende de la pantalla, así que se construye y se prueba primero sin Android. El móvil se necesita para táctil, zoom, reanudación de la app, rendimiento, memoria, batería y rutas reales de archivo.
@@ -15,8 +15,8 @@ Idea de orden: la simulación (economía, población, almacén, guardado, offlin
 |---|---|---|---|---|
 | 0.1 | Subir el repositorio a GitHub (usuario) | — | [DOC] | repositorio visible con el contenido de la versión actual |
 | 0.2 | Confirmar versión de Godot y requisitos de Android en la documentación oficial vigente | — | [DOC] | D-006 cerrada con versiones y enlaces |
-| 0.3 | Elegir vía de pruebas: ordenador del usuario o GitHub Actions (D-003) | — | [DOC] | decisión registrada |
-| 0.4 | Instalar Godot, plantillas de exportación, JDK y Android SDK (guiado) | 0.2, 0.3 | [PC] | Godot abre y muestra su versión |
+| 0.3 | Elegir vía de pruebas (D-003) | — | [DOC] | decidido: GitHub Actions, porque el usuario no tiene ordenador |
+| 0.4 | Escribir el flujo de GitHub Actions que instala Godot, plantillas, JDK y Android SDK en la nube | 0.2, 0.3 | [PC] | el flujo termina en verde y muestra la versión de Godot |
 | 0.5 | Proyecto vacío en `game/` que arranque | 0.4 | [PC] | arranca sin errores en consola |
 | 0.6 | Elegir herramienta de pruebas (nativa antes que bibliotecas, sección 24); una prueba que pasa y otra que falla a propósito | 0.5 | [PC] | ambas dan el resultado esperado sin ventana |
 | 0.7 | Exportar el proyecto vacío a APK y abrirlo en un móvil | 0.5 | [APK] | abre en el móvil; procedimiento documentado paso a paso |

@@ -19,7 +19,8 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Comprobado el 2026-10-21: Godot no está instalado; la descarga desde GitHub Releases devuelve 403 desde el proxy del entorno; no existe paquete de Godot en PyPI.
 - Consecuencia: el asistente puede escribir y revisar archivos, pero no ejecutar el juego, ni sus pruebas, ni exportar APK. Todo código irá marcado "sin probar" hasta que se ejecute en un entorno real (sección 29: no marcar una prueba como superada si no se ejecutó).
 - Opciones: (a) instalar Godot en un ordenador del usuario; (b) pruebas y exportación con GitHub Actions. La opción (b) no está verificada y requiere configuración.
-- Estado: **pendiente de decidir según el equipo del usuario**.
+- Decisión (2026-10-21): el usuario no tiene ordenador y necesita Android, así que se usa la opción (b), GitHub Actions. Sin verificar: que el flujo funcione y que siga siendo gratuito en repositorios públicos (comprobar condiciones vigentes).
+- Estado: **decidida, sin verificar en la práctica**.
 
 ## D-004. Datos dentro del proyecto de Godot
 
