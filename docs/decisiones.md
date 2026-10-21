@@ -156,7 +156,8 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Causa: GitHub comprimía todo artefacto de Actions en un zip. Desde febrero de 2026 `actions/upload-artifact` v7 admite `archive: false`, que sube un único archivo tal cual y lo deja descargar sin descomprimir. Con esa opción el parámetro `name` se ignora y el artefacto se llama como el archivo: `reinos-tycoon-debug.apk`. Fuentes: anuncio de GitHub (26-02-2026) y README de la acción.
 - Cambio: el paso que guarda el APK usa `upload-artifact@v7` con `archive: false`. Los registros (`ci-log-*`) siguen con v4 y comprimidos, y el trabajo `informe` sigue leyéndolos con `download-artifact@v4`; no se tocan.
 - Límite conocido: sigue siendo un artefacto de Actions, así que hay que iniciar sesión en GitHub para bajarlo y caduca a los 30 días. Una página de versión (Release) con el APK adjunto evitaría la caducidad, pero publica en un repositorio público: **solo con permiso explícito del usuario** (sec. 37).
-- Estado: **provisional hasta ver la primera ejecución con el cambio**: falta confirmar en GitHub que el artefacto aparece como `.apk` y que el móvil lo instala.
+- Comprobado (ejecución #17, `version/code` 24, misma firma `f3e6ecc4…48d5`): la API de GitHub lista el artefacto como `reinos-tycoon-debug.apk` (28 380 221 bytes), ya no `reinos-tycoon-debug-apk`. Eso no prueba por sí solo que el navegador del móvil lo baje sin zip ni que se instale: falta verlo en el móvil.
+- Estado: **provisional hasta descargarlo e instalarlo en el móvil**.
 
 ## Orden de entregas
 
