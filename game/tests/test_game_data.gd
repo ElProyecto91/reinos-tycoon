@@ -381,7 +381,7 @@ func test_non_physical_goods_do_not_count_for_shares() -> void:
 	var data = _new_data()
 	var coin := {"id": "coin", "name": "Moneda", "category": "institutional", "unit": "moneda", "physical": false, "storage_share_percent": 100}
 	var list: Array = [_good("a"), _good("b"), _good("c"), _good("d"), _good("e"), coin]
-	assert_true(data.build_goods(list), "cinco físicas al 20 % más una moneda: %s" % _errors_text(data))
+	assert_true(data.build_goods(list), "cinco físicas al 20 %% más una moneda: %s" % _errors_text(data))
 	done()
 
 

@@ -63,12 +63,26 @@ func limit(good_id: String) -> int:
 
 
 ## Cuánto más cabe de esa mercancía (por espacio total y por su parte). La no física no tiene tope.
-func room(good_id: String) -> int:
+## `extra_free` suma espacio que se va a liberar.
+func room(good_id: String, extra_free: int = 0) -> int:
 	if not _goods.has(good_id):
 		return 0
 	if not _goods[good_id]["physical"]:
 		return UNLIMITED
-	return mini(free_space(), maxi(limit(good_id) - _stock[good_id], 0))
+	return mini(free_space() + extra_free, maxi(limit(good_id) - _stock[good_id], 0))
+
+
+## true si al menos una de las cantidades positivas cabe por sí sola, o si no hay ninguna
+## positiva. Sirve para saber si un edificio con varios productos puede entregar algo.
+func can_fit_any(amounts: Dictionary, extra_free: int = 0) -> bool:
+	var positive := false
+	for good_id in amounts.keys():
+		if amounts[good_id] <= 0:
+			continue
+		positive = true
+		if amounts[good_id] <= room(good_id, extra_free):
+			return true
+	return not positive
 
 
 ## true si todas las cantidades caben a la vez. `extra_free` suma espacio que se va a liberar.

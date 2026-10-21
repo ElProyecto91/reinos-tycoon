@@ -263,3 +263,34 @@ func test_passive_buildings_stay_idle() -> void:
 	assert_eq(p.find_building(house)["status"], "idle", "la vivienda no produce")
 	assert_eq(p.find_building(granary)["status"], "idle", "el granero no produce")
 	done()
+
+
+func test_surplus_coproduct_is_wasted_but_the_rest_is_delivered() -> void:
+	var data = new_data()
+	var p = _fed_province(data)
+	p.store.seed_initial("wood", 9000)
+	var cutter: int = p.add_building("woodcutter")
+	run_steps(p, 6)
+	assert_eq(p.store.ledger("firewood")["produced"], 1500, "la leña se entrega aunque la madera no quepa")
+	assert_eq(p.store.stock("wood"), 9000, "la madera sigue en su tope")
+	assert_eq(p.wasted.get("wood", 0), 3000, "la madera que no cabía se anota como desperdicio")
+	assert_eq(p.store.ledger("wood")["produced"], 0, "lo desperdiciado nunca entró en el libro del almacén")
+	assert_true(p.alerts.has("waste"), "aviso de desperdicio")
+	assert_eq(p.find_building(cutter)["status"], "running", "el leñador sigue trabajando")
+	assert_true(p.check_invariants().is_empty(), "coherente: %s" % str(p.check_invariants()))
+	done()
+
+
+func test_nothing_is_delivered_when_every_output_is_blocked() -> void:
+	var data = new_data()
+	var p = _fed_province(data)
+	p.store.seed_initial("wood", 9000)
+	p.store.seed_initial("firewood", 9000)
+	var cutter: int = p.add_building("woodcutter")
+	run_steps(p, 3)
+	var b: Dictionary = p.find_building(cutter)
+	assert_eq(b["status"], "storage_full", "sin sitio para nada, se detiene")
+	assert_true(not b["active"], "no empezó el ciclo")
+	assert_eq(p.store.ledger("coin")["consumed"], 0, "no pagó mantenimiento por un ciclo que no empezó")
+	assert_true(p.wasted.is_empty(), "y no desperdicia nada")
+	done()

@@ -237,3 +237,15 @@ func test_conservation_flags_stock_above_share() -> void:
 	var problems: Array[String] = store.check_conservation()
 	assert_eq(problems.size(), 1, "solo se detecta pasarse de la parte, el libro cuadra")
 	done()
+
+
+func test_can_fit_any_and_room_with_extra_free_space() -> void:
+	var store = load(STORE).new(_shared_goods(), 10000)
+	store.add("wheat", 5000, "produced")
+	assert_true(store.can_fit_any({"wheat": 100, "flour": 100}), "la harina sí cabe")
+	assert_true(not store.can_fit_any({"wheat": 100}), "el trigo está en su tope")
+	assert_true(store.can_fit_any({"wheat": 0}), "sin cantidades positivas no hay nada que guardar")
+	assert_true(store.can_fit_any({}), "vacío")
+	assert_eq(store.room("flour"), 3000, "la harina tiene su parte entera")
+	assert_eq(store.room("flour", 500), 3000, "el espacio extra no supera la parte de la mercancía")
+	done()

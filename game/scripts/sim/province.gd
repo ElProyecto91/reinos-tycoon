@@ -26,6 +26,7 @@ const ALERT_UNREST := "unrest"
 const ALERT_STARVATION := "starvation"
 const ALERT_STORAGE_FULL := "storage_full"
 const ALERT_NO_WORKERS := "no_workers"
+const ALERT_WASTE := "waste"
 
 var id: String = ""
 var display_name: String = ""
@@ -48,6 +49,9 @@ var projects: Array = []
 var modifiers: Dictionary = {}
 ## Avisos del último paso (códigos ALERT_*)
 var alerts: Array[String] = []
+## Producción desperdiciada por no caber en el almacén, acumulada: id de mercancía -> cantidad.
+## No forma parte del libro del almacén: esas cantidades nunca llegaron a existir en él.
+var wasted: Dictionary = {}
 ## Porcentaje de alimento que faltó en el último paso (0 = todos alimentados)
 var food_shortage_percent: int = 0
 ## Motivo del último rechazo de una acción (vacío si fue válida)
@@ -56,6 +60,7 @@ var store = null
 
 var _data = null
 var _rules: Dictionary = {}
+var _waste_this_step: bool = false
 
 
 func _init(data, province_id: String, province_name: String, start_population: int) -> void:
@@ -225,6 +230,7 @@ func add_modifier(good_id: String, percent: int, duration_steps: int) -> void:
 
 func step() -> void:
 	step_count += 1
+	_waste_this_step = false
 	_expire_modifiers()
 	_enforce_labor_limit()
 	if auto_staff:
@@ -374,7 +380,7 @@ func _try_start_cycle(b: Dictionary, t: Dictionary) -> bool:
 	for good in t["inputs"].keys():
 		if _data.is_physical(good):
 			freed += t["inputs"][good]
-	if not store.can_fit(t["outputs"], freed):
+	if not store.can_fit_any(t["outputs"], freed):
 		b["status"] = STATUS_STORAGE_FULL
 		return false
 	for good in t["inputs"].keys():
@@ -386,17 +392,27 @@ func _try_start_cycle(b: Dictionary, t: Dictionary) -> bool:
 	return true
 
 
-## Termina el ciclo si el resultado cabe en el almacén; si no, espera con el trabajo hecho.
+## Termina el ciclo y entrega cada producto que cabe. Si no cabe ninguno, espera con el
+## trabajo hecho (estado storage_full). Si caben unos y otros no (un leñador con la
+## madera al tope sigue entregando leña), lo que no cabe se desperdicia y se anota en
+## `wasted` con un aviso, para que un subproducto sobrante no bloquee el principal.
 func _try_finish_cycle(b: Dictionary, t: Dictionary) -> void:
 	var produced := {}
 	var productivity := productivity_percent()
 	for good in t["outputs"].keys():
 		produced[good] = Fixed.percent_of_2(t["outputs"][good], productivity, _modifier_percent(good))
-	if not store.can_fit(produced):
+	if not store.can_fit_any(produced):
 		b["status"] = STATUS_STORAGE_FULL
 		return
 	for good in produced.keys():
-		store.add(good, produced[good], StoreScript.PRODUCED)
+		var amount: int = produced[good]
+		if amount <= 0:
+			continue
+		if store.room(good) >= amount:
+			store.add(good, amount, StoreScript.PRODUCED)
+		else:
+			wasted[good] = wasted.get(good, 0) + amount
+			_waste_this_step = true
 	b["active"] = false
 	b["progress"] = 0
 	b["status"] = STATUS_RUNNING
@@ -460,6 +476,8 @@ func _update_alerts() -> void:
 		alerts.append(ALERT_STORAGE_FULL)
 	if idle_workers:
 		alerts.append(ALERT_NO_WORKERS)
+	if _waste_this_step:
+		alerts.append(ALERT_WASTE)
 
 
 # --- Comprobación de coherencia ------------------------------------------------

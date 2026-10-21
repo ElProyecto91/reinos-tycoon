@@ -7,8 +7,10 @@ const MILLI_LEDGER_KEYS: Array[String] = ["initial", "produced", "imported", "co
 ## Cuenta los valores inválidos del estado: no enteros, negativos o fuera de rango.
 func _invalid_values(p, data) -> int:
 	var bad := 0
+	# Se lee el diccionario interno: stock() devuelve int y ocultaría un decimal.
+	var raw_stock: Dictionary = p.store.get("_stock")
 	for good_id in data.goods.keys():
-		var amount = p.store.stock(good_id)
+		var amount = raw_stock[good_id]
 		if typeof(amount) != TYPE_INT or amount < 0:
 			bad += 1
 		var ledger: Dictionary = p.store.ledger(good_id)

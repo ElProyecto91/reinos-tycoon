@@ -93,7 +93,7 @@ func test_bad_harvest_causes_scarcity_and_the_province_recovers() -> void:
 	p.add_modifier("wheat", 0, 100)
 	var max_hunger := 0
 	var max_unrest := 0
-	var min_population := p.population
+	var min_population: int = p.population
 	var worst_loss := 0
 	var problems := 0
 	var recovered_at := -1
