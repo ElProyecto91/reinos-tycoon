@@ -23,6 +23,7 @@ func test_farm_produces_after_a_full_cycle() -> void:
 func test_farm_starts_the_next_cycle_at_once() -> void:
 	var data = new_data()
 	var p = _fed_province(data)
+	p.add_building("granary")   # sin granero el tope del trigo (18 % de 60) no deja entrar dos ciclos
 	p.add_building("farm")
 	run_steps(p, 12)
 	assert_eq(p.store.stock("wheat"), 12000, "dos ciclos en 12 pasos")
@@ -156,18 +157,17 @@ func test_missing_upkeep_stops_the_building() -> void:
 func test_full_storage_stops_production_and_says_why() -> void:
 	var data = new_data()
 	var p = new_province(data, 100)
-	for good in ["wheat", "bread"]:
-		p.store.seed_initial(good, 18000)
-	p.store.seed_initial("flour", 6000)
-	p.store.seed_initial("wood", 9000)
-	p.store.seed_initial("firewood", 9000)
+	# Cada mercancía en su tope (los topes suman el 100 % de 60000).
+	for good in data.goods.keys():
+		if data.goods[good]["physical"]:
+			p.store.seed_initial(good, p.store.limit(good))
 	assert_eq(p.store.free_space(), 0, "el almacén está lleno")
 	var farm: int = p.add_building("farm")
 	p.step()
 	var b: Dictionary = p.find_building(farm)
 	assert_eq(b["status"], "storage_full", "se detiene por almacén lleno")
 	assert_true(not b["active"], "no gastó nada ni empezó el ciclo")
-	assert_eq(p.store.stock("wheat"), 18000, "no se produce trigo")
+	assert_eq(p.store.stock("wheat"), p.store.limit("wheat"), "no se produce trigo")
 	assert_true(p.alerts.has("storage_full"), "aviso de almacén lleno")
 	assert_true(p.store.used_space() <= p.store.capacity, "nunca se supera la capacidad")
 	done()
@@ -189,14 +189,14 @@ func test_finishing_waits_for_space_and_then_completes() -> void:
 	var p = _fed_province(data)
 	var farm: int = p.add_building("farm")
 	run_steps(p, 3)
-	p.store.add("wheat", 18000, "imported")
+	p.store.add("wheat", p.store.limit("wheat"), "imported")
 	run_steps(p, 3)
 	var b: Dictionary = p.find_building(farm)
 	assert_eq(b["status"], "storage_full", "el ciclo terminó pero no cabe el resultado")
-	assert_eq(p.store.stock("wheat"), 18000, "no se creó trigo de más")
+	assert_eq(p.store.stock("wheat"), p.store.limit("wheat"), "no se creó trigo de más")
 	run_steps(p, 2)
 	assert_eq(p.store.ledger("coin")["consumed"], 600, "el mantenimiento se pagó una sola vez")
-	p.store.remove("wheat", 18000, "exported")
+	p.store.remove("wheat", p.store.limit("wheat"), "exported")
 	p.step()
 	assert_eq(p.store.stock("wheat"), 6000, "al haber sitio entrega el resultado")
 	assert_eq(p.find_building(farm)["status"], "running", "vuelve a trabajar")
@@ -252,7 +252,7 @@ func test_granary_adds_storage_capacity() -> void:
 	assert_eq(p.store.capacity, 60000, "capacidad base")
 	p.add_building("granary")
 	assert_eq(p.store.capacity, 100000, "el granero suma 40000")
-	assert_eq(p.store.limit("wheat"), 30000, "las partes se calculan sobre la capacidad nueva")
+	assert_eq(p.store.limit("wheat"), 18000, "las partes se calculan sobre la capacidad nueva (18 % de 100000)")
 	done()
 
 

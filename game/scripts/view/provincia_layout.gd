@@ -35,6 +35,13 @@ const HUECO_DE := {
 	"mill": "molino",
 	"bakery": "panaderia",
 	"woodcutter": "lenador",
+	"olive_grove": "olivar",
+	"olive_press": "almazara",
+	"sheepfold": "aprisco",
+	"loom": "telar",
+	"market": "mercado",
+	"mine": "mina",
+	"smithy": "herreria",
 }
 
 ## Habitantes que representa cada manzana del caserío (parámetro de aspecto, no de simulación).
@@ -208,6 +215,13 @@ static func _sur() -> Dictionary:
 		"molino": _huecos([[1, 1, "V"], [2, 0, "V"]]),
 		"panaderia": _huecos([[-3, 3, "p"], [3, -3, "p"]]),
 		"lenador": _huecos([[4, -2, "L"], [2, 2, "L"]]),
+		"olivar": _huecos([[-4, 0, "i"], [0, -4, "i"]]),
+		"almazara": _huecos([[-4, 3, "B"]]),
+		"aprisco": _huecos([[-2, 4, "q"], [-1, 4, "q"]]),
+		"telar": _huecos([[1, 3, "e"]]),
+		"mercado": _huecos([[3, -1, "E"]]),
+		"mina": _huecos([[1, -4, "n"], [3, -4, "n"]]),
+		"herreria": _huecos([[2, -4, "Z"], [4, -4, "Z"]]),
 	}
 	var rutas := [
 		# Camino de la puerta al puente y por la calzada hasta el fondo.
@@ -264,6 +278,13 @@ static func _norte() -> Dictionary:
 		"molino": _huecos([[3, 0, "V"], [1, 1, "V"]]),
 		"panaderia": _huecos([[1, -3, "p"], [0, -4, "p"]]),
 		"lenador": _huecos([[2, 2, "L"], [3, 1, "L"]]),
+		"olivar": _huecos([[-3, 0, "a"], [-4, 1, "a"]]),
+		"almazara": _huecos([[-4, 2, "B"]]),
+		"aprisco": _huecos([[-3, -1, "q"], [-4, 3, "q"]]),
+		"telar": _huecos([[-3, 1, "e"]]),
+		"mercado": _huecos([[3, -3, "E"]]),
+		"mina": _huecos([[2, -4, "n"], [4, -4, "n"]]),
+		"herreria": _huecos([[4, -2, "Z"], [4, -3, "Z"]]),
 	}
 	var rutas := [
 		# Vuelta por los campos de cereal.

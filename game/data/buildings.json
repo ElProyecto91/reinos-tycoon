@@ -37,6 +37,48 @@
 			"workers": 3, "build_workers": 2, "build_cost": {"wood": 800, "coin": 2000}, "build_steps": 4,
 			"inputs": {}, "outputs": {"wood": 3000, "firewood": 1500}, "cycle_steps": 6, "upkeep": {"coin": 600},
 			"storage_capacity": 0, "housing": 0
+		},
+		{
+			"id": "olive_grove", "name": "Olivar", "category": "agricultural",
+			"workers": 3, "build_workers": 2, "build_cost": {"wood": 500, "coin": 2500}, "build_steps": 5,
+			"inputs": {}, "outputs": {"olives": 2000}, "cycle_steps": 8, "upkeep": {"coin": 400},
+			"storage_capacity": 0, "housing": 0
+		},
+		{
+			"id": "olive_press", "name": "Almazara", "category": "industrial",
+			"workers": 2, "build_workers": 2, "build_cost": {"wood": 2500, "coin": 4500}, "build_steps": 8,
+			"inputs": {"olives": 2000}, "outputs": {"oil": 1200}, "cycle_steps": 6, "upkeep": {"coin": 400},
+			"storage_capacity": 0, "housing": 0
+		},
+		{
+			"id": "sheepfold", "name": "Aprisco", "category": "pastoral",
+			"workers": 2, "build_workers": 2, "build_cost": {"wood": 1200, "coin": 2500}, "build_steps": 4,
+			"inputs": {}, "outputs": {"wool": 1500}, "cycle_steps": 8, "upkeep": {"coin": 300},
+			"storage_capacity": 0, "housing": 0
+		},
+		{
+			"id": "loom", "name": "Telar", "category": "industrial",
+			"workers": 2, "build_workers": 2, "build_cost": {"wood": 2000, "coin": 3500}, "build_steps": 7,
+			"inputs": {"wool": 1500}, "outputs": {"cloth": 1000}, "cycle_steps": 6, "upkeep": {"coin": 400},
+			"storage_capacity": 0, "housing": 0
+		},
+		{
+			"id": "market", "name": "Mercado", "category": "commercial",
+			"workers": 3, "build_workers": 2, "build_cost": {"wood": 3000, "coin": 5000}, "build_steps": 10,
+			"inputs": {"oil": 600, "cloth": 500}, "outputs": {"coin": 4000}, "cycle_steps": 6, "upkeep": {"coin": 500},
+			"storage_capacity": 0, "housing": 0
+		},
+		{
+			"id": "mine", "name": "Mina", "category": "mining",
+			"workers": 4, "build_workers": 3, "build_cost": {"wood": 3000, "coin": 4000}, "build_steps": 10,
+			"inputs": {}, "outputs": {"iron": 1500}, "cycle_steps": 8, "upkeep": {"coin": 600},
+			"storage_capacity": 0, "housing": 0
+		},
+		{
+			"id": "smithy", "name": "Herrería", "category": "industrial",
+			"workers": 2, "build_workers": 2, "build_cost": {"wood": 2000, "coin": 4000}, "build_steps": 8,
+			"inputs": {"iron": 1500, "firewood": 500}, "outputs": {"weapons": 1000}, "cycle_steps": 6, "upkeep": {"coin": 400},
+			"storage_capacity": 0, "housing": 0
 		}
 	]
 }

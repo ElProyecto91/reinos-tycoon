@@ -236,6 +236,15 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Coste: el 3D se redibuja a 15 fps mientras haya gente (antes, solo al cambiar). Interruptor en el menú. **Sin medir en el móvil.**
 - Estado: **provisional**.
 
+## D-028. Más edificios y mercancías (G1, versión 0.0.8)
+
+- Nuevos edificios (parámetros provisionales, no históricos): Olivar (aceitunas), Almazara (aceitunas → aceite), Aprisco (lana), Telar (lana → paño), Mercado (aceite + paño → moneda), Mina (hierro), Herrería (hierro + leña → armas). Familias del documento maestro: agrícola, industrial, comercial, minero, ganadero.
+- Fundamento histórico: el olivo y el aceite en al-Andalus (H-10), la seda y los paños de Toledo (H-01); la ganadería y el hierro se incluyen como oficios generales, **sin cifras históricas**.
+- Mercancías nuevas con tope de almacén propio. Para que la suma siga en 100 %: trigo 18, pan 18, harina 6, madera 15, leña 15, aceitunas 5, aceite 5, lana 4, paño 4, hierro 5, armas 5. Esto **cambia el equilibrio** de las provincias existentes (el trigo y el pan caben menos) y obliga a un granero antes de lo que antes hacía falta.
+- Los lotes de cada edificio deben caber en el tope de su mercancía; una prueba lo exige (el primer intento tenía lotes mayores que el tope y los edificios nunca habrían trabajado).
+- Vista 3D: cada tipo tiene huecos en la plantilla, **sobre terreno desbrozable** (bosque, monte, huerta, olivar); nunca sobre monumentos, caminos ni ríos. En el norte el olivar se dibuja como huerto (limitación: el juego no modela el clima).
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

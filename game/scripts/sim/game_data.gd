@@ -7,8 +7,8 @@ extends RefCounted
 ## juego provisionales, no datos históricos.
 
 const SUPPORTED_FORMAT_VERSION := 1
-const GOODS_CATEGORIES: Array[String] = ["food", "forestry", "manufactured", "institutional"]
-const BUILDING_CATEGORIES: Array[String] = ["residential", "agricultural", "storage", "forestry", "industrial"]
+const GOODS_CATEGORIES: Array[String] = ["food", "forestry", "manufactured", "materials", "institutional"]
+const BUILDING_CATEGORIES: Array[String] = ["residential", "agricultural", "storage", "forestry", "industrial", "pastoral", "mining", "commercial"]
 
 const DEFAULT_GOODS_PATH := "res://data/goods.json"
 const DEFAULT_BUILDINGS_PATH := "res://data/buildings.json"

@@ -41,8 +41,8 @@ func test_real_files_load_without_errors() -> void:
 	var data = _new_data()
 	var ok: bool = data.load_files(GOODS_PATH, BUILDINGS_PATH, RULES_PATH)
 	assert_true(ok, "los archivos reales deben cargarse: %s" % _errors_text(data))
-	assert_eq(data.goods.size(), 6, "número de mercancías del prototipo")
-	assert_eq(data.buildings.size(), 6, "número de edificios del prototipo")
+	assert_eq(data.goods.size(), 12, "número de mercancías")
+	assert_eq(data.buildings.size(), 13, "número de edificios")
 	assert_eq(data.rules["currency"], "coin", "la moneda de las reglas")
 	done()
 
@@ -50,9 +50,9 @@ func test_real_files_load_without_errors() -> void:
 func test_prototype_ids_are_stable() -> void:
 	var data = _new_data()
 	data.load_files(GOODS_PATH, BUILDINGS_PATH)
-	for id in ["wheat", "flour", "bread", "wood", "firewood", "coin"]:
+	for id in ["wheat", "flour", "bread", "wood", "firewood", "coin", "olives", "oil", "wool", "cloth", "iron", "weapons"]:
 		assert_true(data.goods.has(id), "falta la mercancía \"%s\"" % id)
-	for id in ["house", "granary", "farm", "mill", "bakery", "woodcutter"]:
+	for id in ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy"]:
 		assert_true(data.buildings.has(id), "falta el edificio \"%s\"" % id)
 	done()
 

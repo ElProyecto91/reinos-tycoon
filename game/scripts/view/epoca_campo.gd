@@ -275,3 +275,53 @@ static func cercado(m: Malla, centro: Vector3, radio_extra: float) -> void:
 		m.push(mid + Vector3(0, 0.045, 0), ang)
 		m.box(Vector3.ZERO, Vector3((p - q).length(), 0.012, 0.012), U.MADERA_CLARA)
 		m.pop()
+
+
+# ---------------------------------------------------------------------------------------------
+# Ganadería y minería
+
+## Aprisco: redil de estacas con ovejas y un montón de heno. Las ovejas son manchas lanosas con cabeza oscura.
+static func aprisco(m: Malla, seed: int) -> void:
+	var hx := 0.62
+	var hz := 0.46
+	var paso := 0.155
+	var x := -hx
+	while x <= hx + 0.001:
+		for z in [-hz, hz]:
+			m.box(Vector3(x, 0, z), Vector3(0.022, 0.085, 0.022), U.MADERA)
+		x += paso
+	var zz := -hz
+	while zz <= hz + 0.001:
+		for xx in [-hx, hx]:
+			m.box(Vector3(xx, 0, zz), Vector3(0.022, 0.085, 0.022), U.MADERA)
+		zz += paso
+	for y in [0.035, 0.065]:
+		m.box(Vector3(0, y, -hz), Vector3(hx * 2.0, 0.012, 0.012), U.MADERA_CLARA)
+		m.box(Vector3(0, y, hz), Vector3(hx * 2.0, 0.012, 0.012), U.MADERA_CLARA)
+		m.box(Vector3(-hx, y, 0), Vector3(0.012, 0.012, hz * 2.0), U.MADERA_CLARA)
+		m.box(Vector3(hx, y, 0), Vector3(0.012, 0.012, hz * 2.0), U.MADERA_CLARA)
+	m.box(Vector3(0, -0.0, 0), Vector3(hx * 2.0 - 0.04, 0.012, hz * 2.0 - 0.04), U.TIERRA.lightened(0.05))
+	for i in 7:
+		var px := (U.rnd(seed, 40 + i) - 0.5) * (hx * 2.0 - 0.3)
+		var pz := (U.rnd(seed, 60 + i) - 0.5) * (hz * 2.0 - 0.25)
+		var giro := U.rnd(seed, 80 + i) * TAU
+		m.blob(Vector3(px, 0.05, pz), 0.065, 6, 4, Color(0.90, 0.88, 0.82), 0.70)
+		m.blob(Vector3(px + cos(giro) * 0.07, 0.065, pz + sin(giro) * 0.07), 0.027, 5, 3, Color(0.25, 0.21, 0.18))
+	m.box(Vector3(-hx + 0.16, 0, hz - 0.14), Vector3(0.18, 0.07, 0.12), U.PAJA)
+
+
+## Mina: cerro con la bocamina entibada de madera, una vagoneta y la escombrera.
+static func mina(m: Malla, seed: int, seco: bool) -> void:
+	relieve(m, "h", seed, seco)
+	m.push(Vector3(0, 0, 0.50), 0.0)
+	m.box(Vector3(0, 0, 0), Vector3(0.30, 0.20, 0.14), U.SOMBRA)
+	for dx in [-1.0, 1.0]:
+		m.box(Vector3(dx * 0.17, 0, 0.05), Vector3(0.035, 0.24, 0.045), U.MADERA)
+	m.box(Vector3(0, 0.22, 0.05), Vector3(0.40, 0.045, 0.05), U.MADERA)
+	m.pop()
+	for dz in [0.0, 0.07]:
+		m.box(Vector3(0.0, 0.0, 0.64 + dz), Vector3(0.015, 0.012, 0.30), U.MADERA_CLARA)
+	m.box(Vector3(0.0, 0.015, 0.78), Vector3(0.11, 0.06, 0.15), Color(0.30, 0.28, 0.27))
+	m.box(Vector3(0.0, 0.075, 0.78), Vector3(0.09, 0.025, 0.12), Color(0.46, 0.34, 0.26))
+	for k in 4:
+		m.blob(Vector3(-0.42 + 0.09 * float(k), 0.04, 0.62 + 0.05 * U.rnd(seed, k)), 0.075, 5, 3, Color(0.52, 0.47, 0.42), 0.6)

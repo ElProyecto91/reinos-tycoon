@@ -82,14 +82,17 @@ func test_templates_are_inside_the_map_and_their_slots_never_collide() -> void:
 		d.free()
 		var vistas := {}
 		for tipo in t["huecos"].keys():
-			assert_true(t["huecos"][tipo].size() >= 2, "%s: al menos dos huecos para %s" % [aspecto, tipo])
+			assert_true(t["huecos"][tipo].size() >= 1, "%s: al menos un hueco para %s" % [aspecto, tipo])
 			for hueco in t["huecos"][tipo]:
 				var celda: Vector2i = hueco[0]
 				assert_true(maxi(maxi(absi(celda.x), absi(celda.y)), absi(celda.x + celda.y)) <= Layout.RADIO, "%s: el hueco %s está dentro del mapa" % [aspecto, str(celda)])
 				assert_true(not vistas.has(celda), "%s: el hueco %s no se repite" % [aspecto, str(celda)])
 				vistas[celda] = true
 				var fija: Dictionary = t["base"].get(celda, {})
-				assert_true(not fija.has("o") and not fija.has("p"), "%s: el hueco %s no pisa el paisaje fijo" % [aspecto, str(celda)])
+				# Un hueco solo puede ocupar terreno que se roturaba o desbrozaba (bosque, monte, huerta, olivar),
+				# nunca un monumento, un camino, un río ni una muralla.
+				assert_true(not fija.has("p"), "%s: el hueco %s no pisa un camino, río o muralla" % [aspecto, str(celda)])
+				assert_true(not fija.has("o") or str(fija["o"]) in "TthHMNiaA", "%s: el hueco %s no pisa un monumento (%s)" % [aspecto, str(celda), str(fija.get("o", ""))])
 				assert_true(str(hueco[1]).length() == 1 and load("res://scripts/view/diorama.gd").THING_SYMBOLS.contains(hueco[1]), "%s: el símbolo %s existe" % [aspecto, hueco[1]])
 		for tipo in Layout.HUECO_DE.keys():
 			assert_true(t["huecos"].has(Layout.HUECO_DE[tipo]), "%s: hay huecos para %s" % [aspecto, tipo])

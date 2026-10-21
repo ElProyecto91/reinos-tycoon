@@ -384,3 +384,44 @@ static func obra(m: Malla, seed: int) -> void:
 	for k in 3:
 		m.box(Vector3(0.40, 0.02 + 0.045 * float(k), 0.28), Vector3(0.26, 0.04, 0.05), U.CALIZA.darkened(0.05 * float(k)))
 	m.box(Vector3(-0.42, 0.02, 0.30), Vector3(0.22, 0.04, 0.12), U.MADERA_CLARA)
+
+
+## Almazara: casa baja con la muela de piedra al lado, la viga de la prensa y tinajas de aceite.
+static func almazara(m: Malla, seed: int, sur: bool) -> void:
+	var col := U.jit(U.TAPIAL if sur else U.PIEDRA_NORTE, 0.04, seed)
+	m.box(Vector3(-0.15, 0, -0.05), Vector3(0.56, 0.12, 0.40), col)
+	m.gable(Vector3(-0.15, 0.12, -0.05), Vector3(0.62, 0.10, 0.44), U.TEJA if sur else U.TEJA_OSCURA)
+	m.box(Vector3(-0.30, 0, 0.16), Vector3(0.07, 0.07, 0.003), U.SOMBRA)
+	# Muela: rueda de piedra de canto sobre una pila.
+	m.cyl(Vector3(0.36, 0, 0.04), 0.17, 0.17, 0.035, 10, U.PIEDRA_NORTE)
+	m.push(Vector3(0.36, 0.075, 0.04), 0.0, 0.0, 90.0)
+	m.cyl(Vector3(0, -0.02, 0), 0.075, 0.075, 0.05, 10, U.CALIZA.darkened(0.08))
+	m.pop()
+	m.box(Vector3(0.36, 0.04, 0.04), Vector3(0.012, 0.07, 0.012), U.MADERA)
+	# Viga de la prensa.
+	m.box(Vector3(0.12, 0.13, 0.26), Vector3(0.30, 0.025, 0.025), U.MADERA)
+	m.box(Vector3(0.24, 0, 0.26), Vector3(0.03, 0.13, 0.03), U.MADERA)
+	# Tinajas.
+	for k in 4:
+		var px := -0.36 + 0.09 * float(k)
+		m.cyl(Vector3(px, 0, 0.30), 0.036, 0.03, 0.07, 6, U.LADRILLO.lightened(0.05))
+		m.blob(Vector3(px, 0.07, 0.30), 0.032, 6, 3, U.LADRILLO.lightened(0.10), 0.5)
+
+
+## Telar: casa abierta por un lado con el bastidor vertical del telar y paños tendidos de colores.
+static func telar(m: Malla, seed: int, sur: bool) -> void:
+	var col := U.jit(U.TAPIAL if sur else U.PIEDRA_NORTE.lightened(0.04), 0.04, seed)
+	m.box(Vector3(-0.15, 0, -0.12), Vector3(0.58, 0.12, 0.26), col)
+	m.gable(Vector3(-0.15, 0.12, -0.12), Vector3(0.64, 0.10, 0.30), U.TEJA if sur else U.PAJA)
+	# Bastidor del telar.
+	for dx in [-1.0, 1.0]:
+		m.box(Vector3(0.30 + dx * 0.07, 0, 0.16), Vector3(0.018, 0.18, 0.018), U.MADERA)
+	m.box(Vector3(0.30, 0.17, 0.16), Vector3(0.17, 0.018, 0.018), U.MADERA)
+	m.box(Vector3(0.30, 0.05, 0.16), Vector3(0.13, 0.11, 0.004), U.TOLDOS[seed % U.TOLDOS.size()])
+	# Tendedero con paños.
+	for dx in [-1.0, 1.0]:
+		m.box(Vector3(-0.30 + dx * 0.22, 0, 0.26), Vector3(0.014, 0.13, 0.014), U.MADERA)
+	m.box(Vector3(-0.30, 0.12, 0.26), Vector3(0.46, 0.010, 0.010), U.MADERA_CLARA)
+	for k in 4:
+		m.box(Vector3(-0.46 + 0.10 * float(k), 0.045, 0.262), Vector3(0.075, 0.075, 0.004), U.TOLDOS[(seed + k) % U.TOLDOS.size()])
+
