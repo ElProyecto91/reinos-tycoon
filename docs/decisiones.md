@@ -101,6 +101,17 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Lo que NO está probado: que 50 % y 172 pasos sean un buen equilibrio de juego. Son valores provisionales; la prueba solo exige que la provincia se pueda recuperar. Se probó una sola mala cosecha (trigo a 0 durante 40 pasos); otras crisis más largas pueden no ser recuperables y eso es una decisión de diseño pendiente.
 - Estado: **provisional**.
 
+## D-015. Actualización del juego: avisar y descargar, no instalar en silencio
+
+- Petición del usuario: que el juego sea autoactualizable.
+- Límite técnico [Probable, conocimiento de Android; no se ha probado en el móvil del usuario]: fuera de Google Play, una app no puede reemplazarse a sí misma sin que el usuario confirme la instalación, y para instalar un APK descargado necesita el permiso «instalar apps desconocidas». Google Play no se usa (coste 0 €, D-001/FREE_OPERATION).
+- Decisión: el juego **avisa** cuando hay una versión nueva y abre la página de descarga del repositorio; el usuario descarga el APK y Android pide confirmar. Sin instalación automática.
+- Fuente de las versiones: las *releases* de GitHub del repositorio (`releases/latest`, que ignora borradores y versiones de prueba). Formato verificado en la documentación de GitHub; el repositorio aún no tiene ninguna release, así que **la consulta real nunca se ha ejecutado**.
+- Hecho y probado (en local): `scripts/update/update_check.gd` interpreta la respuesta, compara versiones numéricamente y solo acepta direcciones del propio repositorio (7 pruebas en `test_update_check.gd`; una de ellas cazó un error real en la comparación de versiones).
+- Pendiente: (1) activar el permiso `INTERNET` en `export_presets.cfg` y conectar la petición HTTP con un botón en la pantalla de ajustes (tarea 1.9); la consulta será opcional y manual al principio, y el juego seguirá funcionando sin conexión; (2) clave de firma estable: sin ella Android rechaza instalar un APK sobre otro con otra firma; la CI ya muestra la huella del certificado en sus registros para comprobarlo; (3) la primera release la publica el usuario o se publica con su aprobación expresa (sección 37 del documento maestro): la CI **no** publica sola.
+- Consecuencia a conocer: activar `INTERNET` añade un permiso visible en la instalación. No se hace hasta que exista el botón que lo usa.
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.
