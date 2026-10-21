@@ -3,7 +3,7 @@ extends SceneTree
 ## Uso, con ventana virtual y dibujado por software:
 ##   xvfb-run -a -s "-screen 0 1080x2400x24" godot --path game --rendering-driver opengl3 \
 ##     --resolution 1080x2400 -s ../tools/captura_ui.gd -- salida.png [escenario] [provincia] [pasos] [desplazamiento]
-## Escenarios: inicio | hambre | obra | informe
+## Escenarios: inicio | hambre | obra | informe | actualizar (pide la versión por red real)
 ## Limitación: es el mismo código y motor que el APK, pero no es un móvil: no muestra barra de
 ## navegación, cámara frontal ni bordes redondeados, y el dibujado por software puede diferir
 ## en detalles menores. Para comprobar de verdad hay que instalar el APK.
@@ -47,6 +47,10 @@ func _init() -> void:
 			p.start_construction("house")
 			p.start_construction("granary")
 			session.world.run_steps(2)
+		if scenario == "actualizar":
+			main._on_update_pressed()
+			for i in range(120):
+				await create_timer(0.1).timeout
 		if province_id != "":
 			main._map_view.select(province_id)
 		main._refresh_all()

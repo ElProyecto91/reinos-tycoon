@@ -10,6 +10,7 @@ const SessionScript := preload("res://scripts/sim/game_session.gd")
 const MapViewScript := preload("res://scripts/ui/map_view.gd")
 const ProvincePanelScript := preload("res://scripts/ui/province_panel.gd")
 const Texts := preload("res://scripts/ui/texts.gd")
+const UpdateCheck := preload("res://scripts/update/update_check.gd")
 
 const SAVE_PATH := "user://partida.json"
 const AUTOSAVE_SECONDS := 15.0
@@ -46,6 +47,7 @@ var _map_view: Control
 var _panel: VBoxContainer
 var _scroll: ScrollContainer
 var _modal_layer: Control = null
+var _pending_update: HTTPRequest = null
 
 
 func _ready() -> void:
@@ -272,10 +274,52 @@ func _update_speed_buttons() -> void:
 func _on_menu_pressed() -> void:
 	_show_modal("Menú", "Reinos Tycoon v%s\nPrototipo con datos de ejemplo.\nSe guarda solo cada %d s y al salir." % [game_version, int(AUTOSAVE_SECONDS)], [
 		{"text": "Guardar ahora", "action": _on_save_pressed},
+		{"text": "Buscar actualización", "action": _on_update_pressed},
 		{"text": "Medir velocidad", "action": _on_measure_pressed},
 		{"text": "Partida nueva", "action": _on_new_game_pressed},
 		{"text": "Cerrar"},
 	])
+
+
+## Consulta manual de versión nueva: solo al pulsar el botón, nunca sola. Necesita Internet;
+## sin conexión avisa y el juego sigue funcionando igual.
+func _on_update_pressed() -> void:
+	_cancel_update()
+	_show_modal("Buscando actualización", "Consultando la última versión publicada…", [{"text": "Cancelar", "action": _cancel_update}])
+	var request := HTTPRequest.new()
+	request.timeout = 10.0
+	add_child(request)
+	_pending_update = request
+	request.request_completed.connect(_on_update_response.bind(request))
+	var error := request.request(UpdateCheck.LATEST_URL, ["User-Agent: ReinosTycoon", "Accept: application/vnd.github+json"])
+	if error != OK:
+		_cancel_update()
+		_show_update_result(UpdateCheck.describe(0, "", game_version))
+
+
+func _cancel_update() -> void:
+	if _pending_update != null:
+		_pending_update.cancel_request()
+		_pending_update.queue_free()
+		_pending_update = null
+
+
+func _on_update_response(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray, request: HTTPRequest) -> void:
+	if request != _pending_update:
+		request.queue_free()
+		return  # el jugador canceló mientras tanto
+	_pending_update = null
+	request.queue_free()
+	var shown_code := code if result == HTTPRequest.RESULT_SUCCESS else 0
+	_show_update_result(UpdateCheck.describe(shown_code, body.get_string_from_utf8(), game_version))
+
+
+func _show_update_result(outcome: Dictionary) -> void:
+	var buttons: Array = []
+	if outcome["kind"] == "newer" and outcome["page_url"] != "":
+		buttons.append({"text": "Abrir la página de descarga", "action": OS.shell_open.bind(outcome["page_url"])})
+	buttons.append({"text": "Cerrar"})
+	_show_modal("Actualización", outcome["message"], buttons)
 
 
 func _on_measure_pressed() -> void:

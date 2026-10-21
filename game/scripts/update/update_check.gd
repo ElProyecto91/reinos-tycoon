@@ -90,3 +90,34 @@ static func _failure(message: String) -> Dictionary:
 		"ok": false, "error": message, "newer": false, "tag": "", "page_url": "",
 		"apk_url": "", "apk_size": 0, "notes": "",
 	}
+
+
+## Convierte la respuesta HTTP en algo que mostrar. `code` es el código HTTP (0 si no hubo
+## respuesta: sin conexión, tiempo agotado…). Devuelve {kind, message, page_url, apk_url}
+## con kind = "newer" | "current" | "none" | "error".
+static func describe(code: int, body_text: String, current_version: String) -> Dictionary:
+	var result := {"kind": "error", "message": "", "page_url": "", "apk_url": ""}
+	if code == 0:
+		result["message"] = "No se pudo conectar. Comprueba la conexión a Internet e inténtalo de nuevo."
+	elif code == 404:
+		result["kind"] = "none"
+		result["message"] = "Todavía no hay versiones publicadas para descargar."
+	elif code == 403 or code == 429:
+		result["message"] = "GitHub ha limitado las consultas por ahora. Prueba más tarde."
+	elif code != 200:
+		result["message"] = "Respuesta inesperada del servidor (código %d)." % code
+	else:
+		var release := evaluate(body_text, current_version)
+		if not release["ok"]:
+			result["message"] = release["error"]
+		elif release["newer"]:
+			result["kind"] = "newer"
+			result["message"] = "Hay una versión nueva: %s (tienes %s)." % [release["tag"], current_version]
+			if release["notes"] != "":
+				result["message"] += "\n\n" + release["notes"]
+			result["page_url"] = release["page_url"]
+			result["apk_url"] = release["apk_url"]
+		else:
+			result["kind"] = "current"
+			result["message"] = "Tienes la última versión (%s)." % current_version
+	return result

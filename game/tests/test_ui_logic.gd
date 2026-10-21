@@ -304,3 +304,16 @@ func test_menu_offers_the_speed_measurement() -> void:
 	assert_true(main.has_modal(), "se muestra el resultado")
 	main.free()
 	done()
+
+
+func test_late_update_response_after_cancelling_is_ignored() -> void:
+	_clean()
+	var main = _main()
+	var stale := HTTPRequest.new()
+	main._pending_update = null
+	main._show_modal("Otra ventana", "texto", [{"text": "Cerrar"}])
+	main._on_update_response(HTTPRequest.RESULT_SUCCESS, 200, PackedStringArray(), "{}".to_utf8_buffer(), stale)
+	assert_true(main.has_modal(), "la ventana que había sigue ahí")
+	assert_eq(main._pending_update, null, "sin petición pendiente")
+	main.free()
+	done()
