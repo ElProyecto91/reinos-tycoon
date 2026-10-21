@@ -145,6 +145,8 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Se guarda cada 15 s, al pausar la aplicación y al cerrarla; al volver tras una pausa se aplica la ausencia y se muestra un resumen. Si el guardado no se puede leer, se aparta con otro nombre (no se borra) y se empieza una partida nueva avisando.
 - Cantidades mostradas exactas (milésimas sin ceros sobrantes). En el resumen offline resulta algo ruidoso («Moneda +123,656»); pendiente de pulir.
 - Menú → «Medir velocidad» (criterio A12): simula 600 pasos de una partida aparte y muestra los milisegundos por paso en ese dispositivo; no toca la partida en curso. En el entorno del asistente (no un móvil) salió ≈ 0,3 ms por paso con 5 provincias: es una referencia del PC, **no** el dato del móvil. El valor del móvil lo tiene que dar la propia app.
+- Icono: el registro de exportación avisaba «No project icon specified»; se añade `game/icon.svg` (torre dorada sobre círculo verde, diseño propio y provisional) como icono del proyecto y de la app. Comprobado: Godot lo importa y lo dibuja; cómo queda como icono en tu pantalla de inicio no se ha visto.
+- Los archivos `.uid` que Godot genera junto a cada script no se versionan (`.gitignore`): el proyecto carga por ruta y la CI funciona sin ellos.
 - Qué NO está probado: nada de esto se ha visto en un móvil real. Las capturas se generan en un entorno Linux con dibujado por software (`tools/captura_ui.gd`).
 - Estado: **provisional**.
 

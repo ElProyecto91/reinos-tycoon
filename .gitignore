@@ -14,3 +14,7 @@
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Identificadores que Godot genera junto a cada script; el proyecto carga por ruta y se
+# regeneran solos, así que no se versionan.
+*.uid

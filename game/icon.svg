@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#161d29"/>
+  <circle cx="256" cy="256" r="196" fill="#3f7d62"/>
+  <!-- torre con almenas -->
+  <path d="M176 380 V200 h28 v-36 h32 v36 h40 v-36 h32 v36 h28 V380 z" fill="#e0b44c"/>
+  <rect x="236" y="300" width="40" height="80" rx="20" fill="#161d29"/>
+  <rect x="236" y="228" width="40" height="40" rx="6" fill="#161d29"/>
+</svg>
