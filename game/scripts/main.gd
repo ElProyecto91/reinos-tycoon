@@ -272,9 +272,14 @@ func _update_speed_buttons() -> void:
 func _on_menu_pressed() -> void:
 	_show_modal("Menú", "Reinos Tycoon v%s\nPrototipo con datos de ejemplo.\nSe guarda solo cada %d s y al salir." % [game_version, int(AUTOSAVE_SECONDS)], [
 		{"text": "Guardar ahora", "action": _on_save_pressed},
+		{"text": "Medir velocidad", "action": _on_measure_pressed},
 		{"text": "Partida nueva", "action": _on_new_game_pressed},
 		{"text": "Cerrar"},
 	])
+
+
+func _on_measure_pressed() -> void:
+	_show_modal("Velocidad de la simulación", Texts.speed_text(session.measure_speed(600)), [{"text": "Cerrar"}])
 
 
 func _on_save_pressed() -> void:

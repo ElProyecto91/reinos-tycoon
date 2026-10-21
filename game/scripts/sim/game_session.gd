@@ -87,6 +87,18 @@ func resume(now: int) -> Dictionary:
 	return last_report
 
 
+## Mide cuánto tarda la simulación en este dispositivo (criterio A12). Usa una partida
+## nueva aparte: no toca la partida en curso. Devuelve {steps, provinces, microseconds}.
+func measure_speed(steps: int) -> Dictionary:
+	var created: Dictionary = map.new_world(data)
+	if not created["ok"]:
+		return {"steps": 0, "provinces": 0, "microseconds": 0}
+	var scratch = created["world"]
+	var started := Time.get_ticks_usec()
+	scratch.run_steps(steps)
+	return {"steps": steps, "provinces": scratch.provinces.size(), "microseconds": Time.get_ticks_usec() - started}
+
+
 ## "Día 3, 14:00" a partir del contador de pasos (un paso = una hora de juego).
 func time_text() -> String:
 	var steps: int = world.step_count

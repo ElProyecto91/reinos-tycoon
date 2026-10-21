@@ -143,6 +143,7 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Velocidad por defecto ×60 (un paso por segundo, para poder ver cosas pasar). **Pregunta de diseño abierta**: el progreso offline cuenta un paso por minuto, así que jugar a ×60 rinde 60 veces más que estar fuera. Hay que decidir el ritmo real tras medir en el móvil (A12).
 - Se guarda cada 15 s, al pausar la aplicación y al cerrarla; al volver tras una pausa se aplica la ausencia y se muestra un resumen. Si el guardado no se puede leer, se aparta con otro nombre (no se borra) y se empieza una partida nueva avisando.
 - Cantidades mostradas exactas (milésimas sin ceros sobrantes). En el resumen offline resulta algo ruidoso («Moneda +123,656»); pendiente de pulir.
+- Menú → «Medir velocidad» (criterio A12): simula 600 pasos de una partida aparte y muestra los milisegundos por paso en ese dispositivo; no toca la partida en curso. En el entorno del asistente (no un móvil) salió ≈ 0,3 ms por paso con 5 provincias: es una referencia del PC, **no** el dato del móvil. El valor del móvil lo tiene que dar la propia app.
 - Qué NO está probado: nada de esto se ha visto en un móvil real. Las capturas se generan en un entorno Linux con dibujado por software (`tools/captura_ui.gd`).
 - Estado: **provisional**.
 

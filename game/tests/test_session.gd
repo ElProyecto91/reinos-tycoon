@@ -132,3 +132,16 @@ func test_time_text() -> void:
 	s.world.run_steps(24 + 5)
 	assert_eq(s.time_text(), "Día 2, 05:00", "día 2, hora 5")
 	done()
+
+
+func test_measure_speed_does_not_touch_the_game_in_progress() -> void:
+	_clean()
+	var s = _session()
+	s.start(T0)
+	s.world.run_steps(7)
+	var result: Dictionary = s.measure_speed(100)
+	assert_eq(result["steps"], 100, "pasos medidos")
+	assert_eq(result["provinces"], 5, "provincias")
+	assert_true(result["microseconds"] >= 0, "tiempo no negativo")
+	assert_eq(s.world.step_count, 7, "la partida en curso no avanza")
+	done()

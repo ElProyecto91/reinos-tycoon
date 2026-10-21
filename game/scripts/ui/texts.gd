@@ -137,3 +137,12 @@ static func offline_text(data, report: Dictionary) -> String:
 			if ALERT_SEVERITY.get(code, 1) > 0:
 				lines.append("  Aviso: " + alert_text(code))
 	return "\n".join(lines)
+
+
+## Resultado de la medición de velocidad: milisegundos por paso con dos decimales.
+static func speed_text(result: Dictionary) -> String:
+	if result["steps"] <= 0:
+		return "No se pudo medir."
+	var centi_ms := Fixed.div_floor(result["microseconds"] * 100, result["steps"] * 1000)
+	var total_ms := Fixed.div_floor(result["microseconds"], 1000)
+	return "%d pasos de %d provincias en %d ms.\nCada paso tarda unos %d,%02d ms en este dispositivo.\nAnota este dato: sirve para decidir el ritmo del juego." % [result["steps"], result["provinces"], total_ms, Fixed.div_floor(centi_ms, 100), centi_ms % 100]

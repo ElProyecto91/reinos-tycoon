@@ -285,3 +285,22 @@ func test_broken_save_shows_a_notice_and_still_plays() -> void:
 	assert_eq(main.session.world.step_count, 0, "partida nueva jugable")
 	main.free()
 	done()
+
+
+func test_speed_text_formats_milliseconds_per_step() -> void:
+	var texts = load(TEXTS)
+	var text: String = texts.speed_text({"steps": 600, "provinces": 5, "microseconds": 300000})
+	assert_true("600 pasos de 5 provincias en 300 ms" in text, "total: %s" % text)
+	assert_true("0,50 ms" in text, "por paso: %s" % text)
+	assert_true("12,34 ms" in texts.speed_text({"steps": 100, "provinces": 5, "microseconds": 1234000}), "12,34 ms por paso")
+	assert_eq(texts.speed_text({"steps": 0, "provinces": 0, "microseconds": 0}), "No se pudo medir.", "sin datos")
+	done()
+
+
+func test_menu_offers_the_speed_measurement() -> void:
+	_clean()
+	var main = _main()
+	main._on_measure_pressed()
+	assert_true(main.has_modal(), "se muestra el resultado")
+	main.free()
+	done()
