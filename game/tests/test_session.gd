@@ -95,6 +95,69 @@ func test_broken_save_is_set_aside_not_deleted() -> void:
 	done()
 
 
+## Escribe un guardado válido pero con las provincias dadas (como el de un mapa anterior).
+func _write_save_with_provinces(ids: Array[String]) -> String:
+	var data = new_data()
+	var old_world = load("res://scripts/sim/world.gd").new(data)
+	for id in ids:
+		old_world.add_province(id, "Provincia " + id, 100)
+	old_world.run_steps(5)
+	assert_eq(load("res://scripts/sim/save_game.gd").write_file(old_world, PATH, "0.0.test", T0), "", "se escribe el guardado de prueba")
+	return FileAccess.get_file_as_string(PATH)
+
+
+func _kept_copy_with_label(label: String) -> String:
+	for file_name in DirAccess.open(DIR).get_files():
+		if file_name.begins_with("partida.json.%s-" % label) and not file_name.ends_with(".bak"):
+			return FileAccess.get_file_as_string(DIR + "/" + file_name)
+	return "<<no hay copia>>"
+
+
+func test_save_from_another_map_is_set_aside_and_a_new_game_starts() -> void:
+	_clean()
+	var original := _write_save_with_provinces(["prueba_a", "prueba_b", "prueba_c", "prueba_d", "prueba_e"])
+	var s = _session()
+	assert_true(s.start(T0 + 100), "arranca igualmente: %s" % "\n".join(s.errors))
+	assert_true("otro mapa" in s.notice, "avisa: %s" % s.notice)
+	assert_eq(s.world.step_count, 0, "partida nueva")
+	var ids: Array[String] = []
+	for province in s.world.provinces:
+		ids.append(province.id)
+	ids.sort()
+	assert_eq(ids, ["castilla", "cordoba", "leon", "toledo", "zaragoza"], "las provincias son las del mapa actual")
+	assert_eq(s.last_report, {}, "sin ausencia que contar")
+	assert_true(not FileAccess.file_exists(PATH), "el guardado viejo ya no ocupa el sitio")
+	assert_eq(_kept_copy_with_label("mapa-anterior"), original, "se conserva el guardado viejo tal cual")
+	done()
+
+
+func test_save_with_a_missing_or_extra_province_is_also_set_aside() -> void:
+	_clean()
+	var original := _write_save_with_provinces(["toledo", "zaragoza", "castilla", "cordoba"])
+	var s = _session()
+	assert_true(s.start(T0), "arranca")
+	assert_true("otro mapa" in s.notice, "falta una provincia: %s" % s.notice)
+	assert_eq(s.world.provinces.size(), 5, "partida nueva con las 5 provincias")
+	assert_eq(_kept_copy_with_label("mapa-anterior"), original, "copia intacta")
+	_clean()
+	original = _write_save_with_provinces(["toledo", "zaragoza", "castilla", "cordoba", "leon", "pamplona"])
+	var t = _session()
+	assert_true(t.start(T0), "arranca")
+	assert_true("otro mapa" in t.notice, "sobra una provincia: %s" % t.notice)
+	done()
+
+
+func test_save_with_exactly_the_map_provinces_loads_normally() -> void:
+	_clean()
+	_write_save_with_provinces(["toledo", "zaragoza", "castilla", "cordoba", "leon"])
+	var s = _session()
+	assert_true(s.start(T0 + 600), "arranca")
+	assert_eq(s.notice, "", "sin avisos")
+	assert_eq(s.world.step_count, 5 + 10, "5 pasos guardados + 10 de ausencia (600 s)")
+	assert_eq(_kept_copy_with_label("mapa-anterior"), "<<no hay copia>>", "no se aparta nada")
+	done()
+
+
 func test_damaged_main_falls_back_to_backup_with_a_notice() -> void:
 	_clean()
 	var s = _session()

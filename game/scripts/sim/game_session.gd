@@ -51,12 +51,19 @@ func start(now: int) -> bool:
 	if any_file:
 		var loaded: Dictionary = SaveGameScript.read_file(data, save_path)
 		if loaded["ok"]:
-			world = loaded["world"]
-			notice = loaded["warning"]
-			last_report = OfflineScript.settle(world, loaded["saved_at"], now)
-			stamp = last_report["new_saved_at"]
-			return true
-		var kept := _set_aside_broken_files(now)
+			var mismatch := _map_mismatch(loaded["world"])
+			if mismatch == "":
+				world = loaded["world"]
+				notice = loaded["warning"]
+				last_report = OfflineScript.settle(world, loaded["saved_at"], now)
+				stamp = last_report["new_saved_at"]
+				return true
+			# Un guardado de otro mapa no se puede mostrar (las provincias no coinciden):
+			# se aparta entero, sin borrarlo, y se empieza una partida nueva.
+			var kept_old := _set_aside_files(now, "mapa-anterior")
+			notice = "La partida guardada es de otro mapa (%s). Se conservó una copia en %s y se empezó una partida nueva." % [mismatch, kept_old]
+			return new_game(now)
+		var kept := _set_aside_files(now, "danada")
 		notice = "No se pudo leer la partida guardada (%s). Se conservó una copia en %s y se empezó una partida nueva." % [loaded["error"], kept]
 	return new_game(now)
 
@@ -105,8 +112,24 @@ func time_text() -> String:
 	return "Día %d, %02d:00" % [steps / 24 + 1, steps % 24]
 
 
-func _set_aside_broken_files(now: int) -> String:
-	var target := "%s.danada-%d" % [save_path, now]
+## Texto vacío si las provincias del guardado son exactamente las del mapa; si no, cuáles difieren.
+func _map_mismatch(saved_world) -> String:
+	var saved_ids: Array[String] = []
+	for province in saved_world.provinces:
+		saved_ids.append(province.id)
+	var map_ids: Array[String] = []
+	for entry in map.provinces:
+		map_ids.append(entry["id"])
+	saved_ids.sort()
+	map_ids.sort()
+	if saved_ids == map_ids:
+		return ""
+	return "provincias guardadas: %s; provincias del mapa: %s" % [", ".join(saved_ids), ", ".join(map_ids)]
+
+
+## Aparta los archivos de guardado con otro nombre (no se borran). `label` va en el nombre.
+func _set_aside_files(now: int, label: String) -> String:
+	var target := "%s.%s-%d" % [save_path, label, now]
 	for suffix in ["", ".bak"]:
 		var source: String = save_path + suffix
 		if FileAccess.file_exists(source):

@@ -37,7 +37,7 @@ Vecindades propuestas (esquemáticas): Córdoba–Toledo, Toledo–Zaragoza, Tol
 ## Qué es dato y qué es parámetro
 
 - **Dato histórico (con fuente):** nombres de las provincias, la entidad política de cada una, el contraste general «califato urbano y con regadío al sur y al este, reinos cristianos poco urbanos al norte», los cultivos citados en H-10 para Córdoba y el calendario agrícola de Córdoba.
-- **Parámetro de juego (no histórico):** poblaciones de partida, edificios iniciales, existencias, costes, ciclos y el tope de edificios. Las poblaciones iniciales del prototipo conservan el orden relativo sugerido por las fuentes (capital muy por encima del resto) pero **no son habitantes**.
+- **Parámetro de juego (no histórico):** poblaciones de partida, edificios iniciales, existencias, costes, ciclos y el tope de edificios. Las poblaciones iniciales del prototipo (Córdoba 140, Toledo 100, Zaragoza 80, Castilla 60, León 40) siguen el orden que sugieren las estimaciones de H-04 para las ciudades (Córdoba muy por delante; el norte cristiano con ciudades pequeñas) pero **no son habitantes**.
 - **Simplificación:** el prototipo solo tiene trigo, harina, pan, madera, leña y moneda. No hay olivo, vid, caña de azúcar, arroz ni seda, aunque sean reales y estén en H-10 y H-01.
 
 ## Decisiones que esto permite (ver D-021 a D-023)

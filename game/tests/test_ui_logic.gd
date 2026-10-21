@@ -130,10 +130,10 @@ func test_tap_near_the_edge_of_the_touch_zone_still_selects() -> void:
 	_clean()
 	var main = _main()
 	var view = main._map_view
-	var a: Dictionary = main.session.map.find("prueba_a")
+	var a: Dictionary = main.session.map.find("toledo")
 	var edge: Vector2 = view.map_to_view(a["x"], a["y"]) + Vector2(main.session.map.touch_radius * view.view_scale() * 0.95, 0)
 	_tap(view, edge)
-	assert_eq(view.selected_id, "prueba_a", "cerca del borde de la zona de toque")
+	assert_eq(view.selected_id, "toledo", "cerca del borde de la zona de toque")
 	var outside: Vector2 = view.map_to_view(a["x"], a["y"]) + Vector2(main.session.map.touch_radius * view.view_scale() * 1.2, 0)
 	view.selected_id = ""
 	_tap(view, outside)
@@ -156,8 +156,8 @@ func test_touch_zone_is_large_enough_for_a_finger() -> void:
 func test_building_buttons_build_and_report() -> void:
 	_clean()
 	var main = _main()
-	var province = main.session.world.find_province("prueba_d")
-	main._on_province_selected("prueba_d")
+	var province = main.session.world.find_province("cordoba")
+	main._on_province_selected("cordoba")
 	var projects_before: int = province.projects.size()
 	var button: Button = main._panel.build_button("house")
 	assert_true(button != null and not button.disabled, "se puede construir una vivienda con recursos")
@@ -180,10 +180,10 @@ func test_building_buttons_build_and_report() -> void:
 func test_projects_limit_disables_the_buttons() -> void:
 	_clean()
 	var main = _main()
-	var province = main.session.world.find_province("prueba_d")
+	var province = main.session.world.find_province("cordoba")
 	province.store.seed_initial("wood", 20000)
 	province.store.seed_initial("coin", 50000)
-	main._on_province_selected("prueba_d")
+	main._on_province_selected("cordoba")
 	for i in range(main.session.data.rules["max_projects"]):
 		province.start_construction("house")
 	main._panel.refresh()
@@ -196,10 +196,10 @@ func test_projects_limit_disables_the_buttons() -> void:
 func test_building_limit_disables_the_buttons_and_is_shown() -> void:
 	_clean()
 	var main = _main()
-	var province = main.session.world.find_province("prueba_d")
+	var province = main.session.world.find_province("cordoba")
 	province.store.seed_initial("wood", 20000)
 	province.store.seed_initial("coin", 50000)
-	main._on_province_selected("prueba_d")
+	main._on_province_selected("cordoba")
 	var limit: int = main.session.data.rules["max_buildings"]
 	while province.buildings.size() < limit:
 		province.add_building("house")

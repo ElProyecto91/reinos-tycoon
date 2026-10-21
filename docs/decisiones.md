@@ -188,6 +188,15 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - La tarea 2.4 del borrador de la fase 2 se limita a la cadena forestal hasta que haya fuentes de minería.
 - Estado: **aplazada**.
 
+## D-024. Mapa histórico en el juego y guardados de otro mapa
+
+- `data/map.json` pasa de «Provincia de prueba A–E» a **Toledo, Zaragoza, Condado de Castilla, Córdoba y Reino de León** (D-021). Se conservan las cifras de partida de cada hueco (población, edificios, existencias) como **parámetros de juego**: Córdoba 140, Toledo 100, Zaragoza 80, Castilla 60, León 40 (orden coherente con H-04: capital muy por delante, norte cristiano con ciudades pequeñas). Posiciones esquemáticas, no a escala; zonas de toque a más de dos radios.
+- Vecindades: Córdoba–Toledo, Toledo–Zaragoza, Toledo–Castilla, Zaragoza–Castilla, Castilla–León.
+- Problema detectado antes de publicar: un guardado hecho con el mapa anterior (ids `prueba_a`…) cargaba el mundo viejo con el mapa nuevo: el mapa se veía sin datos y no se podía tocar nada. Ahora, al arrancar, si las provincias del guardado no son **exactamente** las del mapa, el guardado (y su copia `.bak`) se aparta con el nombre `partida.json.mapa-anterior-<hora>` (no se borra), se empieza una partida nueva y se avisa. Pruebas: guardado de otro mapa, con una provincia de menos, con una de más y con exactamente las del mapa (carga normal). Sabotaje: sin la comprobación fallan las pruebas.
+- Consecuencia para el usuario: la partida actual del móvil (día 143 con las provincias de prueba) no continuará con el APK nuevo; quedará guardada aparte en el teléfono.
+- Versión del proyecto 0.0.5; el pie de pantalla pasa a «provincias históricas, cifras de ejemplo».
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

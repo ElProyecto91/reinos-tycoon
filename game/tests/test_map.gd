@@ -45,8 +45,8 @@ func test_default_map_loads_and_has_the_prototype_provinces() -> void:
 	assert_true(map.load_defaults(data), "el mapa por defecto debe cargarse: %s" % _errors_text(map))
 	assert_eq(map.provinces.size(), 5, "5 provincias (prototipo)")
 	assert_true(map.provinces.size() <= 20, "dentro del máximo del MVP")
-	assert_eq(map.find("prueba_a")["name"], "Provincia de prueba A", "nombre de ejemplo, sin pretensión histórica")
-	assert_eq(typeof(map.find("prueba_a")["x"]), TYPE_INT, "coordenadas enteras")
+	assert_eq(map.find("toledo")["name"], "Toledo", "nombre histórico aproximado (docs/REGION_IBERIA_1000.md)")
+	assert_eq(typeof(map.find("toledo")["x"]), TYPE_INT, "coordenadas enteras")
 	assert_eq(map.find("no_existe"), {}, "id desconocido: vacío")
 	done()
 
@@ -58,7 +58,7 @@ func test_neighbors_are_mutual_in_the_default_map() -> void:
 	for p in map.provinces:
 		for n in map.neighbors_of(p["id"]):
 			assert_true(p["id"] in map.neighbors_of(n), "%s y %s son vecinas en los dos sentidos" % [p["id"], n])
-	assert_eq(map.neighbors_of("prueba_e"), ["prueba_d"], "E solo toca a D")
+	assert_eq(map.neighbors_of("leon"), ["castilla"], "León solo toca a Castilla")
 	assert_eq(map.neighbors_of("no_existe"), [], "desconocida: sin vecinos")
 	done()
 
@@ -67,10 +67,10 @@ func test_touch_selects_the_nearest_province_within_the_radius() -> void:
 	var data = new_data()
 	var map = _new_map()
 	map.load_defaults(data)
-	var a: Dictionary = map.find("prueba_a")
-	assert_eq(map.province_at(a["x"], a["y"]), "prueba_a", "tocar el centro")
-	assert_eq(map.province_at(a["x"] + 80, a["y"] - 70), "prueba_a", "tocar cerca del centro")
-	assert_eq(map.province_at(a["x"] + map.touch_radius, a["y"]), "prueba_a", "justo en el borde del radio")
+	var a: Dictionary = map.find("toledo")
+	assert_eq(map.province_at(a["x"], a["y"]), "toledo", "tocar el centro")
+	assert_eq(map.province_at(a["x"] + 80, a["y"] - 70), "toledo", "tocar cerca del centro")
+	assert_eq(map.province_at(a["x"] + map.touch_radius, a["y"]), "toledo", "justo en el borde del radio")
 	assert_eq(map.province_at(a["x"] + map.touch_radius + 1, a["y"]), "", "un punto más allá: nada")
 	assert_eq(map.province_at(0, 0), "", "esquina vacía del mapa")
 	assert_eq(map.province_at(-500, 99999), "", "fuera del mapa: nada y sin fallar")

@@ -1,13 +1,13 @@
 {
 	"format_version": 1,
-	"status": "MAPA DE EJEMPLO del prototipo. Los nombres, posiciones y vecindades NO son históricos y no representan ninguna región real: la región del MVP aún no está investigada (D-005). Coordenadas en unidades de mapa (1000 de ancho por 1080 de alto). Cantidades en milésimas de unidad. Todos los valores son provisionales.",
+	"status": "Mapa del prototipo (D-021). Los nombres y la entidad política de cada provincia son históricos y aproximados, hacia julio del año 1000 (docs/REGION_IBERIA_1000.md, fuentes en docs/HISTORICAL_SOURCES.md). Las posiciones son esquemáticas, no están a escala y no son fronteras. Las poblaciones, los edificios y las existencias de partida son PARÁMETROS DE JUEGO provisionales, no datos históricos. Coordenadas en unidades de mapa (1000 de ancho por 1080 de alto). Cantidades en milésimas de unidad.",
 	"width": 1000,
 	"height": 1080,
 	"touch_radius": 110,
 	"provinces": [
 		{
-			"id": "prueba_a", "name": "Provincia de prueba A", "short": "Prueba A", "x": 500, "y": 170,
-			"neighbors": ["prueba_b", "prueba_c"],
+			"id": "toledo", "name": "Toledo", "short": "Toledo", "x": 500, "y": 600,
+			"neighbors": ["cordoba", "zaragoza", "castilla"],
 			"start": {
 				"population": 100,
 				"buildings": ["granary", "farm", "farm", "mill", "bakery", "woodcutter"],
@@ -15,8 +15,8 @@
 			}
 		},
 		{
-			"id": "prueba_b", "name": "Provincia de prueba B", "short": "Prueba B", "x": 170, "y": 450,
-			"neighbors": ["prueba_a", "prueba_d"],
+			"id": "zaragoza", "name": "Zaragoza", "short": "Zaragoza", "x": 850, "y": 400,
+			"neighbors": ["toledo", "castilla"],
 			"start": {
 				"population": 80,
 				"buildings": ["granary", "farm", "farm", "farm", "mill"],
@@ -24,8 +24,8 @@
 			}
 		},
 		{
-			"id": "prueba_c", "name": "Provincia de prueba C", "short": "Prueba C", "x": 830, "y": 450,
-			"neighbors": ["prueba_a", "prueba_d"],
+			"id": "castilla", "name": "Condado de Castilla", "short": "Castilla", "x": 540, "y": 200,
+			"neighbors": ["toledo", "zaragoza", "leon"],
 			"start": {
 				"population": 60,
 				"buildings": ["granary", "woodcutter", "woodcutter", "farm"],
@@ -33,8 +33,8 @@
 			}
 		},
 		{
-			"id": "prueba_d", "name": "Provincia de prueba D", "short": "Prueba D", "x": 500, "y": 680,
-			"neighbors": ["prueba_b", "prueba_c", "prueba_e"],
+			"id": "cordoba", "name": "Córdoba", "short": "Córdoba", "x": 430, "y": 900,
+			"neighbors": ["toledo"],
 			"start": {
 				"population": 140,
 				"buildings": ["granary", "farm", "farm", "mill", "bakery", "woodcutter", "house", "house"],
@@ -42,8 +42,8 @@
 			}
 		},
 		{
-			"id": "prueba_e", "name": "Provincia de prueba E", "short": "Prueba E", "x": 500, "y": 930,
-			"neighbors": ["prueba_d"],
+			"id": "leon", "name": "Reino de León", "short": "León", "x": 170, "y": 230,
+			"neighbors": ["castilla"],
 			"start": {
 				"population": 40,
 				"buildings": ["farm", "woodcutter"],

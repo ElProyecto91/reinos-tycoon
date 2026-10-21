@@ -143,7 +143,7 @@ func _build_ui() -> void:
 	_panel.changed.connect(_on_panel_changed)
 
 	_version_label = Label.new()
-	_version_label.text = "v%s · prototipo con datos de ejemplo" % game_version
+	_version_label.text = "v%s · prototipo: provincias históricas, cifras de ejemplo" % game_version
 	_version_label.add_theme_font_size_override("font_size", 20)
 	_version_label.add_theme_color_override("font_color", COLOR_TEXT_DISABLED)
 	_version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -272,7 +272,7 @@ func _update_speed_buttons() -> void:
 
 
 func _on_menu_pressed() -> void:
-	_show_modal("Menú", "Reinos Tycoon v%s\nPrototipo con datos de ejemplo.\nSe guarda solo cada %d s y al salir." % [game_version, int(AUTOSAVE_SECONDS)], [
+	_show_modal("Menú", "Reinos Tycoon v%s\nPrototipo: provincias históricas aproximadas hacia el año 1000; las cifras de partida son de ejemplo.\nSe guarda solo cada %d s y al salir." % [game_version, int(AUTOSAVE_SECONDS)], [
 		{"text": "Guardar ahora", "action": _on_save_pressed},
 		{"text": "Buscar actualización", "action": _on_update_pressed},
 		{"text": "Medir velocidad", "action": _on_measure_pressed},
