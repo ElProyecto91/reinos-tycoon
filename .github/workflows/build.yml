@@ -1,7 +1,8 @@
 name: Pruebas y APK de depuración
 
-# SIN EJECUTAR todavía: este flujo se escribió sin poder probarlo.
-# El primer resultado real es la primera ejecución en GitHub.
+# Primera ejecución en verde: 2026-10-21 (#1).
+# El trabajo "informe" publica un resumen y los registros en la rama ci-results
+# (solo la escribe este flujo; ver docs/decisiones.md, D-011).
 
 on:
   push:
@@ -23,24 +24,38 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Versión de Godot en la imagen
-        run: docker run --rm "$GODOT_IMAGE" godot --headless --version
+        run: |
+          mkdir -p logs
+          docker run --rm "$GODOT_IMAGE" godot --headless --version 2>&1 | tee logs/version.txt
 
       - name: Ejecutar pruebas
         run: |
+          set -o pipefail
+          mkdir -p logs
           docker run --rm -v "$PWD:/work" -w /work "$GODOT_IMAGE" \
-            godot --headless --path game -s res://tests/run_tests.gd
+            godot --headless --path game -s res://tests/run_tests.gd 2>&1 | tee logs/pruebas.txt
 
       - name: Comprobar que el ejecutor detecta fallos
         run: |
           set +e
+          mkdir -p logs
           docker run --rm -v "$PWD:/work" -w /work "$GODOT_IMAGE" \
-            godot --headless --path game -s res://tests/run_tests.gd -- --selftest-fail
-          codigo=$?
-          echo "Código de salida con el fallo intencionado: $codigo"
+            godot --headless --path game -s res://tests/run_tests.gd -- --selftest-fail 2>&1 | tee logs/selftest.txt
+          codigo=${PIPESTATUS[0]}
+          echo "Código de salida con el fallo intencionado: $codigo" | tee -a logs/selftest.txt
           if [ "$codigo" -eq 0 ]; then
             echo "::error::El ejecutor no detectó el fallo intencionado"
             exit 1
           fi
+
+      - name: Guardar registros de las pruebas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-log-pruebas
+          path: logs/
+          retention-days: 7
+          if-no-files-found: warn
 
   apk:
     name: APK de depuración
@@ -51,6 +66,7 @@ jobs:
 
       - name: Diagnóstico del entorno de Android en la imagen
         run: |
+          mkdir -p logs
           docker run --rm "$GODOT_IMAGE" bash -c '
             echo "--- plantillas de exportación ---"
             ls /root/.local/share/godot/export_templates/ 2>&1
@@ -61,11 +77,12 @@ jobs:
             ls -l /root/debug.keystore 2>&1
             echo "--- java ---"
             java -version 2>&1 | head -1
-          '
+          ' 2>&1 | tee logs/diagnostico.txt
 
       - name: Importar recursos y exportar el APK
         run: |
-          mkdir -p build
+          set -o pipefail
+          mkdir -p build logs
           docker run --rm -v "$PWD:/work" -w /work \
             -e GODOT_ANDROID_KEYSTORE_DEBUG_PATH=/root/debug.keystore \
             -e GODOT_ANDROID_KEYSTORE_DEBUG_USER=androiddebugkey \
@@ -75,7 +92,7 @@ jobs:
               godot --headless --path game --import || true
               godot --headless --path game --export-debug "Android" /work/build/reinos-tycoon-debug.apk
               ls -l /work/build
-            '
+            ' 2>&1 | tee logs/export.txt
 
       - name: Comprobar que el APK existe y no está vacío
         run: test -s build/reinos-tycoon-debug.apk
@@ -87,3 +104,54 @@ jobs:
           path: build/reinos-tycoon-debug.apk
           retention-days: 30
           if-no-files-found: error
+
+      - name: Guardar registros de la exportación
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-log-apk
+          path: logs/
+          retention-days: 7
+          if-no-files-found: warn
+
+  informe:
+    name: Informe para el repositorio
+    needs: [pruebas, apk]
+    if: always()
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: write
+    steps:
+      - name: Descargar los registros
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: ci-log-*
+          merge-multiple: true
+          path: informe
+
+      - name: Publicar el informe en la rama ci-results
+        env:
+          RESULT_PRUEBAS: ${{ needs.pruebas.result }}
+          RESULT_APK: ${{ needs.apk.result }}
+          SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_NUMBER: ${{ github.run_number }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p informe
+          {
+            echo "commit: $SHA"
+            echo "ejecucion: #$RUN_NUMBER (id $RUN_ID)"
+            echo "pruebas: $RESULT_PRUEBAS"
+            echo "apk: $RESULT_APK"
+          } > informe/RESUMEN.txt
+          cd informe
+          git init -q -b ci-results
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Informe de la ejecucion #$RUN_NUMBER del commit $SHA"
+          git push -q --force "https://x-access-token:${TOKEN}@github.com/${REPO}.git" ci-results

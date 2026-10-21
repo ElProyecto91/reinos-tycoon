@@ -23,6 +23,7 @@ Este proyecto es independiente del juego "Reinos". No comparte código, archivos
 | `docs/fuente/` | Original `.docx` del documento maestro |
 | `game/` | Proyecto de Godot. Los datos históricos irán en `game/data/`, separados de la lógica |
 | `.github/workflows/` | Flujo de GitHub Actions: pruebas y APK de depuración |
+| rama `ci-results` | La escribe solo el flujo con el resultado de la última ejecución. No editar |
 
 ## Documentos
 

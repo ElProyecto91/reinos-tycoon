@@ -29,7 +29,7 @@ Ninguna prueba cubre todavía reglas del juego: no hay reglas implementadas.
 
 ## Comprobaciones manuales en móvil (tarea 0.7)
 
-Estado: los puntos 1 a 3 se comprobaron con una captura del usuario (2026-10-21, pantalla en vertical, modelo de móvil no indicado). Los puntos 4 a 6 siguen sin ejecutar.
+Estado: los puntos 1 a 3 se comprobaron con una captura del usuario (2026-10-21, pantalla en vertical, Redmi Note 13 5G). Los puntos 4 a 6 siguen sin ejecutar.
 
 1. Descargar y descomprimir el artefacto del flujo; instalar el APK.
 2. La app abre y no se cierra sola.
@@ -45,4 +45,4 @@ Al ejecutarlas, anotar fecha, modelo de móvil, versión de Android y qué pasó
 | Fecha | Qué se ejecutó | Resultado | Notas |
 |---|---|---|---|
 | 2026-10-21 | Flujo completo, ejecución #1 (commit 10431e0): pruebas y APK | Verde, 1 min 57 s (según el estado comunicado por el usuario) | Registros sin revisar. El APK se generó y se subió como artefacto |
-| 2026-10-21 | Comprobaciones manuales 1 a 3 (instalar, abrir, ver el texto) con el APK de la ejecución #1 | Superadas según la captura del usuario: se ve centrado «Reinos Tycoon / v0.0.3 (fase 0) / Arranque correcto» en vertical | Modelo de móvil y versión de Android sin indicar. Puntos 4 a 6 sin ejecutar |
+| 2026-10-21 | Comprobaciones manuales 1 a 3 (instalar, abrir, ver el texto) con el APK de la ejecución #1 | Superadas según la captura del usuario: se ve centrado «Reinos Tycoon / v0.0.3 (fase 0) / Arranque correcto» en vertical | Móvil: Redmi Note 13 5G; versión de Android sin indicar. Puntos 4 a 6 sin ejecutar |

@@ -67,6 +67,13 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - ID de paquete `io.github.elproyecto91.reinostycoon`, pensado para no coincidir con el de Reinos. No se ha consultado el ID de Reinos.
 - Estado: **provisional**; medir rendimiento en la fase 9.
 
+## D-011. Informe de CI en la rama `ci-results`
+
+- Problema: el asistente no puede leer la pestaña Actions (el token de `gh` del entorno es inválido), así que cada fallo exigía capturas del usuario.
+- Decisión: el flujo guarda sus registros como artefactos y un último trabajo publica un resumen y los registros en la rama `ci-results` (una sola confirmación, sobrescrita en cada ejecución). El asistente la lee con `git fetch`. Esa rama la escribe solo el flujo.
+- Riesgos: el trabajo usa permiso de escritura sobre el repositorio (solo ese trabajo); los registros son públicos si el repositorio lo es. No hay secretos en los registros.
+- Estado: **por verificar con la primera ejecución que lo incluya**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

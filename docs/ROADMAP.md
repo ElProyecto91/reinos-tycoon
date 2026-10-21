@@ -6,9 +6,10 @@ Estado a 2026-10-21 (v0.0.3):
 - 0.2 hecha con salvedades: versión confirmada (4.7.2-stable); los requisitos de Android solo se leyeron en resúmenes (D-006).
 - 0.3 hecha: GitHub Actions.
 - 0.4, 0.5 y 0.6 hechas: el flujo salió en verde en su primera ejecución (2026-10-21, #1). Registros sin revisar.
-- 0.7 hecha con salvedades: el APK instala y abre en un móvil real (captura del usuario, 2026-10-21). Faltan los puntos 4 a 6 de `TEST_PLAN.md` y anotar el modelo de móvil.
-- 0.8 en curso: borrador en `docs/MVP_PROTOTYPE.md`, pendiente de aprobación del usuario (incluye la región, D-005).
-- Fase 1 en adelante: pendiente.
+- 0.7 hecha con salvedades: el APK instala y abre en un móvil real (captura del usuario, 2026-10-21). Faltan los puntos 4 a 6 de `TEST_PLAN.md`. Móvil de pruebas: Redmi Note 13 5G (versión de Android sin indicar).
+- 0.8 hecha: `docs/MVP_PROTOTYPE.md` aprobado por el usuario el 2026-10-21 (al ordenar empezar la Fase 1). La región no está investigada.
+- Fase 1: en curso desde 2026-10-21.
+- Fase 2 en adelante: pendiente.
 
 Leyenda de pruebas:
 - **[DOC]** no se ejecuta nada; se revisa un documento.

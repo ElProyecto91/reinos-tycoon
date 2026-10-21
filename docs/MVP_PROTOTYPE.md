@@ -1,6 +1,6 @@
 # Prototipo del MVP (entrega E)
 
-**Borrador pendiente de aprobación.** Hasta que el usuario lo apruebe no se empieza la Fase 1 (tarea 0.8 del ROADMAP). Todo lo de abajo se puede corregir.
+**Aprobado por el usuario el 2026-10-21**, al ordenar empezar la Fase 1 tras leer el borrador. La región sigue sin investigarse. Cualquier punto se puede corregir más adelante.
 
 ## Objetivo
 
@@ -54,8 +54,7 @@ Cada criterio es medible y tiene una prueba asociada. [PC] se prueba sin Android
 
 Orden de las tareas 1.1 a 1.10 del ROADMAP: primero la simulación sin pantalla (A1 a A10), después el mapa y la interfaz (A11, A12). Cada tarea termina con sus pruebas en verde en GitHub Actions.
 
-## Pendiente de aprobar
+## Pendiente
 
-1. La región (Península Ibérica hacia el año 1000) o la alternativa que se prefiera.
-2. La lista de mercancías y edificios del prototipo.
-3. Los criterios A1 a A12.
+1. Investigar la región con fuentes (sección 32). La elección de la Península Ibérica hacia el año 1000 se da por aceptada, pero no está respaldada por investigación.
+2. Ajustar mercancías, edificios y criterios si las pruebas lo aconsejan.
