@@ -9,7 +9,9 @@ Estado a 2026-10-21 (v0.0.3):
 - 0.7 hecha con salvedades: el APK instala y abre en un móvil real (captura del usuario, 2026-10-21). Faltan los puntos 4 a 6 de `TEST_PLAN.md`. Móvil de pruebas: Redmi Note 13 5G (versión de Android sin indicar).
 - 0.8 hecha: `docs/MVP_PROTOTYPE.md` aprobado por el usuario el 2026-10-21 (al ordenar empezar la Fase 1). La región no está investigada.
 - Fase 1: en curso desde 2026-10-21.
-- Fase 2 en adelante: pendiente.
+- Fase 1: cerrada con salvedades el 2026-10-21 (ver más abajo).
+- Fase 2: en curso desde 2026-10-21 (2.1 empezada).
+- Fase 3 en adelante: pendiente.
 
 Leyenda de pruebas:
 - **[DOC]** no se ejecuta nada; se revisa un documento.
@@ -55,8 +57,9 @@ Las tareas 1.1 a 1.7 no necesitan pantalla. Se pueden hacer antes del mapa.
 ## Fase 1.10 — cierre (parte [PC] hecha; falta la parte [APK])
 
 - [PC] `tests/test_closure.gd`: 2 años de juego con las 5 provincias y un jugador automático; 12 guardados y cargas en 6000 pasos con resultado idéntico al de la partida sin interrupciones; 40 cierres y reaperturas con ausencias de 0 s a 24 h y con el reloj hacia atrás, comparados paso a paso con una partida de referencia; un año de juego a ×600 a través de la pantalla real (autoguardado incluido); ajuste de ratón desde el toque. Hallazgo: D-020 (tope de edificios).
-- [APK] pendiente: sesión larga en el móvil con la lista de `TEST_PLAN.md`. **A11 (tocar provincias) sin confirmar.**
-- La fase 1 se da por cerrada cuando A11 esté confirmado en el móvil y la lista de `TEST_PLAN.md` no tenga fallos críticos.
+- [APK] A11 confirmado por el usuario el 2026-10-21 («Sí, se puede») y A12 medido (0,65 ms por paso). Quedan sin confirmar en el móvil los puntos 3, 4, 6, 8 y 9 de la lista de `TEST_PLAN.md`; ninguno ha dado un fallo.
+- **Fase 1 cerrada con salvedades el 2026-10-21**: criterio de cierre cumplido (A11 confirmado y sin fallos críticos comunicados), pero con esos puntos pendientes de ver. Los puntos pendientes se comprobarán cuando el usuario pruebe las siguientes versiones.
+- El usuario pide un **rediseño visual** («no me gusta cómo se ve… todo en general») y está pendiente de recibir su imagen de referencia; no cambia el cierre de la fase 1 (que es de funcionamiento) pero hay que hacerlo.
 
 ## Fase 2 — borrador para aprobar (NO empezada)
 
@@ -73,7 +76,7 @@ Según la sección 28 del documento maestro: estacionalidad, cadenas agrícola/f
 | 2.7 | Interfaz de la fase 2: estación, necesidades y mejoras en la ficha | [APK] | se ve y se toca bien en el móvil |
 | 2.8 | Cierre de la fase 2: partida larga con estaciones | [PC] y [APK] | como 1.10, sin errores críticos |
 
-Las tres decisiones previas (año, estaciones por cultivo y minería) se tomaron con la investigación del 2026-10-21: D-022 y D-023. Siguen sin empezar hasta cerrar la fase 1 (A11).
+Las tres decisiones previas (año, estaciones por cultivo y minería) se tomaron con la investigación del 2026-10-21: D-022 y D-023. La fase 1 se cerró con salvedades el 2026-10-21; la 2.1 empieza en esa fecha.
 
 ## Fases 2 a 9
 

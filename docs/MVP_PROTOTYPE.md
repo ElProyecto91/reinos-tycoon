@@ -50,6 +50,11 @@ Cada criterio es medible y tiene una prueba asociada. [PC] se prueba sin Android
 | A11 | Se puede seleccionar una provincia con el dedo y ver su producción, consumo, almacén y alertas; botones grandes, nada depende de hover; usable en vertical | [APK] manual |
 | A12 | Se mide el tiempo por paso de simulación en el móvil y se registra; no se fija un umbral hasta tener la medida (sección 30) | [APK] manual |
 
+## Estado de A11 y A12 (2026-10-21)
+
+- **A11**: confirmado por el usuario en su móvil («Sí, se puede»), sin más detalle. No se ha medido cuántos toques fallan.
+- **A12**: medido en el Redmi Note 13 5G: ≈ 0,65 ms por paso con 5 provincias (captura del usuario).
+
 ## Cómo se construye
 
 Orden de las tareas 1.1 a 1.10 del ROADMAP: primero la simulación sin pantalla (A1 a A10), después el mapa y la interfaz (A11, A12). Cada tarea termina con sus pruebas en verde en GitHub Actions.
