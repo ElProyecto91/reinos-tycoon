@@ -5,8 +5,12 @@ extends SceneTree
 ##   godot --headless --path game -s res://tests/run_tests.gd
 ##
 ## Con "-- --selftest-fail" añade una prueba que falla a propósito, para comprobar
-## que el ejecutor detecta fallos. Devuelve 0 si todo pasa y 1 si algo falla
-## o si no se ejecutó ninguna prueba.
+## que el ejecutor detecta fallos. Devuelve 0 si todo pasa y 1 si algo falla,
+## si no se ejecutó ninguna prueba o si el propio ejecutor se interrumpió.
+##
+## Un error de ejecución dentro de una prueba no debe dejar el proceso colgado ni
+## darla por buena: cada prueba termina llamando a done() y, si no llega, cuenta
+## como fallo. El ejecutor llama a quit() siempre, aunque _run_all() se aborte.
 
 const TEST_FILES: Array[String] = [
 	"res://tests/test_smoke.gd",
@@ -22,6 +26,18 @@ const SELFTEST_FILE := "res://tests/selftest_fail.gd"
 
 
 func _init() -> void:
+	var summary = _run_all()
+	if summary == null:
+		printerr("El ejecutor de pruebas se interrumpió por un error de ejecución.")
+		quit(1)
+		return
+	print("Pruebas: %d, fallos: %d" % [summary["total"], summary["failed"]])
+	if summary["total"] == 0:
+		printerr("No se ejecutó ninguna prueba.")
+	quit(1 if (summary["failed"] > 0 or summary["total"] == 0) else 0)
+
+
+func _run_all() -> Variant:
 	var files: Array[String] = []
 	files.append_array(TEST_FILES)
 	if "--selftest-fail" in OS.get_cmdline_user_args():
@@ -30,14 +46,20 @@ func _init() -> void:
 	var total := 0
 	var failed := 0
 	for path in files:
+		print("== %s" % path.get_file())
 		var script = load(path)
-		if script == null:
+		if script == null or not script.can_instantiate():
 			# Un archivo que no compila cuenta como fallo, no como "cero pruebas".
 			total += 1
 			failed += 1
-			printerr("FALLO %s: no se pudo cargar el archivo (error de sintaxis o ruta)" % path.get_file())
+			printerr("FALLO %s: no se pudo cargar el archivo (error de sintaxis o de tipos; ver el registro)" % path.get_file())
 			continue
 		var test_case = script.new()
+		if test_case == null:
+			total += 1
+			failed += 1
+			printerr("FALLO %s: no se pudo crear la instancia" % path.get_file())
+			continue
 		for method in test_case.get_method_list():
 			var method_name: String = method["name"]
 			if not method_name.begins_with("test_"):
@@ -55,8 +77,4 @@ func _init() -> void:
 				failed += 1
 				for failure in test_case.failures:
 					printerr("FALLO %s::%s: %s" % [path.get_file(), method_name, failure])
-
-	print("Pruebas: %d, fallos: %d" % [total, failed])
-	if total == 0:
-		printerr("No se ejecutó ninguna prueba.")
-	quit(1 if (failed > 0 or total == 0) else 0)
+	return {"total": total, "failed": failed}

@@ -13,6 +13,12 @@ on:
 permissions:
   contents: read
 
+# Una ejecución nueva cancela la anterior de la misma rama. Si una prueba se colgara,
+# no bloquearía las siguientes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   GODOT_IMAGE: barichello/godot-ci:4.7.2
 
@@ -20,6 +26,7 @@ jobs:
   pruebas:
     name: Pruebas sin ventana
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -29,18 +36,21 @@ jobs:
           docker run --rm "$GODOT_IMAGE" godot --headless --version 2>&1 | tee logs/version.txt
 
       - name: Ejecutar pruebas
+        timeout-minutes: 8
         run: |
           set -o pipefail
           mkdir -p logs
+          # "timeout 300" corta dentro del contenedor si algo se cuelga y deja el registro.
           docker run --rm -v "$PWD:/work" -w /work "$GODOT_IMAGE" \
-            godot --headless --path game -s res://tests/run_tests.gd 2>&1 | tee logs/pruebas.txt
+            timeout 300 godot --headless --path game -s res://tests/run_tests.gd 2>&1 | tee logs/pruebas.txt
 
       - name: Comprobar que el ejecutor detecta fallos
+        timeout-minutes: 8
         run: |
           set +e
           mkdir -p logs
           docker run --rm -v "$PWD:/work" -w /work "$GODOT_IMAGE" \
-            godot --headless --path game -s res://tests/run_tests.gd -- --selftest-fail 2>&1 | tee logs/selftest.txt
+            timeout 300 godot --headless --path game -s res://tests/run_tests.gd -- --selftest-fail 2>&1 | tee logs/selftest.txt
           codigo=${PIPESTATUS[0]}
           echo "Código de salida con el fallo intencionado: $codigo" | tee -a logs/selftest.txt
           if [ "$codigo" -eq 0 ]; then
@@ -61,6 +71,7 @@ jobs:
     name: APK de depuración
     needs: pruebas
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
