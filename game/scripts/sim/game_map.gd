@@ -17,7 +17,7 @@ const MAX_BUILDINGS_PER_PROVINCE := 60
 var width: int = 0
 var height: int = 0
 var touch_radius: int = 0
-## Provincias en el orden del archivo: {id, name, x, y, neighbors: Array, start: {population, buildings, stock}}
+## Provincias en el orden del archivo: {id, name, short (nombre para el mapa; si falta, el nombre), x, y, neighbors: Array, start: {population, buildings, stock}}
 var provinces: Array = []
 var errors: Array[String] = []
 
@@ -114,6 +114,13 @@ func _parse_province(entry: Variant, where: String, w: int, h: int, data) -> Dic
 	var name = entry.get("name", null)
 	if typeof(name) != TYPE_STRING or name.strip_edges() == "":
 		errors.append("%s: falta el nombre" % where)
+	var short_name: String = ""
+	var raw_short = entry.get("short", null)
+	if raw_short != null:
+		if typeof(raw_short) != TYPE_STRING or raw_short.strip_edges() == "" or raw_short.length() > 20:
+			errors.append("%s: \"short\" debe ser un texto de 1 a 20 caracteres" % where)
+		else:
+			short_name = raw_short
 	var x = Fixed.exact_int(entry.get("x", null))
 	var y = Fixed.exact_int(entry.get("y", null))
 	if x == null or x < 0 or x > w or y == null or y < 0 or y > h:
@@ -133,7 +140,7 @@ func _parse_province(entry: Variant, where: String, w: int, h: int, data) -> Dic
 	var start := _parse_start(entry.get("start", null), where, data)
 	if errors.size() > before:
 		return {}
-	return {"id": id, "name": name, "x": x, "y": y, "neighbors": neighbors, "start": start}
+	return {"id": id, "name": name, "short": short_name if short_name != "" else name, "x": x, "y": y, "neighbors": neighbors, "start": start}
 
 
 func _parse_start(raw: Variant, where: String, data) -> Dictionary:

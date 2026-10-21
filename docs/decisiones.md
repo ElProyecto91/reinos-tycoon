@@ -133,6 +133,19 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Observado en una simulación de 4 meses de juego (2880 pasos): las 5 provincias de ejemplo se mantienen estables, sin descontento. B, C y E no tienen panadería y comen trigo directamente; es un reparto provisional, no un equilibrio de diseño.
 - Estado: **provisional**. El dibujo del mapa y la ficha de provincia son la tarea 1.9.
 
+## D-018. Interfaz táctil del prototipo (tarea 1.9)
+
+- Vertical fijo: base de 720×1280 con estiramiento «expand» (en un móvil 20:9 la pantalla gana altura) y orientación bloqueada en vertical. Antes estaba en horizontal/sensor; el documento de criterios (A11) pide «usable en vertical». Si prefieres poder girarlo, es un cambio de una línea, pero la interfaz actual no está pensada para horizontal.
+- Pantalla: barra superior (título, día y hora de juego, menú), cuatro velocidades (Pausa, ×1, ×60, ×600), mapa y ficha desplazable de la provincia elegida (población, trabajo, consumo de alimento, descontento, avisos, existencias, edificios con su estado y lo que falta, obras en curso y botones para construir).
+- Botones de al menos 88 px de alto en la base de 720 (≈ 132 px físicos en un móvil de 1080 de ancho, unos 48 dp). Los textos se actualizan en su sitio para que un botón no desaparezca bajo el dedo.
+- La zona de toque de cada provincia es mayor que su círculo visible (75 %); se comprobó por cálculo que mide más de 88 px base (prueba), no con un dedo real.
+- Avisos: «almacén lleno» y «se desperdicia producción» son **informativos** (se listan en la ficha, no marcan el mapa ni entran en el resumen offline), porque en una economía sana aparecen a las pocas horas y llenaban el mapa de alarmas. Hambruna se marca grave (rojo, «!!») y hambre/descontento/sin trabajadores como atención (ámbar, «!»); no se depende solo del color.
+- Velocidad por defecto ×60 (un paso por segundo, para poder ver cosas pasar). **Pregunta de diseño abierta**: el progreso offline cuenta un paso por minuto, así que jugar a ×60 rinde 60 veces más que estar fuera. Hay que decidir el ritmo real tras medir en el móvil (A12).
+- Se guarda cada 15 s, al pausar la aplicación y al cerrarla; al volver tras una pausa se aplica la ausencia y se muestra un resumen. Si el guardado no se puede leer, se aparta con otro nombre (no se borra) y se empieza una partida nueva avisando.
+- Cantidades mostradas exactas (milésimas sin ceros sobrantes). En el resumen offline resulta algo ruidoso («Moneda +123,656»); pendiente de pulir.
+- Qué NO está probado: nada de esto se ha visto en un móvil real. Las capturas se generan en un entorno Linux con dibujado por software (`tools/captura_ui.gd`).
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

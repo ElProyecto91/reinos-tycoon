@@ -9,7 +9,9 @@
 - Progreso offline (A9, D-016): `scripts/sim/offline.gd`, reglas `step_seconds` y `offline_limit_seconds`, hora del guardado en el sobre.
 - Aviso de versión nueva sin red (D-015): `scripts/update/update_check.gd`.
 - Mapa de ejemplo de 5 provincias con validación y selección táctil (1.8, D-017): `scripts/sim/game_map.gd`, `data/map.json`.
-- Estado de las pruebas: 172 de 172 en local; las 147 hasta el aviso de versión confirmadas en CI, las 25 nuevas pendientes.
+- Sesión de juego sin pantalla (`game_session.gd`): arranque, guardado con hora, reanudación, archivos dañados apartados sin borrarse.
+- Interfaz táctil en vertical (1.9, D-018): mapa con selección por toque, ficha de provincia, construcción, velocidad, autoguardado y resumen al volver. Versión del proyecto 0.0.4. `tools/captura_ui.gd` para capturas.
+- Estado de las pruebas: 195 de 195 en local; las 180 hasta el mapa y la sesión confirmadas en CI (#13), las 15 de interfaz pendientes.
 
 ## v0.0.3 (2026-10-21)
 

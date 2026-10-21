@@ -25,6 +25,7 @@ const TEST_FILES: Array[String] = [
 	"res://tests/test_offline.gd",
 	"res://tests/test_map.gd",
 	"res://tests/test_session.gd",
+	"res://tests/test_ui_logic.gd",
 	"res://tests/test_update_check.gd",
 ]
 const SELFTEST_FILE := "res://tests/selftest_fail.gd"

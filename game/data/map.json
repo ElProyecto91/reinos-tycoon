@@ -1,12 +1,12 @@
 {
 	"format_version": 1,
-	"status": "MAPA DE EJEMPLO del prototipo. Los nombres, posiciones y vecindades NO son históricos y no representan ninguna región real: la región del MVP aún no está investigada (D-005). Coordenadas en unidades de mapa (1000 de ancho por 1600 de alto, pensado para móvil en vertical). Cantidades en milésimas de unidad. Todos los valores son provisionales.",
+	"status": "MAPA DE EJEMPLO del prototipo. Los nombres, posiciones y vecindades NO son históricos y no representan ninguna región real: la región del MVP aún no está investigada (D-005). Coordenadas en unidades de mapa (1000 de ancho por 1080 de alto). Cantidades en milésimas de unidad. Todos los valores son provisionales.",
 	"width": 1000,
-	"height": 1600,
+	"height": 1080,
 	"touch_radius": 110,
 	"provinces": [
 		{
-			"id": "prueba_a", "name": "Provincia de prueba A", "x": 500, "y": 300,
+			"id": "prueba_a", "name": "Provincia de prueba A", "short": "Prueba A", "x": 500, "y": 170,
 			"neighbors": ["prueba_b", "prueba_c"],
 			"start": {
 				"population": 100,
@@ -15,7 +15,7 @@
 			}
 		},
 		{
-			"id": "prueba_b", "name": "Provincia de prueba B", "x": 220, "y": 640,
+			"id": "prueba_b", "name": "Provincia de prueba B", "short": "Prueba B", "x": 170, "y": 450,
 			"neighbors": ["prueba_a", "prueba_d"],
 			"start": {
 				"population": 80,
@@ -24,7 +24,7 @@
 			}
 		},
 		{
-			"id": "prueba_c", "name": "Provincia de prueba C", "x": 780, "y": 640,
+			"id": "prueba_c", "name": "Provincia de prueba C", "short": "Prueba C", "x": 830, "y": 450,
 			"neighbors": ["prueba_a", "prueba_d"],
 			"start": {
 				"population": 60,
@@ -33,7 +33,7 @@
 			}
 		},
 		{
-			"id": "prueba_d", "name": "Provincia de prueba D", "x": 500, "y": 980,
+			"id": "prueba_d", "name": "Provincia de prueba D", "short": "Prueba D", "x": 500, "y": 680,
 			"neighbors": ["prueba_b", "prueba_c", "prueba_e"],
 			"start": {
 				"population": 140,
@@ -42,7 +42,7 @@
 			}
 		},
 		{
-			"id": "prueba_e", "name": "Provincia de prueba E", "x": 500, "y": 1340,
+			"id": "prueba_e", "name": "Provincia de prueba E", "short": "Prueba E", "x": 500, "y": 930,
 			"neighbors": ["prueba_d"],
 			"start": {
 				"population": 40,
