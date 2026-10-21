@@ -1,0 +1,14 @@
+# Godot 4
+.godot/
+*.translation
+
+# Exportación Android: nunca subir claves ni binarios
+export_presets.cfg
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Sistema
+.DS_Store
+Thumbs.db
