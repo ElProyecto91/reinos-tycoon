@@ -30,6 +30,31 @@ func test_construction_charges_the_cost_only_once() -> void:
 	done()
 
 
+func test_building_limit_counts_finished_buildings_and_projects() -> void:
+	# D-020: tope de edificios por provincia. Con recursos de sobra, el tope manda.
+	var data = new_data()
+	var limit: int = data.rules["max_buildings"]
+	var p = new_province(data, 100)
+	p.store.seed_initial("wood", 60000)
+	p.store.seed_initial("coin", 60000)
+	for i in range(limit - 1):
+		p.add_building("house")
+	assert_true(p.start_construction("house"), "con %d de %d todavía cabe uno más: %s" % [limit - 1, limit, p.last_error])
+	assert_eq(p.buildings.size() + p.projects.size(), limit, "terminados + obras llegan al tope")
+	var wood_before: int = p.store.stock("wood")
+	var coin_before: int = p.store.stock("coin")
+	assert_true(not p.start_construction("house"), "la obra en curso ya ocupa el último sitio")
+	assert_true(p.last_error.contains("sitio"), "el motivo habla del sitio: %s" % p.last_error)
+	assert_eq(p.projects.size(), 1, "no se añadió otra obra")
+	assert_eq(p.store.stock("wood"), wood_before, "no se cobró madera")
+	assert_eq(p.store.stock("coin"), coin_before, "no se cobró moneda")
+	run_steps(p, 20)
+	assert_eq(p.buildings.size(), limit, "la obra terminó y hay %d edificios" % limit)
+	assert_true(not p.start_construction("farm"), "con el tope alcanzado no se construye nada más")
+	assert_true(p.check_invariants().is_empty(), "coherente: %s" % str(p.check_invariants()))
+	done()
+
+
 func test_construction_is_rejected_without_materials() -> void:
 	var data = new_data()
 	var p = new_province(data, 100)

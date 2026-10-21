@@ -32,6 +32,36 @@ func chain_province(data, population: int = 100):
 	return province
 
 
+const MILLI_LEDGER_KEYS: Array[String] = ["initial", "produced", "imported", "consumed", "exported", "lost"]
+
+
+## Cuenta los valores inválidos del estado: no enteros, negativos o fuera de rango.
+func _invalid_values(p, data) -> int:
+	var bad := 0
+	# Se lee el diccionario interno: stock() devuelve int y ocultaría un decimal.
+	var raw_stock: Dictionary = p.store.get("_stock")
+	for good_id in data.goods.keys():
+		var amount = raw_stock[good_id]
+		if typeof(amount) != TYPE_INT or amount < 0:
+			bad += 1
+		var ledger: Dictionary = p.store.ledger(good_id)
+		for key in MILLI_LEDGER_KEYS:
+			if typeof(ledger[key]) != TYPE_INT or ledger[key] < 0:
+				bad += 1
+	for value in [p.population, p.unrest, p.recruits, p.hunger_steps, p.step_count, p.food_shortage_percent]:
+		if typeof(value) != TYPE_INT or value < 0:
+			bad += 1
+	for b in p.buildings:
+		for key in ["workers", "progress"]:
+			if typeof(b[key]) != TYPE_INT or b[key] < 0:
+				bad += 1
+	for project in p.projects:
+		for key in ["remaining", "workers"]:
+			if typeof(project[key]) != TYPE_INT or project[key] < 0:
+				bad += 1
+	return bad
+
+
 func run_steps(province, count: int) -> void:
 	for i in range(count):
 		province.step()

@@ -95,6 +95,7 @@ func refresh() -> void:
 	var lines: Array[String] = []
 	lines.append("Población: %d (vivienda para %d)" % [p.population, p.housing_capacity()])
 	lines.append("Trabajo: %d asignados de %d de mano de obra" % [p.assigned_labor(), p.labor_force()])
+	lines.append("Edificios: %d de %d posibles (incluidas las obras)" % [p.buildings.size() + p.projects.size(), rules["max_buildings"]])
 	lines.append("Consumo de alimento: %s por paso" % Texts.amount(p.population * rules["food_per_person"]))
 	lines.append("Descontento: %d de %d · velocidad de trabajo %d %%" % [p.unrest, rules["unrest_max"], p.productivity_percent()])
 	if p.hunger_steps > 0:
@@ -167,17 +168,20 @@ func _projects_text(p) -> String:
 
 func _update_build_buttons(p) -> void:
 	var full: bool = p.projects.size() >= _data.rules["max_projects"]
+	var no_room: bool = p.buildings.size() + p.projects.size() >= _data.rules["max_buildings"]
 	for type_id in _build_buttons.keys():
 		var t: Dictionary = _data.buildings[type_id]
 		var button: Button = _build_buttons[type_id]
 		var can_afford: bool = p.store.can_afford(t["build_cost"])
 		var note := ""
-		if full:
+		if no_room:
+			note = "  (sin sitio)"
+		elif full:
 			note = "  (obras al máximo)"
 		elif not can_afford:
 			note = "  (faltan recursos)"
 		button.text = "Construir %s%s\nCoste: %s · %d pasos" % [t["name"], note, Texts.goods_text(_data, t["build_cost"]), t["build_steps"]]
-		button.disabled = full or not can_afford
+		button.disabled = no_room or full or not can_afford
 
 
 func _on_build_pressed(type_id: String) -> void:

@@ -21,6 +21,7 @@ const RULE_INTS := {
 	"labor_percent": [0, 100],
 	"min_population": [1, 1000000],
 	"max_projects": [1, 100],
+	"max_buildings": [1, 1000],
 	"tax_per_person": [0, 1000000],
 	"food_per_person": [0, 1000000],
 	"hunger_warning_steps": [0, 1000000],

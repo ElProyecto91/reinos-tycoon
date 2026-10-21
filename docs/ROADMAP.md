@@ -50,7 +50,30 @@ Prioridad máxima: 0.3 y 0.4, porque sin Godot ejecutable no se puede probar nad
 
 Las tareas 1.1 a 1.7 no necesitan pantalla. Se pueden hacer antes del mapa.
 
-**Estado (2026-10-21):** 1.1 a 1.9 escritas y con las pruebas en verde en GitHub Actions (ejecución #16, 200 de 200): simulación, guardado, progreso offline (A9, D-016), mapa (D-017), interfaz táctil (D-018), medir velocidad (A12) y aviso de versión (D-015). **En el móvil real**: A12 medido (0,65 ms por paso, captura del usuario); **A11 (toque en provincias) sin confirmar** (lista en `TEST_PLAN.md`). 1.10 (cierre de fase: partida prolongada y sesión en móvil) sin empezar. Criterios A1 a A10 cubiertos en pruebas de PC.
+**Estado (2026-10-21):** 1.1 a 1.9 escritas y con las pruebas en verde en GitHub Actions (ejecución #16, 200 de 200): simulación, guardado, progreso offline (A9, D-016), mapa (D-017), interfaz táctil (D-018), medir velocidad (A12) y aviso de versión (D-015). **En el móvil real**: A12 medido (0,65 ms por paso, captura del usuario); **A11 (toque en provincias) sin confirmar** (lista en `TEST_PLAN.md`). 1.10: parte [PC] escrita (ver más abajo; 208 pruebas en local) y parte [APK] pendiente. Criterios A1 a A10 cubiertos en pruebas de PC.
+
+## Fase 1.10 — cierre (parte [PC] hecha; falta la parte [APK])
+
+- [PC] `tests/test_closure.gd`: 2 años de juego con las 5 provincias y un jugador automático; 12 guardados y cargas en 6000 pasos con resultado idéntico al de la partida sin interrupciones; 40 cierres y reaperturas con ausencias de 0 s a 24 h y con el reloj hacia atrás, comparados paso a paso con una partida de referencia; un año de juego a ×600 a través de la pantalla real (autoguardado incluido); ajuste de ratón desde el toque. Hallazgo: D-020 (tope de edificios).
+- [APK] pendiente: sesión larga en el móvil con la lista de `TEST_PLAN.md`. **A11 (tocar provincias) sin confirmar.**
+- La fase 1 se da por cerrada cuando A11 esté confirmado en el móvil y la lista de `TEST_PLAN.md` no tenga fallos críticos.
+
+## Fase 2 — borrador para aprobar (NO empezada)
+
+Según la sección 28 del documento maestro: estacionalidad, cadenas agrícola/forestal/minera, mantenimiento, necesidades, escasez y mejoras. Troceado propuesto (cada tarea con sus pruebas en verde antes de seguir). Los datos siguen siendo parámetros de juego provisionales, sin pretensión histórica; la región sigue sin investigarse.
+
+| ID | Tarea | Prueba | Listo cuando |
+|---|---|---|---|
+| 2.1 | Calendario derivado del contador de pasos: día, estación y año (un paso = una hora; **la duración del año y de las estaciones es una decisión pendiente**) | [PC] | la estación se calcula solo desde el paso (no se guarda) y se muestra en la barra superior |
+| 2.2 | Estacionalidad agrícola: porcentaje de producción por estación y mercancía, en datos validados | [PC] | A1 (conservación) y A10 siguen en verde; la cosecha varía con la estación; la crisis A7 sigue recuperándose |
+| 2.3 | Necesidad estacional de leña (calefacción) con escasez gradual como la del hambre | [PC] | sin leña hay aviso y después descontento gradual; se recupera |
+| 2.4 | Cadena forestal ampliada y cadena minera genérica (mineral, metal, herramientas) con edificios nuevos | [PC] | no producen sin insumos y muestran por qué; **las provincias con mina dependen de la región, aún sin investigar** |
+| 2.5 | Mantenimiento en mercancías además de moneda (por ejemplo herramientas) | [PC] | un edificio sin mantenimiento se detiene y lo dice (el estado `no_upkeep` ya existe) |
+| 2.6 | Mejoras de edificio (nivel 2) con coste y efecto visibles | [PC] | no se mejora sin recursos; el efecto se aplica una sola vez |
+| 2.7 | Interfaz de la fase 2: estación, necesidades y mejoras en la ficha | [APK] | se ve y se toca bien en el móvil |
+| 2.8 | Cierre de la fase 2: partida larga con estaciones | [PC] y [APK] | como 1.10, sin errores críticos |
+
+Decisiones que necesito de ti antes de 2.1: duración del año de juego (por ejemplo 360 días = 8640 pasos), si las estaciones afectan a todos los cultivos igual, y si quieres la cadena minera ya o después de investigar la región.
 
 ## Fases 2 a 9
 

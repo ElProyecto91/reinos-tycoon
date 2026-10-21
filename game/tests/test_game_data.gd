@@ -254,7 +254,7 @@ func _rules_data():
 func _valid_rules() -> Dictionary:
 	return {
 		"currency": "coin", "base_capacity": 60000, "base_housing": 100, "labor_percent": 50,
-		"min_population": 10, "max_projects": 3, "tax_per_person": 8, "food_per_person": 10,
+		"min_population": 10, "max_projects": 3, "max_buildings": 30, "tax_per_person": 8, "food_per_person": 10,
 		"food_goods": [{"good": "bread", "value": 1500}, {"good": "wheat", "value": 800}],
 		"hunger_warning_steps": 3, "starvation_steps": 24, "starvation_loss_percent": 2,
 		"unrest_max": 1000, "unrest_rise": 25, "unrest_fall": 15, "unrest_slow_threshold": 300,
@@ -293,6 +293,17 @@ func test_rule_out_of_range_is_rejected() -> void:
 	var rules := _valid_rules()
 	rules["labor_percent"] = 150
 	assert_true(not data.build_rules(rules), "un porcentaje no puede pasar de 100")
+	done()
+
+
+func test_max_buildings_must_be_at_least_one() -> void:
+	var data = _rules_data()
+	var rules := _valid_rules()
+	rules["max_buildings"] = 0
+	assert_true(not data.build_rules(rules), "con 0 no se podría construir nunca")
+	assert_true(_errors_text(data).contains("max_buildings"), "el error nombra la regla")
+	rules["max_buildings"] = 1001
+	assert_true(not data.build_rules(rules), "más de 1000 por provincia dispara el coste de la simulación")
 	done()
 
 

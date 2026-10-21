@@ -8,6 +8,7 @@
 		"labor_percent": 50,
 		"min_population": 10,
 		"max_projects": 3,
+		"max_buildings": 30,
 		"tax_per_person": 8,
 		"food_per_person": 10,
 		"food_goods": [

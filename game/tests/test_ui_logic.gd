@@ -193,6 +193,24 @@ func test_projects_limit_disables_the_buttons() -> void:
 	done()
 
 
+func test_building_limit_disables_the_buttons_and_is_shown() -> void:
+	_clean()
+	var main = _main()
+	var province = main.session.world.find_province("prueba_d")
+	province.store.seed_initial("wood", 20000)
+	province.store.seed_initial("coin", 50000)
+	main._on_province_selected("prueba_d")
+	var limit: int = main.session.data.rules["max_buildings"]
+	while province.buildings.size() < limit:
+		province.add_building("house")
+	main._panel.refresh()
+	var button: Button = main._panel.build_button("house")
+	assert_true(button.disabled, "con el tope de edificios no se puede construir más")
+	assert_true("sin sitio" in button.text, "lo explica: %s" % button.text)
+	main.free()
+	done()
+
+
 func test_speed_controls_time() -> void:
 	_clean()
 	var main = _main()

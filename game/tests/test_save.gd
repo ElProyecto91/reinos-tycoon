@@ -31,6 +31,31 @@ func _busy_world(data):
 	return world
 
 
+## Mundo en plena crisis: una provincia con hambre, descontento, escasez, desperdicio y
+## avisos (D) y otra con reclutas, una obra en curso y un efecto activo (C). Los guardados
+## de verdad también ocurren en este estado, y un campo que no se guardara solo se nota
+## aquí (con todo a cero, olvidarlo y recuperarlo da el mismo resultado).
+func _crisis_world(data):
+	var world = load(WORLD).new(data)
+	var c = world.add_province("prueba_c", "Provincia de prueba C", 100)
+	c.add_building("farm")
+	c.store.seed_initial("wheat", 2000)
+	c.store.seed_initial("wood", 9000)
+	c.store.seed_initial("coin", 9000)
+	var d = world.add_province("prueba_d", "Provincia de prueba D", 60)
+	d.add_building("woodcutter")
+	d.store.seed_initial("bread", 6000)
+	d.store.seed_initial("firewood", 60000)
+	d.store.seed_initial("wood", 3000)
+	d.store.seed_initial("coin", 9000)
+	world.run_steps(50)
+	c.start_construction("house")
+	c.recruit(5)
+	c.add_modifier("wheat", 50, 40)
+	world.run_steps(2)
+	return world
+
+
 func _world_snapshot(world) -> String:
 	var parts: Array[String] = [str(world.step_count)]
 	for province in world.provinces:
@@ -54,6 +79,46 @@ func test_round_trip_gives_the_same_state() -> void:
 	assert_true(result["ok"], "debe cargar: %s" % result["error"])
 	assert_eq(_world_snapshot(result["world"]), _world_snapshot(world), "el estado cargado es idéntico")
 	assert_eq(result["game_version"], VERSION, "se conserva la versión del juego")
+	done()
+
+
+func test_round_trip_in_a_crisis_keeps_every_saved_field() -> void:
+	var data = new_data()
+	var world = _crisis_world(data)
+	var c = world.provinces[0]
+	var d = world.provinces[1]
+	# La prueba solo vale si cada campo guardado tiene un valor distinto de cero que perder.
+	assert_true(d.unrest > 0, "D: hay descontento")
+	assert_true(d.hunger_steps > 0, "D: hay pasos de hambre")
+	assert_true(d.food_shortage_percent > 0, "D: hay escasez")
+	assert_true(d.population != 60, "D: la población cambió")
+	assert_true(not d.wasted.is_empty(), "D: hay producción desperdiciada")
+	assert_true(not d.alerts.is_empty(), "D: hay avisos")
+	assert_true(c.recruits > 0, "C: hay reclutas")
+	assert_true(c.projects.size() == 1, "C: hay una obra en curso")
+	assert_true(not c.modifiers.is_empty(), "C: hay un efecto activo")
+	assert_true(c.next_uid > 1 and c.step_count > 0, "C: contadores en marcha")
+	var text: String = load(SAVE_GAME).encode(world, VERSION)
+	var result: Dictionary = load(SAVE_GAME).decode(new_data(), text)
+	assert_true(result["ok"], "debe cargar: %s" % result["error"])
+	var loaded = result["world"]
+	assert_eq(_world_snapshot(loaded), _world_snapshot(world), "el estado cargado es idéntico")
+	for i in range(world.provinces.size()):
+		assert_eq(loaded.provinces[i].to_dict(), world.provinces[i].to_dict(), "lo guardable coincide campo a campo (%s)" % world.provinces[i].id)
+	var l = loaded.provinces[1]
+	assert_eq([l.unrest, l.hunger_steps, l.food_shortage_percent, l.population], [d.unrest, d.hunger_steps, d.food_shortage_percent, d.population], "descontento, hambre, escasez y población")
+	done()
+
+
+func test_loaded_crisis_keeps_simulating_identically() -> void:
+	var data = new_data()
+	var world = _crisis_world(data)
+	var result: Dictionary = load(SAVE_GAME).decode(new_data(), load(SAVE_GAME).encode(world, VERSION))
+	assert_true(result["ok"], "debe cargar: %s" % result["error"])
+	var loaded = result["world"]
+	world.run_steps(400)
+	loaded.run_steps(400)
+	assert_eq(_world_snapshot(loaded), _world_snapshot(world), "tras 400 pasos de crisis siguen iguales")
 	done()
 
 

@@ -209,6 +209,10 @@ func start_construction(type_id: String) -> bool:
 	if projects.size() >= _rules["max_projects"]:
 		last_error = "ya hay %d obras en curso" % projects.size()
 		return false
+	# Tope de edificios por provincia (D-020): cuentan los terminados y las obras en curso.
+	if buildings.size() + projects.size() >= _rules["max_buildings"]:
+		last_error = "no hay sitio para más edificios (máximo %d por provincia)" % _rules["max_buildings"]
+		return false
 	if not store.can_afford(t["build_cost"]):
 		last_error = "faltan recursos para construir"
 		return false

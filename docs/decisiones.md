@@ -159,6 +159,15 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Comprobado (ejecución #17, `version/code` 24, misma firma `f3e6ecc4…48d5`): la API de GitHub lista el artefacto como `reinos-tycoon-debug.apk` (28 380 221 bytes), ya no `reinos-tycoon-debug-apk`. Eso no prueba por sí solo que el navegador del móvil lo baje sin zip ni que se instale: falta verlo en el móvil.
 - Estado: **provisional hasta descargarlo e instalarlo en el móvil**.
 
+## D-020. Tope de edificios por provincia (hallazgo de la tarea 1.10)
+
+- Hallazgo: [Certeza] al simular una partida larga con un jugador automático que construye cada día, el número de edificios por provincia **no tenía límite** (526 edificios en 3000 pasos) y el coste de cada paso crecía en proporción (de ≈ 0,8 ms a ≈ 5 ms por paso en el entorno del asistente), con lo que dos años de juego no terminaban en 5 minutos. En el móvil sería peor (A12: ≈ el doble que aquí).
+- Decisión: nueva regla `max_buildings` (en `rules.json`, entero de 1 a 1000, **30 provisional**). `start_construction` rechaza una obra nueva si edificios terminados + obras en curso ya llegan al tope, sin cobrar nada y con el motivo «no hay sitio para más edificios». `add_building` (usado para el estado inicial y las pruebas) no lo aplica. Un guardado con más edificios que el tope sigue cargando.
+- Interfaz: la ficha muestra «Edificios: n de máx posibles (incluidas las obras)» y los botones de construir se desactivan con «(sin sitio)».
+- El valor 30 es una suposición para que el coste de la simulación esté acotado (5 provincias × 30 edificios = 150), **no** un dato de diseño ni histórico. Pendiente: decidir si el tope debe depender del tamaño o de las mejoras de cada provincia (fase 2).
+- Efecto observado con el jugador automático en 2 años: cuatro provincias llegan al tope (30) y una (B) no llega a construir nada por falta de madera y moneda en sus existencias; es una propiedad de los datos de ejemplo.
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.
