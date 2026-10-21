@@ -19,24 +19,28 @@ const Fixed := preload("res://scripts/sim/fixed.gd")
 const WorldScript := preload("res://scripts/sim/world.gd")
 
 
-static func encode(world, game_version: String) -> String:
-	return pack(world.to_dict(), game_version)
+static func encode(world, game_version: String, saved_at: int = 0) -> String:
+	return pack(world.to_dict(), game_version, saved_at)
 
 
 ## Envuelve un estado ya convertido en diccionario. Separado de encode() para poder
 ## probar la carga de estados alterados con suma de control correcta.
-static func pack(payload: Dictionary, game_version: String) -> String:
+static func pack(payload: Dictionary, game_version: String, saved_at: int = 0) -> String:
 	var payload_text := JSON.stringify(payload, "", true)
 	var envelope := {
 		"format_version": FORMAT_VERSION,
 		"game_version": game_version,
+		"saved_at": saved_at,
 		"checksum": payload_text.sha256_text(),
 		"payload": payload_text,
 	}
 	return JSON.stringify(envelope, "\t", true)
 
 
-## Interpreta un texto de guardado. Devuelve {ok, world, error, game_version}.
+## Interpreta un texto de guardado. Devuelve {ok, world, error, game_version, saved_at}.
+## `saved_at` es la hora Unix del guardado (0 si falta o no es válida: el progreso offline
+## trata un 0 como «hora desconocida» y no da recompensa). La hora está fuera del estado
+## de la simulación a propósito: la simulación no depende del reloj.
 static func decode(data, text: String) -> Dictionary:
 	var json := JSON.new()
 	if json.parse(text) != OK:
@@ -68,12 +72,15 @@ static func decode(data, text: String) -> Dictionary:
 	var game_version = envelope.get("game_version", "")
 	if typeof(game_version) != TYPE_STRING:
 		game_version = ""
-	return {"ok": true, "world": world, "error": "", "game_version": game_version}
+	var saved_at = Fixed.exact_int(envelope.get("saved_at", null))
+	if saved_at == null or saved_at < 0:
+		saved_at = 0
+	return {"ok": true, "world": world, "error": "", "game_version": game_version, "saved_at": saved_at}
 
 
 ## Guarda de forma segura. Devuelve "" si salió bien o el motivo del fallo.
-static func write_file(world, path: String, game_version: String) -> String:
-	var text := encode(world, game_version)
+static func write_file(world, path: String, game_version: String, saved_at: int = 0) -> String:
+	var text := encode(world, game_version, saved_at)
 	var error := DirAccess.make_dir_recursive_absolute(path.get_base_dir())
 	if error != OK and error != ERR_ALREADY_EXISTS:
 		return "No se pudo crear la carpeta de guardado (código %d)." % error
@@ -101,7 +108,7 @@ static func write_file(world, path: String, game_version: String) -> String:
 
 
 ## Lee un guardado. Si el principal falla, prueba la copia .bak.
-## Devuelve {ok, world, error, game_version, used_backup, warning}.
+## Devuelve {ok, world, error, game_version, saved_at, used_backup, warning}.
 static func read_file(data, path: String) -> Dictionary:
 	var main := _read_one(data, path)
 	if main["ok"]:
@@ -125,4 +132,4 @@ static func _read_one(data, path: String) -> Dictionary:
 
 
 static func _failure(message: String) -> Dictionary:
-	return {"ok": false, "world": null, "error": message, "game_version": ""}
+	return {"ok": false, "world": null, "error": message, "game_version": "", "saved_at": 0}

@@ -259,7 +259,7 @@ func _valid_rules() -> Dictionary:
 		"hunger_warning_steps": 3, "starvation_steps": 24, "starvation_loss_percent": 2,
 		"unrest_max": 1000, "unrest_rise": 25, "unrest_fall": 15, "unrest_slow_threshold": 300,
 		"min_productivity_percent": 30, "growth_interval": 12, "growth_percent": 2,
-		"growth_unrest_limit": 200,
+		"growth_unrest_limit": 200, "step_seconds": 60, "offline_limit_seconds": 36000,
 	}
 
 

@@ -34,6 +34,8 @@ const RULE_INTS := {
 	"growth_interval": [1, 1000000],
 	"growth_percent": [0, 100],
 	"growth_unrest_limit": [0, 1000000],
+	"step_seconds": [1, 86400],
+	"offline_limit_seconds": [0, 172800],
 }
 
 ## Mercancías por id: id -> {id, name, category, unit, physical}

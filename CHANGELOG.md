@@ -5,7 +5,10 @@
 - Fase 1, tareas 1.1 a 1.7: datos validados, almacén con conservación, población, producción, obras, hambre gradual, guardado con versión de formato y suma de control. Cantidades enteras en milésimas (D-012); reglas de la simulación (D-013).
 - D-014: el descontento ralentiza el trabajo en vez de recortar lo producido, y la población come antes de producir. Motivo: la provincia no se recuperaba de una mala cosecha.
 - El APK se numera con el recuento de commits (`version/code`) para que un APK nuevo pueda instalarse sobre el anterior. Escrito en el flujo, **todavía no ejecutado** (el trabajo `apk` se omite si fallan las pruebas).
-- Estado de las pruebas: 140 de 140 en local; pendiente de CI.
+- Ejecución #10 de GitHub Actions: pruebas 140 de 140 y APK generado (`version/code` 13), firmado con la clave de depuración de la imagen de Docker; la imagen se fija por digest.
+- Progreso offline (A9, D-016): `scripts/sim/offline.gd`, reglas `step_seconds` y `offline_limit_seconds`, hora del guardado en el sobre.
+- Aviso de versión nueva sin red (D-015): `scripts/update/update_check.gd`.
+- Estado de las pruebas: 161 de 161 en local; las 140 anteriores confirmadas en CI, las 21 nuevas pendientes.
 
 ## v0.0.3 (2026-10-21)
 

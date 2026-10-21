@@ -24,6 +24,8 @@
 		"min_productivity_percent": 50,
 		"growth_interval": 12,
 		"growth_percent": 2,
-		"growth_unrest_limit": 200
+		"growth_unrest_limit": 200,
+		"step_seconds": 60,
+		"offline_limit_seconds": 36000
 	}
 }

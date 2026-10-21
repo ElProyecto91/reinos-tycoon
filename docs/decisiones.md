@@ -112,6 +112,18 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Consecuencia a conocer: activar `INTERNET` añade un permiso visible en la instalación. No se hace hasta que exista el botón que lo usa.
 - Estado: **provisional**.
 
+## D-016. Progreso offline (criterio A9)
+
+- El tiempo ausente se convierte en pasos y se ejecutan los **mismos** pasos de la simulación (no hay una versión aproximada aparte). Prueba: 250 pasos offline dan un estado idéntico a 250 pasos jugados.
+- Parámetros provisionales en `rules.json`: `step_seconds` = 60 (un paso por minuto real, es decir, una hora de juego por minuto) y `offline_limit_seconds` = 36 000 (10 h, dentro del 8–12 h de la sección 19). **El valor de 60 s es una suposición**: la duración real del paso se decide tras medir en el móvil (A12).
+- Tiempo negativo (reloj atrasado) u hora de guardado desconocida: cero pasos, sin recompensa, y se informa del motivo.
+- Tope: la ausencia que pase de 10 h se descarta; no se acumula para después.
+- El resto de tiempo que no llega a un paso se conserva en la marca nueva; así repartir una ausencia en varias cargas da exactamente el mismo resultado que una sola, y cargar de nuevo con la misma hora no da pasos.
+- La hora del guardado (`saved_at`, segundos Unix) va en el sobre del archivo, fuera del estado de la simulación: la simulación no depende del reloj. El archivo sigue en el formato 1 porque aún no existe ningún guardado real de usuario; un guardado sin hora se lee como «hora desconocida».
+- El resumen por provincia (población antes/después, variación de existencias, edificios antes/después, peor hambre y peor descontento durante la ausencia, avisos finales) lo devuelve `Offline.settle`; mostrarlo es tarea de la interfaz (1.9).
+- Límites conocidos: no hay eventos, comercio ni automatizaciones que simular offline (todavía no existen). El reloj lo aporta quien llama; leer la hora del móvil y guardarla se conecta en la interfaz. Quien adelante el reloj del móvil gana como máximo 10 h por carga (juego de un jugador, sin servidor).
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

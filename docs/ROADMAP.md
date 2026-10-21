@@ -50,7 +50,7 @@ Prioridad máxima: 0.3 y 0.4, porque sin Godot ejecutable no se puede probar nad
 
 Las tareas 1.1 a 1.7 no necesitan pantalla. Se pueden hacer antes del mapa.
 
-**Estado (2026-10-21):** 1.1 a 1.7 escritas; sus 140 pruebas pasan en local con Godot 4.7.2 (la misma versión que la CI). Pendiente de confirmar en GitHub Actions (la última ejecución completada, #9, falló por los dos problemas ya corregidos; ver D-014). 1.8 a 1.10 sin empezar. Criterios del prototipo cubiertos hasta ahora: A1, A2 a A7, A8 (guardado) y A10 en pruebas de PC; A9 (progreso offline), A11 y A12 (móvil) sin hacer.
+**Estado (2026-10-21):** 1.1 a 1.7 hechas y confirmadas en GitHub Actions (ejecución #10, 140 de 140). Añadidos después, solo probados en local de momento: progreso offline (A9, D-016) y aviso de versión nueva (D-015), 161 pruebas en total. 1.8 a 1.10 sin empezar. Criterios del prototipo cubiertos en pruebas de PC: A1 a A10. Sin hacer: A11 y A12 (móvil), y la parte de interfaz de A9 (mostrar el resumen).
 
 ## Fases 2 a 9
 
