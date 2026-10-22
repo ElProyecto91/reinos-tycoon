@@ -38,7 +38,7 @@ static func garrison_of(world, province) -> int:
 
 ## Fuerza de defensa que se enfrentaría a un ataque (guarnición × factor de defensa).
 static func defense_strength(world, province) -> int:
-	return Fixed.percent_of(garrison_of(world, province), int(world.data.rules.get("war_defense_percent", 100)))
+	return Fixed.percent_of(garrison_of(world, province), int(world.data.rules.get("war_defense_percent", 100)) + province.defense_bonus_percent())
 
 
 ## Fuerza de un ejército atacante de `soldiers` soldados.
@@ -46,10 +46,10 @@ static func attack_strength(world, soldiers: int) -> int:
 	return Fixed.percent_of(soldiers, int(world.data.rules.get("war_attack_percent", 100)))
 
 
-## Resuelve una batalla sin tocar nada: devuelve {won, attacker_left, defender_left, rounds}. Función pura, para poder probarla.
-static func resolve(attackers: int, garrison: int, rules: Dictionary) -> Dictionary:
+## Resuelve una batalla sin tocar nada (`defense_bonus`: % extra de defensa de las murallas): devuelve {won, attacker_left, defender_left, rounds}. Función pura, para poder probarla.
+static func resolve(attackers: int, garrison: int, rules: Dictionary, defense_bonus: int = 0) -> Dictionary:
 	var att_pct: int = int(rules.get("war_attack_percent", 100))
-	var def_pct: int = int(rules.get("war_defense_percent", 100))
+	var def_pct: int = int(rules.get("war_defense_percent", 100)) + maxi(defense_bonus, 0)
 	var loss_pct: int = int(rules.get("war_round_loss_percent", 15))
 	var max_rounds: int = int(rules.get("war_max_rounds", 60))
 	var a: int = Fixed.percent_of(maxi(attackers, 0), att_pct)
@@ -168,7 +168,7 @@ static func _arrive(world, army: Dictionary) -> void:
 		return
 	var rules: Dictionary = world.data.rules
 	var garrison: int = garrison_of(world, target)
-	var result := resolve(soldiers, garrison, rules)
+	var result := resolve(soldiers, garrison, rules, target.defense_bonus_percent())
 	var report := {
 		"step": world.step_count, "from": army["from"], "to": army["to"], "attacker_realm": realm,
 		"defender_realm": world.owners.get(army["to"], ""), "sent": soldiers, "garrison": garrison,

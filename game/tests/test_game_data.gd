@@ -42,7 +42,7 @@ func test_real_files_load_without_errors() -> void:
 	var ok: bool = data.load_files(GOODS_PATH, BUILDINGS_PATH, RULES_PATH)
 	assert_true(ok, "los archivos reales deben cargarse: %s" % _errors_text(data))
 	assert_eq(data.goods.size(), 14, "número de mercancías")
-	assert_eq(data.buildings.size(), 16, "número de edificios")
+	assert_eq(data.buildings.size(), 17, "número de edificios")
 	assert_eq(data.rules["currency"], "coin", "la moneda de las reglas")
 	done()
 
@@ -52,7 +52,7 @@ func test_prototype_ids_are_stable() -> void:
 	data.load_files(GOODS_PATH, BUILDINGS_PATH)
 	for id in ["wheat", "flour", "bread", "wood", "firewood", "coin", "olives", "oil", "wool", "cloth", "iron", "weapons"]:
 		assert_true(data.goods.has(id), "falta la mercancía \"%s\"" % id)
-	for id in ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy", "barracks"]:
+	for id in ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy", "barracks", "wall"]:
 		assert_true(data.buildings.has(id), "falta el edificio \"%s\"" % id)
 	done()
 
@@ -156,6 +156,22 @@ func test_valid_building_is_accepted() -> void:
 	var ok: bool = data.build_buildings([_building("farm")])
 	assert_true(ok, "edificio válido: %s" % _errors_text(data))
 	assert_true(data.buildings.has("farm"), "queda registrado")
+	done()
+
+
+func test_defense_percent_is_optional_and_validated() -> void:
+	var data = _data_with_goods(["wheat"])
+	assert_true(data.build_buildings([_building("farm")]), "sin el campo es válido")
+	assert_eq(data.buildings["farm"]["defense_percent"], 0, "y vale 0")
+	for bad in [-1, 1001, 2.5, "mucho"]:
+		var d2 = _data_with_goods(["wheat"])
+		var building := _building("wall")
+		building["defense_percent"] = bad
+		assert_true(not d2.build_buildings([building]), "se rechaza defense_percent = %s" % str(bad))
+	var d3 = _data_with_goods(["wheat"])
+	var good := _building("wall")
+	good["defense_percent"] = 40
+	assert_true(d3.build_buildings([good]) and d3.buildings["wall"]["defense_percent"] == 40, "40 es válido")
 	done()
 
 

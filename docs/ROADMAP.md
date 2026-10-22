@@ -112,4 +112,6 @@ Petición del usuario (2026-10-22): conquistar territorios colindantes de otros 
 
 **Lote 0.5.0 (2026-10-22, en local; falta CI):** reinos rivales que se arman y atacan (D-040), elección de reino en «Partida nueva» y mapa de 52 provincias (D-041). Pendiente de la guerra: IA que ataque a otros rivales, comida y paga de soldados en marcha, asedios y fortificaciones, ajustar el ritmo de la IA jugando de verdad. Sigue sin medirse el rendimiento en el móvil.
 
+**Lote 0.6.0 (2026-10-22, en local; falta CI):** muralla y refuerzos (D-042), mapa de 54 provincias (D-043). Pendiente: modelo 3D propio de la muralla, que la IA ataque a otros rivales, comida y paga de soldados en marcha, asedios, comercio entre reinos y probar de verdad en el móvil (ninguna versión desde la 0.2.0 se ha instalado).
+
 Las fases 3 a 8 se detallarán en tareas pequeñas al terminar la anterior, no antes. Cada fase termina con pruebas ejecutadas, documentación actualizada y versión identificable (sección 37).

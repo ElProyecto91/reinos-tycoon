@@ -138,6 +138,23 @@ func test_the_rival_attacks_when_it_is_strong_enough_and_keeps_a_garrison() -> v
 	done()
 
 
+func test_walls_discourage_the_rival() -> void:
+	var data = new_data()
+	var world = _world(data)
+	world.find_province("c").recruits = 80
+	world.find_province("b").recruits = 20
+	_decide(world)
+	assert_eq(world.armies.size(), 1, "sin murallas ataca (relación ~153 %)")
+	var walled = _world(data)
+	walled.find_province("c").recruits = 80
+	walled.find_province("b").recruits = 20
+	walled.find_province("b").add_building("wall")
+	walled.find_province("b").add_building("wall")
+	_decide(walled)
+	assert_true(walled.armies.is_empty(), "con dos murallas la IA no ataca: su defensa pasó del umbral")
+	done()
+
+
 func test_the_rival_does_not_send_a_second_army_at_a_target_already_under_attack() -> void:
 	var data = new_data()
 	var world = _world(data)

@@ -480,3 +480,110 @@ func test_attacking_from_the_card_sends_the_army_and_the_report_pops_up() -> voi
 	assert_eq(main._card_emblem.kind, "emblem_leon", "el emblema pasa a ser el del nuevo dueño")
 	main.free()
 	done()
+
+
+# --- Murallas ---------------------------------------------------------------------------------------------------
+
+func test_walls_add_a_capped_defense_bonus_only_when_finished() -> void:
+	var data = new_data()
+	var p = new_province(data)
+	assert_eq(p.defense_bonus_percent(), 0, "sin murallas no hay bonus")
+	p.add_building("wall")
+	assert_eq(p.defense_bonus_percent(), int(data.buildings["wall"]["defense_percent"]), "una muralla da su bonus")
+	for i in range(6):
+		p.add_building("wall")
+	assert_eq(p.defense_bonus_percent(), int(data.rules["war_wall_cap_percent"]), "pero hay un tope")
+	var q = new_province(data)
+	q.store.seed_initial("wood", 20000)
+	q.store.seed_initial("coin", 50000)
+	assert_true(q.start_construction("wall"), "se puede empezar una muralla: %s" % q.last_error)
+	assert_eq(q.defense_bonus_percent(), 0, "y una obra en curso no defiende todavía")
+	done()
+
+
+func test_walls_make_a_battle_harder_for_the_attacker() -> void:
+	var data = new_data()
+	var rules: Dictionary = data.rules
+	var war = load(WAR)
+	var plain: Dictionary = war.resolve(100, 40, rules)
+	var walled: Dictionary = war.resolve(100, 40, rules, 80)
+	assert_true(plain["won"] and walled["won"], "con 100 atacantes caen las dos")
+	assert_true(walled["attacker_left"] < plain["attacker_left"], "pero la muralla cuesta más soldados (%d contra %d)" % [walled["attacker_left"], plain["attacker_left"]])
+	assert_true(not war.resolve(60, 40, rules, 80)["won"] and war.resolve(60, 40, rules)["won"], "y con 60 atacantes la muralla marca la diferencia")
+	var world = _world(data)
+	var c = world.find_province("c")
+	var before: int = war.defense_strength(world, c)
+	c.add_building("wall")
+	c.add_building("wall")
+	assert_true(war.defense_strength(world, c) > before, "la defensa que se muestra incluye las murallas")
+	done()
+
+
+func test_a_walled_province_is_defeated_less_easily_in_a_real_march() -> void:
+	var data = new_data()
+	var war = load(WAR)
+	var left := []
+	for walls in [0, 2]:
+		var world = _world(data)
+		for i in range(walls):
+			world.find_province("c").add_building("wall")
+		world.find_province("c").recruits = 20
+		world.find_province("b").recruits = 90
+		war.send(world, "b", "c", 90)
+		world.step_count = int(world.armies[0]["arrive"])
+		war.step(world)
+		left.append(world.battle_log[-1]["attacker_left"])
+	assert_true(left[1] < left[0], "con murallas sobreviven menos atacantes (%s)" % str(left))
+	done()
+
+
+func test_the_card_offers_reinforcements_from_a_neighbor_and_sends_half() -> void:
+	var main = _open_main()
+	var world = main.session.world
+	var target := ""
+	var helper := ""
+	for id in world.owners.keys():
+		if world.owners[id] != "leon":
+			continue
+		for n in world.trade_links[id]["neighbors"]:
+			if world.owners[n] == "leon":
+				target = id
+				helper = n
+				break
+		if target != "":
+			break
+	assert_true(target != "", "hay dos provincias de León colindantes")
+	for id in world.owners.keys():
+		world.find_province(id).recruits = 0
+	world.find_province(helper).recruits = 21
+	main._choose(target)
+	assert_true(main._attack_button.visible, "aparece el botón de refuerzo")
+	assert_eq(main._attack_button.text, "Reforzar con 11 soldados", "manda la mitad, redondeando hacia arriba")
+	main._attack_button.pressed.emit()
+	assert_eq(world.armies.size(), 1, "sale el refuerzo")
+	assert_eq(world.find_province(helper).recruits, 10, "y la vecina conserva el resto")
+	main._close_modal()
+	world.run_steps(int(world.data.rules["war_march_steps_per_hop"]))
+	assert_eq(world.find_province(target).recruits, 11, "llega a la provincia")
+	assert_eq(world.battle_count, 0, "sin batalla")
+	main.free()
+	done()
+
+
+func test_the_empty_map_card_shows_how_much_you_rule() -> void:
+	var main = _open_main()
+	var world = main.session.world
+	main._selected_id = ""
+	main._refresh_card()
+	assert_true("Dominas 4 de %d provincias" % world.provinces.size() in main._card_text.text, "dice cuántas provincias tienes: %s" % main._card_text.text)
+	world.find_province("leon").recruits = 7
+	main._refresh_card()
+	assert_true("con 7 soldados" in main._card_text.text, "y cuántos soldados: %s" % main._card_text.text)
+	world.armies = [
+		{"from": "leon", "to": "asturias", "soldiers": 5, "arrive": 99, "realm": "leon"},
+		{"from": "merida", "to": "zamora", "soldiers": 9, "arrive": 99, "realm": "califato"},
+	]
+	main._refresh_card()
+	assert_true("con 12 soldados" in main._card_text.text, "cuenta los que marchan por ti y no los del enemigo: %s" % main._card_text.text)
+	main.free()
+	done()

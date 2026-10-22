@@ -49,7 +49,8 @@ const HUECO_DE := {
 	"mine": "mina",
 	"smithy": "herreria",
 	"barracks": "cuartel",
-	# Sin modelo propio todavía: comparten hueco (y aspecto) con el leñador y la herrería.
+	# Sin modelo propio todavía: comparten hueco (y aspecto) con el leñador, la herrería y el cuartel (la muralla).
+	"wall": "cuartel",
 	"charcoal_kiln": "lenador",
 	"toolsmith": "herreria",
 }

@@ -272,6 +272,23 @@ func _build_map_card(root: VBoxContainer) -> void:
 	box.add_child(_attack_button)
 
 
+## Línea de dominio para la tarjeta del mapa sin selección ("" si no hay guerra).
+func _dominion_text() -> String:
+	var world = session.world
+	if not WarScript.enabled(world):
+		return ""
+	var mine := 0
+	var soldiers := 0
+	for p in world.provinces:
+		if WarScript.is_player(world, p.id):
+			mine += 1
+			soldiers += p.recruits
+	for army in world.armies:
+		if army.get("realm", world.player_realm) == world.player_realm:
+			soldiers += int(army["soldiers"])
+	return "\n\nDominas %d de %d provincias, con %d soldados." % [mine, world.provinces.size(), soldiers]
+
+
 ## La ficha solo se puede manejar en provincias propias.
 func _apply_ownership() -> void:
 	if _panel == null or session == null:
@@ -298,12 +315,14 @@ func _on_attack_pressed() -> void:
 	var origin_id := _best_attack_origin(_selected_id)
 	if origin_id == "":
 		return
-	var count: int = session.world.find_province(origin_id).recruits
+	var reserve: int = session.world.find_province(origin_id).recruits
+	var reinforcing := WarScript.is_player(session.world, _selected_id)
+	var count: int = (reserve + 1) / 2 if reinforcing else reserve     # un refuerzo deja la mitad de guarnición en casa
 	var result: Dictionary = WarScript.send(session.world, origin_id, _selected_id, count)
 	if not result["ok"]:
-		_show_modal("No se puede atacar", str(result["error"]), [{"text": "Entendido"}])
+		_show_modal("No se puede mandar", str(result["error"]), [{"text": "Entendido"}])
 	else:
-		_show_modal("Ejército en marcha", "%d soldados salen de %s hacia %s. Llegarán en %d horas de juego." % [count, session.world.find_province(origin_id).display_name, session.world.find_province(_selected_id).display_name, int(session.data.rules["war_march_steps_per_hop"])], [{"text": "Entendido"}])
+		_show_modal("Refuerzo en marcha" if reinforcing else "Ejército en marcha", "%d soldados salen de %s hacia %s. Llegarán en %d horas de juego." % [count, session.world.find_province(origin_id).display_name, session.world.find_province(_selected_id).display_name, int(session.data.rules["war_march_steps_per_hop"])], [{"text": "Entendido"}])
 	_map_view.queue_redraw()
 	_refresh_card()
 
@@ -371,7 +390,7 @@ func _refresh_card() -> void:
 	_apply_ownership()
 	if province == null:
 		_card_title.text = "El mapa del año 1000"
-		_card_text.text = "Toca un territorio para elegirlo. Arrastra para moverte y pellizca (o usa + y −) para acercar. Los colores son los reinos; las formas son aproximadas, no fronteras históricas."
+		_card_text.text = "Toca un territorio para elegirlo. Arrastra para moverte y pellizca (o usa + y −) para acercar. Los colores son los reinos; las formas son aproximadas, no fronteras históricas." + _dominion_text()
 		return
 	var entry: Dictionary = session.map.find(_selected_id)
 	var realm: Dictionary = session.map.realm_of(_selected_id)
@@ -395,6 +414,12 @@ func _refresh_card() -> void:
 	if not mine:
 		lines.append("Guarnición: %d soldados y milicia · defensa %d" % [province.recruits, WarScript.defense_strength(session.world, province)])
 	var origin_id := _best_attack_origin(_selected_id)
+	if mine and WarScript.enabled(session.world) and origin_id != "":
+		var reserve: int = session.world.find_province(origin_id).recruits
+		var help_count: int = (reserve + 1) / 2
+		lines.append("%s, colindante, tiene %d soldados: puede mandar %d de refuerzo." % [session.world.find_province(origin_id).display_name, reserve, help_count])
+		_attack_button.text = "Reforzar con %d soldados" % help_count
+		_attack_button.visible = true
 	if not mine and WarScript.enabled(session.world):
 		if origin_id == "":
 			lines.append("Para atacar necesitas soldados en una provincia colindante tuya.")

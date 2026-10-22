@@ -97,6 +97,12 @@
 			"workers": 0, "build_workers": 3, "build_cost": {"wood": 3500, "coin": 6000}, "build_steps": 12,
 			"inputs": {}, "outputs": {}, "cycle_steps": 1, "upkeep": {"coin": 300},
 			"storage_capacity": 0, "housing": 0
+		},
+		{
+			"id": "wall", "name": "Muralla", "category": "military", "defense_percent": 40,
+			"workers": 0, "build_workers": 4, "build_cost": {"wood": 5000, "coin": 8000}, "build_steps": 24,
+			"inputs": {}, "outputs": {}, "cycle_steps": 1, "upkeep": {"coin": 200},
+			"storage_capacity": 0, "housing": 0
 		}
 	]
 }

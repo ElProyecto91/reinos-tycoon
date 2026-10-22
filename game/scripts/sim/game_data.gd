@@ -87,6 +87,7 @@ const RULE_OPTIONAL_INTS := {
 	"war_ai_min_soldiers": [0, 100000],
 	"war_ai_ratio_percent": [0, 100000],
 	"war_ai_keep_percent": [0, 99],
+	"war_wall_cap_percent": [0, 10000],
 }
 
 ## Mercancías por id: id -> {id, name, category, unit, physical}
@@ -414,11 +415,17 @@ func build_buildings(list: Array) -> bool:
 			if max_level != null and max_level > 3:
 				errors.append("%s: \"max_level\" no puede pasar de 3" % where)
 				max_level = null
+		var defense_percent = 0
+		if entry.has("defense_percent"):
+			defense_percent = _int_field(entry, "defense_percent", 0, where)
+			if defense_percent != null and defense_percent > 1000:
+				errors.append("%s: \"defense_percent\" no puede pasar de 1000" % where)
+				defense_percent = null
 		var build_cost = _amount_map(entry, "build_cost", where, false)
 		var inputs = _amount_map(entry, "inputs", where, true)
 		var outputs = _amount_map(entry, "outputs", where, true)
 		var upkeep = _amount_map(entry, "upkeep", where, true)
-		var parsed := [workers, build_workers, build_steps, cycle_steps, storage_capacity, housing, max_level, build_cost, inputs, outputs, upkeep]
+		var parsed := [workers, build_workers, build_steps, cycle_steps, storage_capacity, housing, max_level, defense_percent, build_cost, inputs, outputs, upkeep]
 		if parsed.has(null):
 			ok = false
 		elif not inputs.is_empty() and outputs.is_empty():
@@ -443,6 +450,7 @@ func build_buildings(list: Array) -> bool:
 				"storage_capacity": storage_capacity,
 				"housing": housing,
 				"max_level": max_level,
+				"defense_percent": defense_percent,
 			}
 	return errors.size() == before
 

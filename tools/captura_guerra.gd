@@ -31,6 +31,26 @@ func _init() -> void:
 		await _frames(8)
 		_guardar(out)
 		return
+	if escena == "refuerzo":
+		var objetivo := ""
+		var ayuda := ""
+		for id in world.owners.keys():
+			if world.owners[id] != "leon":
+				continue
+			for n in world.trade_links[id]["neighbors"]:
+				if world.owners[n] == "leon":
+					objetivo = id
+					ayuda = n
+					break
+			if objetivo != "":
+				break
+		world.find_province(ayuda).recruits = 40
+		main._choose(objetivo)
+		main._refresh_all()
+		main._show_map(true)
+		await _frames(8)
+		_guardar(out)
+		return
 	if escena == "aviso" or escena == "perdida":
 		# Un León pasivo: se avanza hasta que un rival lance su primer ataque (o hasta que caiga una provincia).
 		var limite := 24 * 150

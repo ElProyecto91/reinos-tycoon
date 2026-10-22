@@ -91,13 +91,15 @@ P = [
     ("bearn", "Vizcondado de Béarn", "Béarn", "gascuna", "norte", -0.37, 43.30, 0.0, 1, "H-51 vizconde Centule III (984-1004), de la casa de Gascuña; la fuente no da capital: ubicación aproximada de juego"),
     # --- Ampliación M6 (versión 0.4.0) ---------------------------------------------------------------------
     ("narbona", "Vizcondado de Narbona", "Narbona", "tolosa", "norte", 3.00, 43.18, 0.15, 1, "H-53 vizconde Raimundo I (h. 969-1019/23), «nominalmente sujeto a los condes de Tolosa pero gobernado casi siempre con autonomía»"),
+    ("bigorre", "Condado de Bigorra", "Bigorra", "gascuna", "norte", 0.08, 43.23, 0.1, 1, "H-58 García Lupus, conde 980-1030, pequeño feudatario del ducado de Gascuña"),
     ("alava", "Álava y Vizcaya", "Álava", "pamplona", "norte", -2.80, 43.00, 0.2, 1, "H-54 CONFIANZA BAJA: la fuente solo dice que Vizcaya estaba bajo control navarro en el siglo X y que Munio Velaz era conde de Álava; no dice quién mandaba en el 1000"),
+    ("najera", "Nájera", "Nájera", "pamplona", "norte", -2.73, 42.42, 0.1, 1, "H-59 CONFIANZA BAJA: Sancho Garcés I de Pamplona la recuperó en 918 y el «reino de Nájera» se fundó en 923; la página no dice nada del año 1000"),
     ("baleares", "Islas Baleares", "Baleares", "califato", "cordoba", 2.65, 39.57, 0.0, 2, "H-47 SIN CONFIRMAR: no se encontró qué estatus tenían hacia el 1000; la taifa propia es de 1018"),
     ("ceuta", "Ceuta", "Ceuta", "califato", "cordoba", -5.31, 35.89, 0.0, 1, "H-48 plaza omeya bajo Córdoba hasta al menos 984; hacia el 1000 sin confirmar"),
 ]
 
 # Provincias que se reparten la tierra francesa (el resto de provincias no entra en ella).
-DE_FRANCIA = {"tolosa", "gascuna", "carcasona", "cominges", "bearn", "narbona"}
+DE_FRANCIA = {"tolosa", "gascuna", "carcasona", "cominges", "bearn", "narbona", "bigorre"}
 
 # Enclaves: territorios que no son una parte continua de la península. Su suelo no sale del reparto por cercanía sino de la
 # tierra que cae dentro de una caja (lon0, lon1, lat0, lat1); `enlaces` son vecindades por mar (no comparten lindero).

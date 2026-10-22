@@ -5,7 +5,7 @@ extends RefCounted
 ## Los dibujos son simples a propósito: tienen que leerse a 40–60 píxeles.
 
 const GOODS: Array[String] = ["wheat", "flour", "bread", "wood", "firewood", "olives", "oil", "wool", "cloth", "iron", "weapons", "charcoal", "tools", "coin"]
-const BUILDINGS: Array[String] = ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy", "charcoal_kiln", "toolsmith", "barracks"]
+const BUILDINGS: Array[String] = ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy", "charcoal_kiln", "toolsmith", "barracks", "wall"]
 const SYMBOLS: Array[String] = ["people", "hammer", "town", "face", "bolt", "clock", "warning", "danger", "storage", "helmet", "arrow", "calendar", "sun", "leaf", "snow", "sprout", "star", "caravan"]
 ## Emblemas de juego de los reinos («emblem_» + id del reino). NO son heráldica histórica: los escudos con armas hereditarias
 ## aparecen a mediados del siglo XII (docs/DISENO_EMBLEMAS.md). Son figuras sencillas inventadas, con el color del reino en el mapa.
@@ -311,6 +311,14 @@ static func draw(c: CanvasItem, kind: String, rect: Rect2) -> void:
 			_line(c, r, [0.32, 0.64], [0.68, 0.28], STONE_L, 0.08)
 			_line(c, r, [0.32, 0.28], [0.68, 0.64], STONE_L, 0.08)
 			_rect(c, r, 0.46, 0.0, 0.08, 0.16, GOLD)
+		"wall":
+			_rect(c, r, 0.06, 0.4, 0.88, 0.5, STONE)
+			for mx in [0.06, 0.28, 0.5, 0.72]:
+				_rect(c, r, mx, 0.22, 0.15, 0.2, STONE_L)
+			_rect(c, r, 0.38, 0.6, 0.24, 0.3, DARK)
+			_circle(c, r, 0.5, 0.6, 0.12, DARK)
+			_line(c, r, [0.06, 0.64], [0.34, 0.64], STONE_L, 0.04)
+			_line(c, r, [0.66, 0.64], [0.94, 0.64], STONE_L, 0.04)
 		"star":
 			var pts := []
 			for i in 10:

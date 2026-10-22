@@ -364,6 +364,20 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Las formas son aproximación de juego. Los guardados del mapa de 49 provincias se apartan al abrir esta versión.
 - Estado: **provisional**.
 
+## D-042. Muralla, refuerzos y dominio (versión 0.6.0)
+
+- **Muralla** (`wall`, categoría militar): cuesta 5 de madera y 8 de moneda, 24 pasos de obra, mantenimiento 0,2 de moneda por paso. Cada muralla terminada suma 40 puntos al porcentaje de defensa de la provincia (130 de base), con un tope de +100 por provincia (`war_wall_cap_percent`). Una obra en curso no defiende. La defensa que se enseña en la tarjeta, la batalla y la decisión de la IA usan el mismo cálculo. **Cifras de juego, sin fuente histórica.**
+- **Aspecto 3D provisional**: la muralla no tiene modelo propio; comparte hueco con el cuartel (como el carbonero con el leñador), así que en la vista de provincia se dibuja un cuartel. Pendiente.
+- **Reforzar**: en una provincia propia, si una colindante propia tiene soldados, la tarjeta ofrece mandar la mitad (redondeando hacia arriba) para que la vecina conserve guarnición. Es lo que el aviso de «ejército enemigo» sugiere hacer.
+- La tarjeta del mapa sin selección dice cuántas provincias dominas y con cuántos soldados (incluidos los que marchan).
+- Estado: **provisional**.
+
+## D-043. Mapa de 54 provincias (versión 0.6.0)
+
+- Se añaden **Bigorra** (H-58, reino de Gascuña) y **Nájera** (H-59, reino de Pamplona, confianza baja). Se buscaron también Almería, Calatayud y Badajoz y **no se añaden**: las fuentes leídas no describen el año 1000.
+- Las formas son aproximación de juego. Los guardados del mapa de 52 provincias se apartan al abrir esta versión.
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

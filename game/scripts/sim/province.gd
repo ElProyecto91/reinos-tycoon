@@ -281,6 +281,14 @@ func recruit(count: int) -> bool:
 	return true
 
 
+## Bonus de defensa en % que dan las murallas terminadas (con el tope war_wall_cap_percent de las reglas).
+func defense_bonus_percent() -> int:
+	var total := 0
+	for b in buildings:
+		total += int(_data.buildings[b["type"]].get("defense_percent", 0))
+	return mini(total, int(_rules.get("war_wall_cap_percent", 0)))
+
+
 ## Pone al día la mano de obra tras un cambio de fuera del paso (soldados que llegan, bajas, leva): si ahora hay más
 ## trabajadores asignados que mano de obra, se liberan los que sobran. Sin esto el estado guardado sería incoherente.
 func settle_labor() -> void:
