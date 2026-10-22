@@ -58,6 +58,11 @@ var _build_buttons := {}
 var _army_info := {}
 var _upgrade_button: Button = null
 var _army_costs_key: String = ""
+var _caravan_header: Tile
+var _caravan_grid: GridContainer
+var _caravan_tiles := {}
+## Lo que viaja hacia o desde la provincia ({"in": {mercancía: cantidad}, "out": {...}}, ver trade.gd); lo pone main.
+var _caravans := {"in": {}, "out": {}}
 
 
 func setup(game_data) -> void:
@@ -101,6 +106,19 @@ func setup(game_data) -> void:
 	_detail_content.add_theme_constant_override("separation", 6)
 	_detail_box.add_child(_detail_content)
 
+	# Caravanas del reparto entre provincias del reino: solo se ve si algo viaja hacia o desde la provincia.
+	_caravan_header = _header("caravan")
+	_caravan_grid = _grid(4)
+	for good_id in _data.rules.get("trade_goods", []):
+		for way in ["in", "out"]:
+			var caravan_tile := _make_tile("chip", 64)
+			caravan_tile.kind = good_id
+			caravan_tile.flat = true
+			caravan_tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			caravan_tile.visible = false
+			_caravan_grid.add_child(caravan_tile)
+			_caravan_tiles["%s:%s" % [way, good_id]] = caravan_tile
+
 	_header("town")
 	_buildings_grid = _grid(5)
 
@@ -143,6 +161,16 @@ func show_province(province, neighbor_names: Array) -> void:
 	_feedback.text = ""
 	_detail_key = ""
 	refresh()
+
+
+## Caravanas en camino de esta provincia (resultado de Trade.summary_for); se muestran en el próximo refresh().
+func set_caravans(summary: Dictionary) -> void:
+	_caravans = {"in": summary.get("in", {}), "out": summary.get("out", {})}
+
+
+## Ficha de una mercancía que llega ("in") o sale ("out") en caravana, para las pruebas (null si no se muestra).
+func caravan_tile(way: String, good_id: String) -> Button:
+	return _caravan_tiles.get("%s:%s" % [way, good_id], null)
 
 
 func current_province_id() -> String:
@@ -238,6 +266,7 @@ func refresh() -> void:
 	_update_stats(p)
 	_update_alerts(p)
 	_update_stock(p)
+	_update_caravans()
 	_update_buildings(p)
 	_update_projects(p)
 	_update_army(p)
@@ -315,6 +344,28 @@ func _update_stock(p) -> void:
 			tile.ratio = -1.0
 		tile.text_color = Tile.COLOR_BAD if amount == 0 and good_id in ["wheat", "bread", "coin"] else Tile.COLOR_TEXT
 		tile.refresh()
+
+
+func _update_caravans() -> void:
+	var any := false
+	var kinds := 0
+	for key in _caravan_tiles.keys():
+		var way: String = key.get_slice(":", 0)
+		var good_id: String = key.get_slice(":", 1)
+		var tile: Tile = _caravan_tiles[key]
+		var amount: int = int(_caravans[way].get(good_id, 0))
+		tile.visible = amount > 0
+		if amount > 0:
+			any = true
+			kinds += 1
+			tile.caption = ("+" if way == "in" else "-") + Texts.compact(amount)
+			tile.text_color = COLOR_OK if way == "in" else COLOR_MUTED
+			tile.refresh()
+	_caravan_header.visible = any
+	_caravan_grid.visible = any
+	if any:
+		_caravan_header.caption = str(kinds)
+		_caravan_header.refresh()
 
 
 # --- Edificios agrupados por tipo -----------------------------------------------------------------------

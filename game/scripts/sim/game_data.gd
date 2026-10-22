@@ -64,6 +64,14 @@ const RULE_OPTIONAL_INTS := {
 	"upgrade_steps_percent": [0, 10000],
 	"upgrade_output_percent": [0, 1000],
 	"upgrade_upkeep_percent": [0, 1000],
+	"trade_interval": [0, 100000],
+	"trade_deficit_percent": [0, 100],
+	"trade_target_percent": [0, 100],
+	"trade_surplus_percent": [0, 100],
+	"trade_steps_per_hop": [0, 100000],
+	"trade_cost_per_unit_hop": [0, 1000000],
+	"trade_route_cap": [0, 1000000000],
+	"trade_max_shipments": [0, 100000],
 }
 
 ## Mercancías por id: id -> {id, name, category, unit, physical}
@@ -187,7 +195,7 @@ func build_rules(raw: Dictionary) -> bool:
 			continue
 		result[key] = int(value2)
 	for key in raw.keys():
-		if not RULE_INTS.has(key) and not RULE_OPTIONAL_INTS.has(key) and key != "currency" and key != "food_goods":
+		if not RULE_INTS.has(key) and not RULE_OPTIONAL_INTS.has(key) and key != "currency" and key != "food_goods" and key != "trade_goods":
 			errors.append("regla \"%s\": nombre desconocido (¿error de escritura?)" % str(key))
 	var currency = raw.get("currency", null)
 	if typeof(currency) != TYPE_STRING or not goods.has(currency):
@@ -224,11 +232,33 @@ func build_rules(raw: Dictionary) -> bool:
 				errors.append("%s: \"value\" debe ser un entero positivo" % where)
 				continue
 			food_list.append({"good": good, "value": int(value)})
+	# Red de distribución dentro de cada reino (docs/DISENO_COMERCIO.md). trade_interval 0 = sin comercio.
+	var trade_list: Array = []
+	var trade_raw = raw.get("trade_goods", [])
+	if typeof(trade_raw) != TYPE_ARRAY:
+		errors.append("regla \"trade_goods\": debe ser una lista de mercancías")
+	else:
+		for good in trade_raw:
+			if typeof(good) != TYPE_STRING or not goods.has(good) or not goods[good]["physical"]:
+				errors.append("regla \"trade_goods\": %s no es una mercancía física existente" % str(good))
+			elif trade_list.has(good):
+				errors.append("regla \"trade_goods\": mercancía repetida (%s)" % good)
+			else:
+				trade_list.append(good)
+	if errors.size() == before and int(result.get("trade_interval", 0)) > 0:
+		var tr: Dictionary = result
+		if trade_list.is_empty():
+			errors.append("regla \"trade_goods\": con comercio activo debe haber al menos una mercancía")
+		elif not (tr["trade_deficit_percent"] < tr["trade_target_percent"] and tr["trade_target_percent"] < tr["trade_surplus_percent"]):
+			errors.append("reglas de comercio: deficit < objetivo < excedente (en porcentaje)")
+		elif tr["trade_steps_per_hop"] < 1 or tr["trade_route_cap"] < 1 or tr["trade_max_shipments"] < 1:
+			errors.append("reglas de comercio: pasos por salto, tope de ruta y máximo de envíos deben ser al menos 1")
 	if errors.size() == before:
 		if result["unrest_slow_threshold"] >= result["unrest_max"]:
 			errors.append("regla \"unrest_slow_threshold\": debe ser menor que unrest_max")
 		else:
 			result["food_goods"] = food_list
+			result["trade_goods"] = trade_list
 			rules = result
 	return errors.size() == before
 

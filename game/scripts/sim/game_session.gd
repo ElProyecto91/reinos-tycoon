@@ -50,7 +50,7 @@ func start(now: int) -> bool:
 		return false
 	var any_file := FileAccess.file_exists(save_path) or FileAccess.file_exists(save_path + ".bak")
 	if any_file:
-		var loaded: Dictionary = SaveGameScript.read_file(data, save_path)
+		var loaded: Dictionary = SaveGameScript.read_file(data, save_path, map.trade_links())
 		if loaded["ok"]:
 			var mismatch := _map_mismatch(loaded["world"])
 			if mismatch == "":

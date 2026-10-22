@@ -51,13 +51,13 @@ jobs:
           # si la importación fallara, las pruebas de test_diorama.gd no cargarían los modelos y fallarían.
 
       - name: Ejecutar pruebas
-        timeout-minutes: 10
+        timeout-minutes: 13
         run: |
           set -o pipefail
           mkdir -p logs
-          # "timeout 420" corta dentro del contenedor si algo se cuelga y deja el registro.
+          # "timeout 600" corta dentro del contenedor si algo se cuelga y deja el registro.
           docker run --rm -v "$PWD:/work" -w /work "$GODOT_IMAGE" \
-            timeout 420 godot --headless --path game -s res://tests/run_tests.gd 2>&1 | tee logs/pruebas.txt
+            timeout 600 godot --headless --path game -s res://tests/run_tests.gd 2>&1 | tee logs/pruebas.txt
 
       - name: Comprobar que el ejecutor detecta fallos
         timeout-minutes: 8

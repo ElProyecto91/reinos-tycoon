@@ -1,6 +1,6 @@
 {
 	"format_version": 1,
-	"status": "Parámetros de juego provisionales. No son datos históricos. Cantidades en milésimas; tiempos en pasos de simulación (un paso equivale a una hora de juego; el día tiene 24 pasos). heating_per_person: leña por persona y paso en invierno (0 = sin necesidad); cold_warning_steps/cold_unrest_rise/cold_unrest_limit: escasez de leña gradual, sin muertes y con tope de descontento (con tope 1000 las provincias sin leñador llegaban a trabajar al 50 %, experimento del 2026-10-22); upgrade_*: coste y pasos de una mejora en porcentaje del coste de construcción, y aumento de producción y de mantenimiento por nivel. calendar_start_day: día del año de la partida nueva (0 a 364; 181 = 1 de julio, la fecha de referencia de la región, D-021).",
+	"status": "Parámetros de juego provisionales. No son datos históricos. Cantidades en milésimas; tiempos en pasos de simulación (un paso equivale a una hora de juego; el día tiene 24 pasos). heating_per_person: leña por persona y paso en invierno (0 = sin necesidad); cold_warning_steps/cold_unrest_rise/cold_unrest_limit: escasez de leña gradual, sin muertes y con tope de descontento (con tope 1000 las provincias sin leñador llegaban a trabajar al 50 %, experimento del 2026-10-22); upgrade_*: coste y pasos de una mejora en porcentaje del coste de construcción, y aumento de producción y de mantenimiento por nivel. trade_*: reparto entre provincias del mismo reino (cada trade_interval pasos; déficit/objetivo/excedente en % del límite de almacén; trade_steps_per_hop pasos por salto; coste en milésimas de moneda por unidad y salto, que paga el destino; tope por ruta y reparto en milésimas; envíos en vuelo como máximo); PARÁMETROS DE JUEGO, sin fuente histórica. calendar_start_day: día del año de la partida nueva (0 a 364; 181 = 1 de julio, la fecha de referencia de la región, D-021).",
 	"rules": {
 		"currency": "coin",
 		"base_capacity": 60000,
@@ -37,6 +37,15 @@
 		"upgrade_steps_percent": 150,
 		"upgrade_output_percent": 50,
 		"upgrade_upkeep_percent": 50,
+		"trade_interval": 24,
+		"trade_deficit_percent": 20,
+		"trade_target_percent": 50,
+		"trade_surplus_percent": 70,
+		"trade_steps_per_hop": 12,
+		"trade_cost_per_unit_hop": 200,
+		"trade_route_cap": 20000,
+		"trade_max_shipments": 600,
+		"trade_goods": ["bread", "wheat", "flour", "firewood", "wood", "tools"],
 		"calendar_start_year": 1000,
 		"calendar_start_day": 181,
 		"step_seconds": 60,

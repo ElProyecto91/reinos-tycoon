@@ -12,6 +12,7 @@ class Hoja extends Control:
 		todos.append_array(Icons.GOODS)
 		todos.append_array(Icons.BUILDINGS)
 		todos.append_array(Icons.SYMBOLS)
+		todos.append_array(Icons.EMBLEMS)
 		var font := ThemeDB.fallback_font
 		for i in todos.size():
 			var col := i % 8
@@ -27,7 +28,7 @@ func _init() -> void:
 	await process_frame
 	var out: String = OS.get_cmdline_user_args()[0]
 	var hoja := Hoja.new()
-	hoja.size = Vector2(1080, 1000)
+	hoja.size = Vector2(1080, 1250)
 	root.add_child(hoja)
 	for i in 4:
 		await process_frame

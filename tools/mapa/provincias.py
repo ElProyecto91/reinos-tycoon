@@ -24,6 +24,8 @@ REALMS = {
                "note": "H-45. Los condes habían perdido casi todo su poder efectivo hacia fines del siglo X; la ciudad la regía un vizconde. Nominalmente bajo el rey de Francia."},
     "gascuna": {"name": "Ducado de Gascuña", "color": (190, 128, 148), "label": "DUCADO DE GASCUÑA",
                 "note": "H-46. Duque Bernat I Guilhem (996-1009), de la línea ducal vasca; en la práctica independiente de los reyes francos. Su madre, o su padre, enlazaba con Pamplona por matrimonio (Urraca Garcés)."},
+    "carcasona": {"name": "Condado de Carcasona", "color": (156, 122, 92), "label": "COND. DE CARCASONA",
+                  "note": "H-50. Roger I, conde de Comminges desde 957, de Couserans desde 983 y de Carcasona hacia el 1000 (muere en 1012). Una sola casa con tres condados; la forma de cada uno es aproximación de juego."},
     "catalanes": {"name": "Condados catalanes", "color": (218, 188, 84), "label": "CONDADOS CATALANES",
                   "note": "H-41. Condados independientes entre sí; desde 987 los condes no rinden homenaje a la nueva dinastía francesa."},
 }
@@ -80,9 +82,16 @@ P = [
     # --- Ampliación M4 (versión 0.2.0): sur de Francia y enclaves ---------------------------------------
     ("tolosa", "Condado de Tolosa", "Tolosa", "tolosa", "norte", 1.44, 43.60, 0.4, 3, "H-45"),
     ("gascuna", "Ducado de Gascuña", "Gascuña", "gascuna", "norte", -0.58, 44.84, 0.5, 2, "H-46 capital Burdeos según el artículo (no confirmada para el año 1000)"),
+    # --- Ampliación M5 (versión 0.3.0): el Mediodía entre Tolosa y los Pirineos ------------------------------
+    ("carcasona", "Condado de Carcasona", "Carcasona", "carcasona", "norte", 2.35, 43.21, 0.45, 2, "H-50 Roger I hereda Carcasona de su madre hacia el 1000"),
+    ("cominges", "Condados de Cominges y Coserans", "Cominges", "carcasona", "norte", 0.72, 43.11, 0.35, 1, "H-50 Cominges desde 957 y Coserans desde 983 (ubicación aproximada de juego)"),
+    ("bearn", "Vizcondado de Béarn", "Béarn", "gascuna", "norte", -0.37, 43.30, 0.0, 1, "H-51 vizconde Centule III (984-1004), de la casa de Gascuña; la fuente no da capital: ubicación aproximada de juego"),
     ("baleares", "Islas Baleares", "Baleares", "califato", "cordoba", 2.65, 39.57, 0.0, 2, "H-47 SIN CONFIRMAR: no se encontró qué estatus tenían hacia el 1000; la taifa propia es de 1018"),
     ("ceuta", "Ceuta", "Ceuta", "califato", "cordoba", -5.31, 35.89, 0.0, 1, "H-48 plaza omeya bajo Córdoba hasta al menos 984; hacia el 1000 sin confirmar"),
 ]
+
+# Provincias que se reparten la tierra francesa (el resto de provincias no entra en ella).
+DE_FRANCIA = {"tolosa", "gascuna", "carcasona", "cominges", "bearn"}
 
 # Enclaves: territorios que no son una parte continua de la península. Su suelo no sale del reparto por cercanía sino de la
 # tierra que cae dentro de una caja (lon0, lon1, lat0, lat1); `enlaces` son vecindades por mar (no comparten lindero).

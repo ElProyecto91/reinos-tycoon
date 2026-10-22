@@ -1,4 +1,4 @@
-# Diseño: redes de comercio y distribución dentro de cada reino (borrador, sin código)
+# Diseño: redes de comercio y distribución dentro de cada reino (implementado en la versión 0.3.0, ver D-034)
 
 Petición del usuario (2026-10-22): «en cada reino exista redes de comercio y distribución de materiales o mercancías para cubrir déficit en algún pueblo o ciudad». Es la fase 4 del plan («Comercio»), adelantada. Todo lo que sigue son **parámetros de juego provisionales**, no datos históricos: no hay fuente leída sobre rutas ni volúmenes de comercio hacia el año 1000 en este repositorio.
 

@@ -41,7 +41,9 @@ static func pack(payload: Dictionary, game_version: String, saved_at: int = 0) -
 ## `saved_at` es la hora Unix del guardado (0 si falta o no es válida: el progreso offline
 ## trata un 0 como «hora desconocida» y no da recompensa). La hora está fuera del estado
 ## de la simulación a propósito: la simulación no depende del reloj.
-static func decode(data, text: String) -> Dictionary:
+## `links` es la red de comercio del mapa (GameMap.trade_links()): no se guarda, así que quien carga la pasa;
+## sin ella el mundo cargado no comercia.
+static func decode(data, text: String, links: Dictionary = {}) -> Dictionary:
 	var json := JSON.new()
 	if json.parse(text) != OK:
 		return _failure("El archivo de guardado está incompleto o dañado (JSON no válido en la línea %d)." % json.get_error_line())
@@ -69,6 +71,7 @@ static func decode(data, text: String) -> Dictionary:
 	var world = WorldScript.new(data)
 	if not world.load_dict(payload_json.data):
 		return _failure("El guardado no es coherente: %s." % world.last_error)
+	world.set_network(links)
 	var game_version = envelope.get("game_version", "")
 	if typeof(game_version) != TYPE_STRING:
 		game_version = ""
@@ -109,13 +112,13 @@ static func write_file(world, path: String, game_version: String, saved_at: int 
 
 ## Lee un guardado. Si el principal falla, prueba la copia .bak.
 ## Devuelve {ok, world, error, game_version, saved_at, used_backup, warning}.
-static func read_file(data, path: String) -> Dictionary:
-	var main := _read_one(data, path)
+static func read_file(data, path: String, links: Dictionary = {}) -> Dictionary:
+	var main := _read_one(data, path, links)
 	if main["ok"]:
 		main["used_backup"] = false
 		main["warning"] = ""
 		return main
-	var backup := _read_one(data, path + ".bak")
+	var backup := _read_one(data, path + ".bak", links)
 	if backup["ok"]:
 		backup["used_backup"] = true
 		backup["warning"] = "No se pudo leer el guardado principal (%s) Se cargó la copia anterior." % main["error"]
@@ -125,10 +128,10 @@ static func read_file(data, path: String) -> Dictionary:
 	return main
 
 
-static func _read_one(data, path: String) -> Dictionary:
+static func _read_one(data, path: String, links: Dictionary = {}) -> Dictionary:
 	if not FileAccess.file_exists(path):
 		return _failure("No hay archivo de guardado en %s." % path)
-	return decode(data, FileAccess.get_file_as_string(path))
+	return decode(data, FileAccess.get_file_as_string(path), links)
 
 
 static func _failure(message: String) -> Dictionary:

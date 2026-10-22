@@ -22,6 +22,7 @@ const TEST_FILES: Array[String] = [
 	"res://tests/test_economia_nueva.gd",
 	"res://tests/test_ejercito.gd",
 	"res://tests/test_ficha.gd",
+	"res://tests/test_comercio.gd",
 	"res://tests/test_calendario.gd",
 	"res://tests/test_estaciones.gd",
 	"res://tests/test_forestal_mejoras.gd",
@@ -60,6 +61,12 @@ func _init() -> void:
 func _run_all() -> Variant:
 	var files: Array[String] = []
 	files.append_array(TEST_FILES)
+	# «-- --solo=comercio» ejecuta solo los archivos cuyo nombre contiene ese texto (para trabajar más rápido;
+	# la suite completa, sin este argumento, es la que vale).
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--solo="):
+			var wanted: String = arg.substr(7)
+			files = files.filter(func(f): return wanted in f.get_file())
 	if "--selftest-fail" in OS.get_cmdline_user_args():
 		files.append(SELFTEST_FILE)
 

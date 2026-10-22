@@ -297,6 +297,31 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Regla de trabajo nueva del usuario (2026-10-22): **cada versión amplía el mapa**. Candidatas anotadas para próximas versiones: Narbona y Carcasona, Foix, Béarn y Bigorre, Sicilia/Cerdeña no (fuera de la región), el Magreb occidental (si se localiza fuente), Álava/Vizcaya y la Rioja como divisiones del norte.
 - Estado: **provisional**.
 
+## D-034. Red de distribución dentro de cada reino (comercio, versión 0.3.0)
+
+- Petición del usuario (2026-10-22): «en cada reino exista redes de comercio y distribución de materiales o mercancías para cubrir déficit en algún pueblo o ciudad».
+- Implementado como en `docs/DISENO_COMERCIO.md`: cada 24 pasos, en cada reino, las provincias con más del 70 % del límite de una mercancía ofrecen lo que pasa del 50 % y las que bajan del 20 % piden hasta el 50 %. Primero los hambrientos, luego por falta relativa; proveedor más cercano primero (saltos por las vecindades del mapa, sin salir del reino); 12 pasos por salto; el destino paga 0,2 de moneda por unidad y salto; tope por ruta de 20 unidades; máximo 600 caravanas.
+- Mercancías que se reparten: pan, trigo, harina, leña, madera y herramientas. **Todas las cifras son parámetros de juego** (`rules.json`, `trade_*`), sin fuente histórica.
+- Conservación: lo que sale es «exportado» del origen y lo que llega «importado» del destino; el mundo comprueba que salido − llegado = en camino + perdido. Lo que no cabe al llegar vuelve al origen; solo si tampoco allí cabe se pierde (y se anota). En un año con el mapa real se perdió un 0,5 % de lo enviado.
+- Las caravanas se guardan; un guardado anterior sin ellas se carga igual. La red sale del mapa y no se guarda: `SaveGame.decode/read_file` reciben `GameMap.trade_links()`.
+- Fuera de esta pieza (decidido): comercio entre reinos, mercado que suba el tope, gestión manual de rutas, líneas animadas en el mapa. La ficha muestra solo un icono de caravana con lo que llega y sale.
+- Efecto en rendimiento medido en el servidor: +~10 % por paso. Con las 47 provincias llenas (30 edificios cada una) el paso cuesta ~11 ms; **no medido en el móvil**.
+- Estado: **provisional**.
+
+## D-035. Emblemas de juego por reino (versión 0.3.0)
+
+- Aprobado por el usuario (2026-10-22, «Úsalo»): un emblema de juego por reino, dibujado por código, **no histórico**. Nueve emblemas (uno por reino del mapa): media luna y estrella, corona, barco, torre, árbol, sol, montañas, puerta y muralla.
+- Se ven en la tarjeta del mapa junto al nombre; la tarjeta dice «emblema de juego, no histórico». No hay escudo por ciudad.
+- Si se localiza una fuente de insignias de la época, se sustituye el emblema de ese reino y se registra en `HISTORICAL_SOURCES.md`.
+- Estado: **provisional**.
+
+## D-036. Mapa de 47 provincias (versión 0.3.0)
+
+- Se añaden **Carcasona** y **Cominges/Coserans** (reino propio «carcasona», Roger I, H-50) y **Béarn** (reino de Gascuña, H-51). **Foix no se añade** (H-52: aún no era condado propio). Narbona y Bigorre quedan sin añadir por falta de fuente.
+- Las formas son aproximación de juego; los pesos de reparto de Carcasona y Cominges se ajustaron para que sean vecinas entre sí (si no, el reino no tendría red de comercio).
+- Los guardados del mapa de 44 o 40 provincias se apartan al abrir esta versión (comportamiento ya existente para mapas distintos).
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

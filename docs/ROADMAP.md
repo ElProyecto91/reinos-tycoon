@@ -104,6 +104,8 @@ Las tres decisiones previas (año, estaciones por cultivo y minería) se tomaron
 | 8 Automatización y progresión | 4 | solo la interfaz |
 | 9 Pulido | todas | rendimiento, batería, accesibilidad, tutorial y distribución |
 
+**Lote 0.3.0 (2026-10-22, en local; falta CI):** red de distribución por reino (parte de la fase 4, D-034), emblemas de juego (D-035) y mapa de 47 provincias (D-036). Pendiente de la fase 4: comercio entre reinos, mercado y gestión manual de rutas. Pendiente anotado: **rendimiento** (paso de ~11 ms en servidor con todas las provincias llenas; sin medir en el móvil) antes de crecer mucho más el mapa.
+
 Petición del usuario (2026-10-22): conquistar territorios colindantes de otros reinos; diseño en `docs/DISENO_CONQUISTA.md` (piezas CQ1 a CQ6, dentro de la fase 6).
 
 Las fases 3 a 8 se detallarán en tareas pequeñas al terminar la anterior, no antes. Cada fase termina con pruebas ejecutadas, documentación actualizada y versión identificable (sección 37).

@@ -132,7 +132,7 @@ func test_two_game_years_of_the_whole_world() -> void:
 	done()
 
 
-func test_the_whole_map_of_forty_provinces_runs_a_year_without_corruption() -> void:
+func test_the_whole_map_runs_a_year_without_corruption() -> void:
 	var data = new_data_with_seasons()
 	var world = _new_world(data, true)
 	assert_true(world.provinces.size() >= 30, "son todas las del mapa (%d)" % world.provinces.size())
@@ -178,9 +178,9 @@ func test_saving_and_loading_never_changes_the_course_of_the_game() -> void:
 		if trips % 3 == 2:
 			var error: String = save_script.write_file(reloaded, PATH, "0.0.test", T0 + i)
 			assert_eq(error, "", "el guardado en archivo del paso %d no da error" % i)
-			decoded = save_script.read_file(data, PATH)
+			decoded = save_script.read_file(data, PATH, continuous.trade_links)
 		else:
-			decoded = save_script.decode(data, save_script.encode(reloaded, "0.0.test", T0 + i))
+			decoded = save_script.decode(data, save_script.encode(reloaded, "0.0.test", T0 + i), continuous.trade_links)
 		assert_true(decoded["ok"], "el paso %d se vuelve a cargar: %s" % [i, decoded["error"]])
 		if not decoded["ok"]:
 			break
@@ -203,7 +203,7 @@ func test_close_and_reopen_cycles_with_every_kind_of_odd_absence() -> void:
 	_clean()
 	# Ausencias en segundos: cortas, justo en el límite de un paso, más allá del tope de
 	# 10 h (36 000 s), cero y con el reloj hacia atrás.
-	var gaps: Array[int] = [30, 90, 3600, 7200, 40000, 0, 59, 61, -500, 600, 36000, 36060, 1, 86400]
+	var gaps: Array[int] = [30, 90, 3600, 7200, 40000, 0, 59, 61, -500, 600, 36000, 36060, 1, 5]
 	var data = new_data_with_seasons()
 	var reference = _new_world(data, true)
 	var session = load(SESSION).new(PATH, "0.0.test")

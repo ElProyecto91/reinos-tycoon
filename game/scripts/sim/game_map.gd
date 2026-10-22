@@ -376,6 +376,14 @@ func realm_of(province_id: String) -> Dictionary:
 
 ## Crea el mundo de una partida nueva. Devuelve {ok, world, error}. Falla (sin devolver un
 ## mundo a medias) si alguna existencia inicial no cabe en el almacén de su provincia.
+## Red de comercio del mapa: id -> {realm, neighbors} (ver trade.gd).
+func trade_links() -> Dictionary:
+	var links := {}
+	for p in provinces:
+		links[p["id"]] = {"realm": p["realm"], "neighbors": p["neighbors"].duplicate()}
+	return links
+
+
 func new_world(data) -> Dictionary:
 	var world = WorldScript.new(data)
 	for p in provinces:
@@ -389,6 +397,7 @@ func new_world(data) -> Dictionary:
 			var accepted: int = province.store.seed_initial(good, wanted)
 			if accepted != wanted:
 				return {"ok": false, "world": null, "error": "provincia \"%s\": solo caben %d de %d de %s en el almacén inicial" % [p["id"], accepted, wanted, good]}
+	world.set_network(trade_links())
 	var problems := world.check_invariants()
 	if not problems.is_empty():
 		return {"ok": false, "world": null, "error": "estado inicial incoherente: %s" % problems[0]}

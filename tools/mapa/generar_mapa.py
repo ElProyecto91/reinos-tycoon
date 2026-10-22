@@ -12,7 +12,7 @@ import json, math, sys, os
 import numpy as np
 import cv2
 sys.path.insert(0, os.path.dirname(__file__))
-from provincias import REALMS, P, FRONTERA, START_PROTOTIPO, START_POR_TAMANO, ROTULOS, ENCLAVES
+from provincias import REALMS, P, FRONTERA, START_PROTOTIPO, START_POR_TAMANO, ROTULOS, ENCLAVES, DE_FRANCIA
 
 # --- Proyección: equirrectangular con el coseno de la latitud media ------------------------------------
 LON0, LON1 = -10.0, 4.6
@@ -87,7 +87,7 @@ def main(carpeta, preview=None, salida_json=None):
     ys, xs = np.mgrid[0:H, 0:W]
     lon = LON0 + (xs / ESC) / UNID_POR_GRADO_LON
     lat = LAT1 - (ys / ESC) / UNID_POR_GRADO_LAT
-    # La Francia que no es el Rosellón solo la reparten Tolosa y Gascuña; ninguna otra provincia entra en ella.
+    # La Francia que no es el Rosellón solo la reparten las provincias de DE_FRANCIA; ninguna otra provincia entra en ella.
     francesa = (fra > 0) & ~((lat < 42.85) & (lon > 1.8))
     jug = (jug > 0) | (fra > 0)
     jug &= peninsula
@@ -103,7 +103,7 @@ def main(carpeta, preview=None, salida_json=None):
     semillas = np.array([a_px(p[5], p[6]) for p in P])
     pesos = np.array([p[7] for p in P]) * UNID_POR_GRADO_LAT * ESC * 0.55   # peso en píxeles
     enclave_idx = [i for i, p in enumerate(P) if p[0] in ENCLAVES]
-    de_francia = np.array([p[0] in ("tolosa", "gascuna") for p in P])
+    de_francia = np.array([p[0] in DE_FRANCIA for p in P])
     yy, xx = np.nonzero(jug)
     etiqueta = np.full((H, W), -1, np.int16)
     for i in range(0, len(xx), 400000):
@@ -193,7 +193,7 @@ def main(carpeta, preview=None, salida_json=None):
     km_por_unidad = 111.19 / UNID_POR_GRADO_LAT
     salida = {
         "format_version": 2,
-        "status": "Mapa grande (M2–M4, 44 provincias). Las ENTIDADES POLÍTICAS y las capitales son históricas y aproximadas, hacia julio del año 1000 "
+        "status": "Mapa grande (M2–M5, 47 provincias). Las ENTIDADES POLÍTICAS y las capitales son históricas y aproximadas, hacia julio del año 1000 "
                   "(docs/REGION_IBERIA_1000.md; fuentes H-39 a H-44). La FORMA de cada territorio es una aproximación de juego (reparto por "
                   "cercanía a la capital), NO son fronteras históricas. Costas y ríos: Natural Earth (dominio público). Las poblaciones, edificios y "
                   "existencias de partida son PARÁMETROS DE JUEGO provisionales, no datos históricos. Cantidades en milésimas de unidad.",

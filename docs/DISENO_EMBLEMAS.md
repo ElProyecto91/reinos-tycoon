@@ -15,4 +15,4 @@ Petición del usuario (2026-10-22): «el escudo correspondiente de cada lugar hi
 3. Si más adelante se localiza una fuente fiable de insignias de la época, se sustituye el emblema de juego de ese reino y se registra la fuente (H-xx).
 4. Opcional: una pantalla aparte de «curiosidades» con el escudo posterior de cada lugar, **marcada con su siglo de aparición**, fuera del juego principal.
 
-Estado: **propuesta**, sin código. Pendiente de que el usuario elija entre (1)+(2) o (4).
+Estado: **aprobada la opción (1)+(2) y hecha en la versión 0.3.0 (D-035)**; la opción (4) no se ha hecho.

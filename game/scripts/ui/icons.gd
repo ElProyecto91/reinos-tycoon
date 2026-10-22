@@ -6,7 +6,15 @@ extends RefCounted
 
 const GOODS: Array[String] = ["wheat", "flour", "bread", "wood", "firewood", "olives", "oil", "wool", "cloth", "iron", "weapons", "charcoal", "tools", "coin"]
 const BUILDINGS: Array[String] = ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy", "charcoal_kiln", "toolsmith", "barracks"]
-const SYMBOLS: Array[String] = ["people", "hammer", "town", "face", "bolt", "clock", "warning", "danger", "storage", "helmet", "arrow", "calendar", "sun", "leaf", "snow", "sprout", "star"]
+const SYMBOLS: Array[String] = ["people", "hammer", "town", "face", "bolt", "clock", "warning", "danger", "storage", "helmet", "arrow", "calendar", "sun", "leaf", "snow", "sprout", "star", "caravan"]
+## Emblemas de juego de los reinos («emblem_» + id del reino). NO son heráldica histórica: los escudos con armas hereditarias
+## aparecen a mediados del siglo XII (docs/DISENO_EMBLEMAS.md). Son figuras sencillas inventadas, con el color del reino en el mapa.
+const EMBLEMS: Array[String] = ["emblem_califato", "emblem_leon", "emblem_portugal", "emblem_castilla", "emblem_pamplona", "emblem_tolosa", "emblem_gascuna", "emblem_catalanes", "emblem_carcasona"]
+const EMBLEM_COLORS := {
+	"califato": Color8(96, 142, 84), "leon": Color8(140, 98, 156), "portugal": Color8(96, 140, 176),
+	"castilla": Color8(176, 84, 72), "pamplona": Color8(206, 142, 70), "tolosa": Color8(84, 150, 152),
+	"gascuna": Color8(190, 128, 148), "catalanes": Color8(218, 188, 84), "carcasona": Color8(156, 122, 92),
+}
 
 const GOLD := Color("#e6b84a")
 const GOLD_D := Color("#b8892a")
@@ -30,7 +38,7 @@ const OLIVE := Color("#7f8c3c")
 
 
 static func is_kind(kind: String) -> bool:
-	return kind in GOODS or kind in BUILDINGS or kind in SYMBOLS
+	return kind in GOODS or kind in BUILDINGS or kind in SYMBOLS or kind in EMBLEMS
 
 
 # --- Ayudas de dibujo en coordenadas 0..1 ------------------------------------------------------------
@@ -80,7 +88,20 @@ static func _quad(c: CanvasItem, r: Rect2, cx: float, cy: float, w: float, h: fl
 ## Dibuja el icono `kind` dentro de `rect`. Un nombre desconocido dibuja una interrogación simple (nunca falla).
 static func draw(c: CanvasItem, kind: String, rect: Rect2) -> void:
 	var r := rect
+	if kind.begins_with("emblem_"):
+		_emblem(c, kind.substr(7), r)
+		return
 	match kind:
+		"caravan":
+			_rect(c, r, 0.16, 0.38, 0.62, 0.3, BROWN_L)
+			_rect(c, r, 0.16, 0.38, 0.62, 0.06, BROWN)
+			_poly(c, r, [[0.2, 0.38], [0.3, 0.14], [0.66, 0.14], [0.76, 0.38]], WHITE)
+			_line(c, r, [0.48, 0.14], [0.48, 0.38], STONE, 0.04)
+			_line(c, r, [0.78, 0.5], [0.94, 0.42], BROWN, 0.06)
+			for x in [0.32, 0.64]:
+				_circle(c, r, x, 0.74, 0.15, BROWN)
+				_circle(c, r, x, 0.74, 0.08, BROWN_L)
+				_circle(c, r, x, 0.74, 0.03, DARK)
 		"wheat":
 			_line(c, r, [0.5, 0.95], [0.5, 0.25], BROWN_L, 0.06)
 			for i in 3:
@@ -393,3 +414,59 @@ static func draw(c: CanvasItem, kind: String, rect: Rect2) -> void:
 			_circle(c, r, 0.5, 0.5, 0.4, STONE_D)
 			_rect(c, r, 0.46, 0.3, 0.08, 0.26, WHITE)
 			_rect(c, r, 0.46, 0.64, 0.08, 0.08, WHITE)
+
+
+## Emblema de juego de un reino: disco del color del reino, aro y una figura sencilla (ver EMBLEMS).
+static func _emblem(c: CanvasItem, realm: String, r: Rect2) -> void:
+	var base: Color = EMBLEM_COLORS.get(realm, STONE)
+	_circle(c, r, 0.5, 0.5, 0.48, DARK)
+	_circle(c, r, 0.5, 0.5, 0.43, WHITE if realm == "catalanes" else GOLD)
+	_circle(c, r, 0.5, 0.5, 0.38, base)
+	match realm:
+		"califato":    # media luna y estrella
+			_circle(c, r, 0.46, 0.5, 0.24, WHITE)
+			_circle(c, r, 0.55, 0.47, 0.2, base)
+			_poly(c, r, [[0.66, 0.36], [0.69, 0.46], [0.78, 0.46], [0.71, 0.52], [0.74, 0.62], [0.66, 0.56], [0.58, 0.62], [0.61, 0.52], [0.54, 0.46], [0.63, 0.46]], GOLD)
+		"leon":        # corona
+			_rect(c, r, 0.26, 0.56, 0.48, 0.14, GOLD)
+			_poly(c, r, [[0.26, 0.56], [0.26, 0.3], [0.38, 0.44], [0.5, 0.26], [0.62, 0.44], [0.74, 0.3], [0.74, 0.56]], GOLD)
+			for x in [0.26, 0.5, 0.74]:
+				_circle(c, r, x, 0.28 if x == 0.5 else 0.3, 0.04, WHITE)
+		"portugal":    # barco con vela
+			_poly(c, r, [[0.5, 0.2], [0.5, 0.58], [0.74, 0.58]], WHITE)
+			_poly(c, r, [[0.46, 0.28], [0.46, 0.58], [0.28, 0.58]], STONE_L)
+			_poly(c, r, [[0.24, 0.62], [0.76, 0.62], [0.66, 0.74], [0.34, 0.74]], BROWN)
+			_line(c, r, [0.26, 0.82], [0.74, 0.82], WHITE, 0.04)
+		"castilla":    # torre almenada
+			_rect(c, r, 0.34, 0.38, 0.32, 0.36, WHITE)
+			for x in [0.34, 0.45, 0.56]:
+				_rect(c, r, x, 0.28, 0.1, 0.12, WHITE)
+			_poly(c, r, [[0.44, 0.74], [0.44, 0.56], [0.56, 0.56], [0.56, 0.74]], base)
+			_rect(c, r, 0.47, 0.44, 0.06, 0.1, base)
+		"pamplona":    # árbol
+			_rect(c, r, 0.46, 0.5, 0.08, 0.26, BROWN)
+			_circle(c, r, 0.5, 0.38, 0.2, GREEN_D)
+			_circle(c, r, 0.38, 0.46, 0.13, GREEN)
+			_circle(c, r, 0.62, 0.46, 0.13, GREEN)
+		"tolosa":      # sol
+			_circle(c, r, 0.5, 0.5, 0.15, GOLD)
+			for i in 8:
+				var a := TAU * float(i) / 8.0
+				_line(c, r, [0.5 + cos(a) * 0.2, 0.5 + sin(a) * 0.2], [0.5 + cos(a) * 0.3, 0.5 + sin(a) * 0.3], GOLD, 0.05)
+		"gascuna":     # montañas
+			_poly(c, r, [[0.2, 0.7], [0.42, 0.3], [0.64, 0.7]], WHITE)
+			_poly(c, r, [[0.44, 0.7], [0.62, 0.42], [0.8, 0.7]], STONE_L)
+			_poly(c, r, [[0.42, 0.3], [0.36, 0.42], [0.48, 0.42]], STONE)
+		"catalanes":   # puerta con arco
+			_rect(c, r, 0.28, 0.42, 0.44, 0.32, WHITE)
+			_rect(c, r, 0.26, 0.32, 0.1, 0.1, WHITE)
+			_rect(c, r, 0.64, 0.32, 0.1, 0.1, WHITE)
+			_circle(c, r, 0.5, 0.54, 0.1, base)
+			_rect(c, r, 0.4, 0.54, 0.2, 0.2, base)
+		"carcasona":   # muralla con dos torres
+			_rect(c, r, 0.2, 0.46, 0.6, 0.26, WHITE)
+			_rect(c, r, 0.2, 0.3, 0.16, 0.42, STONE_L)
+			_rect(c, r, 0.64, 0.3, 0.16, 0.42, STONE_L)
+			_poly(c, r, [[0.18, 0.3], [0.28, 0.16], [0.38, 0.3]], RED)
+			_poly(c, r, [[0.62, 0.3], [0.72, 0.16], [0.82, 0.3]], RED)
+			_rect(c, r, 0.46, 0.56, 0.08, 0.16, base)

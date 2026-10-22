@@ -11,8 +11,10 @@ const MapViewScript := preload("res://scripts/ui/map_view.gd")
 const ProvincePanelScript := preload("res://scripts/ui/province_panel.gd")
 const IconRectScript := preload("res://scripts/ui/icon_rect.gd")
 const CalendarScript := preload("res://scripts/sim/calendar.gd")
+const TradeScript := preload("res://scripts/sim/trade.gd")
 const ProvinceViewScript := preload("res://scripts/ui/province_view.gd")
 const Texts := preload("res://scripts/ui/texts.gd")
+const Icons := preload("res://scripts/ui/icons.gd")
 const UpdateCheck := preload("res://scripts/update/update_check.gd")
 
 const SAVE_PATH := "user://partida.json"
@@ -68,6 +70,7 @@ var _center: MarginContainer
 var _map_button: Button
 var _map_card: PanelContainer
 var _card_title: Label
+var _card_emblem: Control
 var _card_text: Label
 var _enter_button: Button
 var _season_icon: Control
@@ -238,10 +241,17 @@ func _build_map_card(root: VBoxContainer) -> void:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 6)
 	_map_card.add_child(box)
+	var title_row := HBoxContainer.new()
+	title_row.add_theme_constant_override("separation", 12)
+	box.add_child(title_row)
+	_card_emblem = IconRectScript.new()
+	_card_emblem.custom_minimum_size = Vector2(64, 64)
+	title_row.add_child(_card_emblem)
 	_card_title = Label.new()
 	_card_title.add_theme_font_size_override("font_size", 34)
 	_card_title.add_theme_color_override("font_color", COLOR_ACCENT)
-	box.add_child(_card_title)
+	_card_title.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	title_row.add_child(_card_title)
 	_card_text = Label.new()
 	_card_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_card_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -253,12 +263,19 @@ func _build_map_card(root: VBoxContainer) -> void:
 	box.add_child(_enter_button)
 
 
+## Pasa a la ficha lo que viaja hacia o desde la provincia mostrada.
+func _sync_caravans(province_id: String = "") -> void:
+	var id: String = province_id if province_id != "" else _panel.current_province_id()
+	_panel.set_caravans(TradeScript.summary_for(session.world, id) if id != "" else {})
+
+
 ## Pone al día la tarjeta del mapa con la provincia elegida (o la ayuda si no hay ninguna).
 func _refresh_card() -> void:
 	if _map_card == null:
 		return
 	var province = session.world.find_province(_selected_id) if _selected_id != "" else null
 	_enter_button.visible = province != null
+	_card_emblem.kind = ""
 	if province == null:
 		_card_title.text = "El mapa del año 1000"
 		_card_text.text = "Toca un territorio para elegirlo. Arrastra para moverte y pellizca (o usa + y −) para acercar. Los colores son los reinos; las formas son aproximadas, no fronteras históricas."
@@ -267,7 +284,9 @@ func _refresh_card() -> void:
 	var realm: Dictionary = session.map.realm_of(_selected_id)
 	_card_title.text = province.display_name
 	var lines: Array[String] = []
-	lines.append("%s" % realm.get("name", ""))
+	var emblem: String = "emblem_" + str(entry.get("realm", ""))
+	_card_emblem.kind = emblem if Icons.is_kind(emblem) else ""
+	lines.append("%s · emblema de juego, no histórico" % realm.get("name", ""))
 	lines.append("Población: %d · Descontento: %d de %d" % [province.population, province.unrest, session.data.rules["unrest_max"]])
 	if not province.alerts.is_empty():
 		var names: Array[String] = []
@@ -412,6 +431,7 @@ func _refresh_all() -> void:
 	_season_icon.tooltip_text = CalendarScript.SEASON_NAMES[session.date()["season"]]
 	_map_view.queue_redraw()
 	_refresh_card()
+	_sync_caravans()
 	_panel.refresh()
 	_refresh_view()
 
@@ -464,6 +484,7 @@ func _choose(province_id: String) -> bool:
 	_selected_id = province_id
 	_map_view.selected_id = province_id
 	_map_view.queue_redraw()
+	_sync_caravans(province_id)
 	_panel.show_province(province, _neighbor_names(province_id))
 	_scroll.scroll_vertical = 0
 	_refresh_card()
