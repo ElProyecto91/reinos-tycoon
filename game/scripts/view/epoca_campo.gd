@@ -325,3 +325,60 @@ static func mina(m: Malla, seed: int, seco: bool) -> void:
 	m.box(Vector3(0.0, 0.075, 0.78), Vector3(0.09, 0.025, 0.12), Color(0.46, 0.34, 0.26))
 	for k in 4:
 		m.blob(Vector3(-0.42 + 0.09 * float(k), 0.04, 0.62 + 0.05 * U.rnd(seed, k)), 0.075, 5, 3, Color(0.52, 0.47, 0.42), 0.6)
+
+
+# ---------------------------------------------------------------------------------------------
+# Maleza (V3b): detalle del suelo en casillas vacías para que el paisaje no se vea liso.
+
+## Matas, piedras y flores sueltas sobre una casilla vacía. Solo aspecto: sin nada de simulación.
+## `seco`: tierra seca (esparto, jara, piedras) o verde del norte (hierba, flores, helechos).
+static func maleza(m: Malla, seed: int, seco: bool) -> void:
+	# Manchas planas de tono distinto (hierba más seca o más umbría, tierra más clara) bajo las matas.
+	for k in 3:
+		var a0 := U.rnd(seed, 500 + k) * TAU
+		var d0 := 0.55 * U.rnd(seed, 510 + k)
+		var base0: Color
+		if seco:
+			base0 = [Color(0.86, 0.76, 0.56), Color(0.80, 0.70, 0.52), Color(0.84, 0.77, 0.58)][k]
+		else:
+			base0 = [Color(0.55, 0.70, 0.44), Color(0.50, 0.65, 0.41), Color(0.60, 0.71, 0.44)][k]
+		m.blob(Vector3(cos(a0) * d0, 0.002 * float(k + 1), sin(a0) * d0), 0.45 + 0.25 * U.rnd(seed, 520 + k), 8, 2, base0, 0.012)
+	var n := 9 + int(U.rnd(seed, 300) * 5.0)
+	for k in n:
+		var a := U.rnd(seed, 310 + k) * TAU
+		var d := 0.12 + 0.72 * sqrt(U.rnd(seed, 330 + k))
+		var x := cos(a) * d
+		var z := sin(a) * d
+		if not U.in_hex(x, z, 0.12):
+			continue
+		var base := Vector3(x, 0, z)
+		var t := U.rnd(seed, 350 + k)
+		var s := 0.8 + 0.5 * U.rnd(seed, 370 + k)
+		if seco:
+			if t < 0.45:
+				# Mata de esparto: tres hojas finas y claras.
+				var col := U.jit(Color(0.70, 0.62, 0.36), 0.05, seed, 380 + k)
+				for j in 3:
+					var o := Vector3(0.02 * float(j - 1), 0, 0.015 * float(j % 2))
+					m.pyramid(base + o, Vector3(0.035, 0.11 * s, 0.035), col)
+			elif t < 0.75:
+				# Jara o romero: mata baja y verde apagada.
+				m.blob(base + Vector3(0, 0.02, 0), 0.055 * s, 6, 3, U.jit(Color(0.38, 0.45, 0.28), 0.05, seed, 400 + k), 0.6)
+			else:
+				m.blob(base + Vector3(0, 0.012, 0), 0.04 * s, 5, 3, U.jit(Color(0.62, 0.56, 0.47), 0.06, seed, 420 + k), 0.55)
+		else:
+			if t < 0.40:
+				var col2 := U.jit(Color(0.38, 0.56, 0.27), 0.05, seed, 380 + k)
+				for j in 3:
+					var o2 := Vector3(0.02 * float(j - 1), 0, 0.015 * float(j % 2))
+					m.pyramid(base + o2, Vector3(0.035, 0.12 * s, 0.035), col2)
+			elif t < 0.62:
+				# Flores silvestres: puntos pequeños blancos, amarillos o violetas sobre una mata.
+				m.blob(base + Vector3(0, 0.015, 0), 0.04 * s, 5, 3, Color(0.30, 0.46, 0.22), 0.6)
+				var flor: Color = [Color(0.95, 0.93, 0.80), Color(0.93, 0.78, 0.25), Color(0.62, 0.45, 0.72)][int(U.rnd(seed, 440 + k) * 3.0) % 3]
+				m.blob(base + Vector3(0.012, 0.045, 0.01), 0.016, 5, 2, flor)
+				m.blob(base + Vector3(-0.015, 0.04, -0.008), 0.014, 5, 2, flor)
+			elif t < 0.85:
+				m.blob(base + Vector3(0, 0.03, 0), 0.07 * s, 6, 3, U.jit(Color(0.27, 0.42, 0.22), 0.05, seed, 400 + k), 0.7)
+			else:
+				m.blob(base + Vector3(0, 0.012, 0), 0.04 * s, 5, 3, U.jit(Color(0.55, 0.54, 0.50), 0.06, seed, 420 + k), 0.55)

@@ -60,7 +60,19 @@ func build(terrain: Array, things: Array, paths: Array = []) -> bool:
 	var ok: bool = super(terrain, things, paths)
 	if ok:
 		_aplicar_paleta(PALETA_SECA if _datos()["seco"] else PALETA_NORTE)
+		_poner_maleza()
 	return ok
+
+
+## Matas, piedras y flores en las casillas sin nada encima (ni objeto ni camino ni agua).
+func _poner_maleza() -> void:
+	for key in _cells.keys():
+		var c: Dictionary = _cells[key]
+		if c["o"] != "." or c["p"] != "." or c["t"] == "w":
+			continue
+		var m := Malla.new()
+		Campo.maleza(m, U.seed_of(key.x, key.y), _datos()["seco"])
+		_poner(m, "maleza_%d_%d" % [key.x, key.y], hex_to_world(key.x, key.y, float(c["h"])))
 
 
 ## Cambia la textura de paleta de todos los modelos KayKit colocados (suelo, río, camino, costa).

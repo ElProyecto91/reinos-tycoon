@@ -336,3 +336,47 @@ func test_the_period_view_keeps_kaykit_for_what_it_does_not_replace() -> void:
 	assert_true(kaykit >= 7, "el suelo sigue siendo de KayKit (%d)" % kaykit)
 	d.free()
 	done()
+
+
+func test_undergrowth_stays_inside_the_cell_is_deterministic_and_differs_between_cells() -> void:
+	for seco in [true, false]:
+		var m := Malla.new()
+		Campo.maleza(m, 1234, seco)
+		assert_true(not m.is_empty(), "hay maleza (seco=%s)" % seco)
+		assert_true(m.triangle_count() < 1500, "pocos triángulos: %d" % m.triangle_count())
+		var b: AABB = m.bounds()
+		assert_true(b.position.x >= -LIMITE_XZ and b.end.x <= LIMITE_XZ and b.position.z >= -LIMITE_XZ and b.end.z <= LIMITE_XZ, "cabe en la casilla")
+		assert_true(b.end.y < 0.2 and b.position.y >= -0.05, "es baja: altura %.2f" % b.end.y)
+		var m2 := Malla.new()
+		Campo.maleza(m2, 1234, seco)
+		assert_eq(m2.vertices(), m.vertices(), "misma casilla, mismo resultado")
+		var m3 := Malla.new()
+		Campo.maleza(m3, 99, seco)
+		assert_true(m3.vertices() != m.vertices(), "otra casilla, otro dibujo")
+	done()
+
+
+func test_undergrowth_only_on_empty_cells() -> void:
+	var ciudad = load(CIUDAD).new()
+	ciudad.region = "norte"
+	var capas: Dictionary = ciudad.layers_from_cells(1, {Vector2i(0, 0): {"o": "T"}, Vector2i(1, 0): {"p": "r"}})
+	assert_true(ciudad.build(capas["terrain"], capas["things"], capas["paths"]), "se construye")
+	var vacias := 0
+	var ocupadas := 0
+	for hijo in ciudad.get_children():
+		if str(hijo.name).begins_with("maleza_"):
+			var partes := str(hijo.name).split("_")
+			var k := Vector2i(int(partes[1]), int(partes[2]))
+			if k == Vector2i(0, 0) or k == Vector2i(1, 0):
+				ocupadas += 1
+			else:
+				vacias += 1
+	var formas := {}
+	for hijo in ciudad.get_children():
+		if str(hijo.name).begins_with("maleza_") and hijo is MeshInstance3D:
+			formas[(hijo as MeshInstance3D).mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX].to_byte_array().hex_encode().hash()] = true
+	assert_true(formas.size() >= 4, "cada casilla vacía tiene su propio dibujo (%d distintos de 5)" % formas.size())
+	assert_eq(ocupadas, 0, "ni bosque ni río llevan maleza")
+	assert_eq(vacias, 5, "las otras 5 casillas de radio 1 sí")
+	ciudad.free()
+	done()

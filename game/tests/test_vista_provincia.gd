@@ -312,12 +312,12 @@ func test_the_map_button_swaps_between_map_and_landscape_and_picking_a_province_
 func test_building_something_changes_the_landscape_through_the_real_screen() -> void:
 	var main = _main_en_arbol()
 	var antes: int = main._province_view.reconstrucciones
-	var triangulos_antes: int = main._province_view.triangulos()
+	var firma_antes: String = main._province_view.firma()
 	var boton: Button = main._panel.build_button("house")
 	assert_true(not boton.disabled, "se puede construir una vivienda: %s" % boton.text)
 	boton.pressed.emit()
 	assert_true(main._province_view.reconstrucciones > antes, "empezar la obra reconstruye el paisaje")
-	assert_true(main._province_view.triangulos() > triangulos_antes, "y añade el andamio (%d → %d)" % [triangulos_antes, main._province_view.triangulos()])
+	assert_true(main._province_view.firma() != firma_antes, "y cambia lo dibujado (el andamio ocupa una casilla; antes había maleza)")
 	var p = main.session.world.find_province("cordoba")
 	var obras_antes: int = p.projects.size()
 	assert_eq(obras_antes, 1, "hay una obra en la provincia")

@@ -12,7 +12,7 @@ var exposure := 1.0
 var realista := false
 ## Altura del suelo continuo respecto a la cara superior de las casillas (que están en y = 0).
 const SUELO_Y := -0.30
-const HORIZONTE := Color(0.80, 0.77, 0.69)
+const HORIZONTE := Color(0.84, 0.79, 0.68)
 
 
 ## shadows: sombras del sol. pitch: inclinación de la cámara en grados (90 = desde arriba).
@@ -40,7 +40,7 @@ func setup(target: Vector3, shadows: bool = true, pitch: float = 42.0, distance:
 		# Ambiente neutro y cálido: las sombras salen marrones, no turquesa.
 		env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 		env.ambient_light_color = Color(0.66, 0.60, 0.55)
-		env.ambient_light_energy = 0.60
+		env.ambient_light_energy = 0.52
 	else:
 		env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
 		env.ambient_light_energy = 0.5
@@ -52,7 +52,7 @@ func setup(target: Vector3, shadows: bool = true, pitch: float = 42.0, distance:
 	env.fog_sky_affect = 0.0
 	env.glow_enabled = false
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 0.94 if realista else 1.08
+	env.adjustment_saturation = 1.0 if realista else 1.08
 	env.adjustment_contrast = 1.10 if realista else 1.06
 	var we := WorldEnvironment.new()
 	we.environment = env
@@ -61,8 +61,8 @@ func setup(target: Vector3, shadows: bool = true, pitch: float = 42.0, distance:
 	sun = DirectionalLight3D.new()
 	if realista:
 		sun.rotation_degrees = Vector3(-33, -58, 0)
-		sun.light_color = Color(1.0, 0.89, 0.74)
-		sun.light_energy = 1.05
+		sun.light_color = Color(1.0, 0.86, 0.68)
+		sun.light_energy = 1.18
 	else:
 		sun.rotation_degrees = Vector3(-42, -52, 0)
 		sun.light_color = Color(1.0, 0.93, 0.82)
