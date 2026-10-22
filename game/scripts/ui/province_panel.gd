@@ -63,6 +63,9 @@ var _caravan_grid: GridContainer
 var _caravan_tiles := {}
 ## Lo que viaja hacia o desde la provincia ({"in": {mercancía: cantidad}, "out": {...}}, ver trade.gd); lo pone main.
 var _caravans := {"in": {}, "out": {}}
+## Provincia de otro reino: se puede mirar pero no mandar en ella (lo pone main según el propietario).
+var _read_only := false
+const READ_ONLY_TEXT := "Provincia de otro reino: solo se puede mirar. Para tomarla hay que conquistarla."
 
 
 func setup(game_data) -> void:
@@ -255,6 +258,23 @@ func project_tile_count() -> int:
 ## Pulsa (por código) la ficha de detalle de `key`: "stock:wheat", "building:farm" o "alert:unrest".
 func select_detail(key: String) -> void:
 	_select_detail(key)
+
+
+func set_read_only(value: bool) -> void:
+	if value == _read_only:
+		return
+	_read_only = value
+	_detail_signature = ""
+	if value:
+		_feedback.text = READ_ONLY_TEXT
+	elif _feedback.text == READ_ONLY_TEXT:
+		_feedback.text = ""
+	if _province != null:
+		refresh()
+
+
+func is_read_only() -> bool:
+	return _read_only
 
 
 func refresh() -> void:
@@ -496,8 +516,8 @@ func _update_army(p) -> void:
 	_release_button.caption = "−%d" % lote
 	_recruit_button.tooltip_text = "Reclutar %d" % lote
 	_release_button.tooltip_text = "Licenciar %d" % lote
-	_recruit_button.disabled = false
-	_release_button.disabled = p.recruits < lote
+	_recruit_button.disabled = _read_only
+	_release_button.disabled = _read_only or p.recruits < lote
 	_recruit_button.refresh()
 	_release_button.refresh()
 
@@ -528,7 +548,7 @@ func _update_build_buttons(p) -> void:
 			var needed: int = t["build_cost"][good_id]
 			tile.footer.append({"icon": good_id, "text": Texts.compact(needed), "bad": p.store.stock(good_id) < needed})
 		tile.footer.append({"icon": "clock", "text": str(t["build_steps"]), "bad": false})
-		tile.disabled = no_room or full or not can_afford
+		tile.disabled = _read_only or no_room or full or not can_afford
 		tile.refresh()
 
 
@@ -692,7 +712,7 @@ func _update_detail(p) -> void:
 		button.kind = "star"
 		button.caption = "+%d %%" % int(_data.rules["upgrade_output_percent"])
 		button.custom_minimum_size = Vector2(130, 64)
-		button.disabled = not up["enabled"]
+		button.disabled = _read_only or not up["enabled"]
 		button.tooltip_text = "Mejorar %s%s" % [Texts.building_name(_data, up["type"]), " · obras al máximo" if up["full"] else (" · faltan recursos" if not up["enabled"] else "")]
 		button.pressed.connect(_on_upgrade_pressed.bind(up["type"]))
 		button.refresh()
@@ -705,7 +725,7 @@ func _update_detail(p) -> void:
 # --- Acciones --------------------------------------------------------------------------------------------------------
 
 func _on_recruit_pressed() -> void:
-	if _province == null:
+	if _province == null or _read_only:
 		return
 	if _province.recruit(LOTE_SOLDADOS):
 		_feedback.text = "Reclutados %d soldados." % LOTE_SOLDADOS
@@ -716,7 +736,7 @@ func _on_recruit_pressed() -> void:
 
 
 func _on_release_pressed() -> void:
-	if _province == null:
+	if _province == null or _read_only:
 		return
 	if _province.release_recruits(LOTE_SOLDADOS):
 		_feedback.text = "Licenciados %d soldados." % LOTE_SOLDADOS
@@ -727,7 +747,7 @@ func _on_release_pressed() -> void:
 
 
 func _on_upgrade_pressed(type_id: String) -> void:
-	if _province == null:
+	if _province == null or _read_only:
 		return
 	for b in _province.buildings:
 		if b["type"] == type_id and b["level"] < _data.buildings[type_id]["max_level"] and not _province.is_upgrading(b["uid"]):
@@ -741,7 +761,7 @@ func _on_upgrade_pressed(type_id: String) -> void:
 
 
 func _on_build_pressed(type_id: String) -> void:
-	if _province == null:
+	if _province == null or _read_only:
 		return
 	if _province.start_construction(type_id):
 		_feedback.text = "Obra iniciada: %s." % Texts.building_name(_data, type_id)

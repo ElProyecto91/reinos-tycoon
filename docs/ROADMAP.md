@@ -108,4 +108,6 @@ Las tres decisiones previas (año, estaciones por cultivo y minería) se tomaron
 
 Petición del usuario (2026-10-22): conquistar territorios colindantes de otros reinos; diseño en `docs/DISENO_CONQUISTA.md` (piezas CQ1 a CQ6, dentro de la fase 6).
 
+**Lote 0.4.0 (2026-10-22, en local; falta CI):** rendimiento −30 % (D-037), guerra y conquista CQ1 a CQ5 con defensa de CQ6 (D-038), mapa de 49 provincias (D-039), botón de ataque, informe de batalla y fichas ajenas en solo lectura. Pendiente de la guerra: IA de los rivales (CQ6), elegir el reino de partida, comida y paga de los soldados en marcha, asedios y fortificaciones. Pendiente: medir el rendimiento en el móvil.
+
 Las fases 3 a 8 se detallarán en tareas pequeñas al terminar la anterior, no antes. Cada fase termina con pruebas ejecutadas, documentación actualizada y versión identificable (sección 37).

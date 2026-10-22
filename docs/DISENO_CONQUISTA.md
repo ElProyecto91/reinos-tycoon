@@ -1,4 +1,4 @@
-# Diseño: conquista de territorios colindantes de otros reinos (borrador, sin código)
+# Diseño: conquista de territorios colindantes de otros reinos (CQ1–CQ5 y defensa de CQ6 implementados en 0.4.0; ver D-038)
 
 Petición del usuario (2026-10-22): «quiero que sea un juego en el que puedas ir conquistando territorio colindantes de otros reinos». En el plan ya estaba como **fase 6 (Guerra)**, que depende de comercio (4) y mundo político (5). Todo lo que sigue son **parámetros de juego provisionales**: no hay fuente leída sobre tamaños de ejércitos ni resultados de campañas hacia el año 1000 en este repositorio.
 

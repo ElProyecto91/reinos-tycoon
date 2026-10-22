@@ -12,6 +12,8 @@ const Fixed := preload("res://scripts/sim/fixed.gd")
 const SUPPORTED_FORMAT_VERSION := 2
 const DEFAULT_PATH := "res://data/map.json"
 const MAX_PROVINCES := 60
+## Reino que manda el jugador en una partida nueva (provisional: más adelante se podrá elegir).
+const DEFAULT_PLAYER_REALM := "leon"
 const LOOKS := ["cordoba", "toledo", "zaragoza", "norte"]
 const MAX_RING_POINTS := 4000
 const MAX_BUILDINGS_PER_PROVINCE := 60
@@ -384,7 +386,12 @@ func trade_links() -> Dictionary:
 	return links
 
 
-func new_world(data) -> Dictionary:
+func new_world(data, player_realm: String = DEFAULT_PLAYER_REALM) -> Dictionary:
+	# Un mapa pequeño (de prueba) sin el reino por defecto se juega sin guerra; un reino pedido a mano que no exista sí es un error.
+	if player_realm == DEFAULT_PLAYER_REALM and not realms.has(player_realm):
+		player_realm = ""
+	if player_realm != "" and not realms.has(player_realm):
+		return {"ok": false, "world": null, "error": "reino del jugador desconocido: %s" % player_realm}
 	var world = WorldScript.new(data)
 	for p in provinces:
 		var province = world.add_province(p["id"], p["name"], p["start"]["population"])
@@ -397,6 +404,10 @@ func new_world(data) -> Dictionary:
 			var accepted: int = province.store.seed_initial(good, wanted)
 			if accepted != wanted:
 				return {"ok": false, "world": null, "error": "provincia \"%s\": solo caben %d de %d de %s en el almacén inicial" % [p["id"], accepted, wanted, good]}
+	if player_realm != "":
+		for p in provinces:
+			world.owners[p["id"]] = p["realm"]
+		world.player_realm = player_realm
 	world.set_network(trade_links())
 	var problems := world.check_invariants()
 	if not problems.is_empty():

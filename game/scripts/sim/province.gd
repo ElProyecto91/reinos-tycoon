@@ -381,6 +381,7 @@ func step() -> void:
 	_update_calendar()
 	_expire_modifiers()
 	_enforce_labor_limit()
+	var population_before := population
 	if auto_staff:
 		_staff_automatically()
 	_collect_taxes()
@@ -388,12 +389,15 @@ func step() -> void:
 	_consume_food()
 	_consume_heating()
 	_advance_projects()
+	var productivity := productivity_percent()      # igual para todos los edificios en este paso
 	for b in buildings:
-		_run_building(b)
+		_run_building(b, productivity)
 	_update_population()
 	# La población puede haber bajado: así nunca queda un paso con más trabajadores
 	# asignados que mano de obra, ni siquiera entre dos pasos (por ejemplo, al guardar).
-	_enforce_labor_limit()
+	# Si no ha cambiado, la comprobación del principio del paso sigue valiendo.
+	if population != population_before:
+		_enforce_labor_limit()
 	_update_alerts()
 
 
@@ -515,9 +519,10 @@ func _advance_projects() -> void:
 				break
 
 
-func _run_building(b: Dictionary) -> void:
+func _run_building(b: Dictionary, productivity: int = -1) -> void:
 	var t: Dictionary = _data.buildings[b["type"]]
-	b["missing"] = {}
+	if not b["missing"].is_empty():
+		b["missing"] = {}
 	if t["inputs"].is_empty() and t["outputs"].is_empty():
 		b["status"] = STATUS_IDLE
 		return
@@ -534,7 +539,7 @@ func _run_building(b: Dictionary) -> void:
 	# paso suma la productividad (100 si no hay descontento).
 	var needed: int = t["cycle_steps"] * 100
 	if b["progress"] < needed:
-		b["progress"] = mini(b["progress"] + productivity_percent(), needed)
+		b["progress"] = mini(b["progress"] + (productivity if productivity >= 0 else productivity_percent()), needed)
 	if b["progress"] >= needed:
 		_try_finish_cycle(b, t)
 	else:
@@ -583,10 +588,17 @@ func _try_start_cycle(b: Dictionary, t: Dictionary) -> bool:
 ## `wasted` con un aviso, para que un subproducto sobrante no bloquee el principal.
 func _try_finish_cycle(b: Dictionary, t: Dictionary) -> void:
 	var produced := {}
+	var level_percent := level_output_percent(b)
 	for good in t["outputs"].keys():
-		var amount: int = Fixed.percent_of(t["outputs"][good], _modifier_percent(good))
-		amount = Fixed.percent_of(amount, _data.season_percent(good, _month))
-		produced[good] = Fixed.percent_of(amount, level_output_percent(b))
+		# Multiplicar por 100 % no cambia nada: solo se aplica lo que de verdad modifica la cantidad.
+		var amount: int = t["outputs"][good]
+		if not modifiers.is_empty():
+			amount = Fixed.percent_of(amount, _modifier_percent(good))
+		if not _data.seasons.is_empty():
+			amount = Fixed.percent_of(amount, _data.season_percent(good, _month))
+		if level_percent != 100:
+			amount = Fixed.percent_of(amount, level_percent)
+		produced[good] = amount
 	if not store.can_fit_any(produced):
 		b["status"] = STATUS_STORAGE_FULL
 		return

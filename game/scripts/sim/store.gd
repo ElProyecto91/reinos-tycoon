@@ -30,6 +30,9 @@ var last_error: String = ""
 var _goods: Dictionary = {}
 var _stock: Dictionary = {}
 var _ledger: Dictionary = {}
+## Espacio ocupado por las mercancías físicas, llevado al día en cada entrada o salida (consultarlo es lo más
+## frecuente de toda la simulación). `check_conservation` lo recalcula entero para detectar un descuadre.
+var _used: int = 0
 
 
 func _init(goods: Dictionary, capacity_milli: int) -> void:
@@ -45,6 +48,10 @@ func stock(good_id: String) -> int:
 
 
 func used_space() -> int:
+	return _used
+
+
+func _compute_used() -> int:
 	var total := 0
 	for good_id in _stock.keys():
 		if _goods[good_id]["physical"]:
@@ -114,6 +121,8 @@ func seed_initial(good_id: String, amount: int) -> int:
 	if accepted > 0:
 		_stock[good_id] += accepted
 		_ledger[good_id]["initial"] += accepted
+		if _goods[good_id]["physical"]:
+			_used += accepted
 	return accepted
 
 
@@ -126,6 +135,8 @@ func add(good_id: String, amount: int, kind: String) -> int:
 	if accepted > 0:
 		_stock[good_id] += accepted
 		_ledger[good_id][kind] += accepted
+		if _goods[good_id]["physical"]:
+			_used += accepted
 	return accepted
 
 
@@ -145,6 +156,8 @@ func remove(good_id: String, amount: int, kind: String) -> int:
 	if removed > 0:
 		_stock[good_id] -= removed
 		_ledger[good_id][kind] += removed
+		if _goods[good_id]["physical"]:
+			_used -= removed
 	return removed
 
 
@@ -175,8 +188,9 @@ func check_conservation() -> Array[String]:
 	for good_id in _stock.keys():
 		if _goods[good_id]["physical"] and _stock[good_id] > limit(good_id):
 			problems.append("%s: existencias %d por encima de su parte de almacén %d" % [good_id, _stock[good_id], limit(good_id)])
-	if used_space() > capacity:
-		problems.append("espacio usado %d por encima de la capacidad %d" % [used_space(), capacity])
+	var real_used := _compute_used()
+	if real_used > capacity:
+		problems.append("espacio usado %d por encima de la capacidad %d" % [real_used, capacity])
 	return problems
 
 
@@ -254,14 +268,17 @@ func load_dict(raw: Variant) -> bool:
 	var old_capacity := capacity
 	var old_stock := _stock
 	var old_ledger := _ledger
+	var old_used := _used
 	capacity = new_capacity
 	_stock = new_stock
 	_ledger = new_ledger
+	_used = _compute_used()
 	var problems := check_conservation()
 	if not problems.is_empty():
 		capacity = old_capacity
 		_stock = old_stock
 		_ledger = old_ledger
+		_used = old_used
 		last_error = "almacén incoherente: %s" % problems[0]
 		return false
 	return true

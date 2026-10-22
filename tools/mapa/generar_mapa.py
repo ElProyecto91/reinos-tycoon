@@ -193,7 +193,7 @@ def main(carpeta, preview=None, salida_json=None):
     km_por_unidad = 111.19 / UNID_POR_GRADO_LAT
     salida = {
         "format_version": 2,
-        "status": "Mapa grande (M2–M5, 47 provincias). Las ENTIDADES POLÍTICAS y las capitales son históricas y aproximadas, hacia julio del año 1000 "
+        "status": "Mapa grande (M2–M6, 49 provincias). Las ENTIDADES POLÍTICAS y las capitales son históricas y aproximadas, hacia julio del año 1000 "
                   "(docs/REGION_IBERIA_1000.md; fuentes H-39 a H-44). La FORMA de cada territorio es una aproximación de juego (reparto por "
                   "cercanía a la capital), NO son fronteras históricas. Costas y ríos: Natural Earth (dominio público). Las poblaciones, edificios y "
                   "existencias de partida son PARÁMETROS DE JUEGO provisionales, no datos históricos. Cantidades en milésimas de unidad.",

@@ -68,7 +68,7 @@ func test_default_map_loads_and_has_many_playable_provinces() -> void:
 	for id in map.realms.keys():
 		assert_true(used.has(id), "el reino %s tiene alguna provincia" % id)
 	assert_true(map.realms.size() >= 5, "varios reinos")
-	assert_eq(map.provinces.size(), 47, "el mapa de la versión 0.3.0 tiene 47 provincias")
+	assert_eq(map.provinces.size(), 49, "el mapa de la versión 0.4.0 tiene 49 provincias")
 	for ring in map.land:
 		assert_true(not Geometry2D.triangulate_polygon(ring).is_empty(), "una orilla se puede dibujar")
 	done()
@@ -235,7 +235,7 @@ func test_version_0_2_adds_tolosa_gascuna_and_the_two_sea_provinces_all_reachabl
 			if not vistas.has(n):
 				vistas[n] = true
 				cola.append(n)
-	assert_eq(vistas.size(), map.provinces.size(), "las 47 provincias están conectadas entre sí")
+	assert_eq(vistas.size(), map.provinces.size(), "las 49 provincias están conectadas entre sí")
 	for p in map.provinces:
 		assert_eq(int(p["start"]["stock"].get("tools", -1)), 1800, "%s empieza con herramientas" % p["id"])
 	done()

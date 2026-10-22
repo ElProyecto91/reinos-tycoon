@@ -45,6 +45,10 @@ func _new_world(data, whole_map: bool = false):
 				kept.append(province)
 		assert_eq(kept.size(), REPRESENTATIVE.size(), "las provincias representativas existen en el mapa")
 		world.provinces = kept
+		var kept_owners := {}
+		for province in kept:
+			kept_owners[province.id] = world.owners[province.id]
+		world.owners = kept_owners
 	return world
 
 
@@ -256,6 +260,7 @@ func test_a_year_of_play_through_the_real_screen_at_x600() -> void:
 	_clean()
 	var main = _main()
 	var world = main.session.world
+	world.player_realm = ""     # esta prueba es de construcción y tiempo, no de guerra: se manda en todas las provincias
 	var data = main.session.data
 	main.frame_budget_usec = 1 << 40
 	main._on_speed_pressed(3)

@@ -322,6 +322,30 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Los guardados del mapa de 44 o 40 provincias se apartan al abrir esta versión (comportamiento ya existente para mapas distintos).
 - Estado: **provisional**.
 
+## D-037. Rendimiento del paso (versión 0.4.0)
+
+- Medido en el servidor con un jugador automático que construye en 47 provincias (mundo maduro, ~1 386 edificios): el paso bajó de **12,4 ms a 8,66 ms** (−30 %). La suite completa pasó de 3 min 23 s a 2 min 17 s en local.
+- Cambios sin alterar resultados: el almacén lleva el espacio usado de forma incremental (`_used`), la productividad se calcula una vez por paso y no por edificio, se evita vaciar diccionarios ya vacíos y se saltan los multiplicadores al 100 %. Las 385 pruebas de antes siguen en verde, y los guardados no cambian.
+- **No medido en el móvil.** Los 8,66 ms son del servidor; el Redmi Note 13 5G puede ir varias veces más lento.
+- Estado: **provisional**.
+
+## D-038. Guerra y conquista, primera parte (versión 0.4.0)
+
+- Petición del usuario (2026-10-22): conquistar territorios colindantes de otros reinos. Implementado CQ1 a CQ5 y la defensa de CQ6 de `docs/DISENO_CONQUISTA.md`: cada provincia tiene propietario; el jugador manda un reino (`player_realm`); manda soldados de una provincia propia a una colindante (propia: refuerzo; ajena: batalla al llegar tras 24 pasos por salto).
+- Batalla determinista, sin azar: fuerza de ataque = soldados × 100 %; defensa = (guarnición + milicia del 10 % de la población) × 130 %; cada ronda cada bando pierde el 15 % de la fuerza del otro (mínimo 1); gana el atacante solo si la defensa llega a 0 con él en pie, y en cualquier otro caso aguanta el defensor. Bajas del defensor: primero la guarnición, luego la población (milicia).
+- Conquista: la provincia pasa al reino del jugador y a su red de comercio, los supervivientes son su guarnición y el descontento sube a 600. **Administrar cuesta**: cada día cada provincia propia paga 0,4 de moneda por cada otra provincia propia (se consume).
+- Los rivales **solo defienden** (no hay IA de ataque todavía; CQ6 sigue abierto). Los soldados no comen ni cobran mientras marchan.
+- **Todas las cifras son parámetros de juego** (`rules.json`, `war_*`), sin fuente histórica.
+- **El reino de partida del jugador es León, provisional**; no hay pantalla para elegirlo todavía. Las provincias de otros reinos se pueden mirar pero no manejar (ficha en solo lectura).
+- Guardado: `owners`, `player_realm` y `armies` son claves opcionales; un guardado anterior carga sin guerra (el jugador manda en todo, como antes).
+- Estado: **provisional**.
+
+## D-039. Mapa de 49 provincias (versión 0.4.0)
+
+- Se añaden **Narbona** (H-53, nominalmente de Tolosa, aislada en el grafo del juego) y **Álava** (H-54, confianza baja, en Pamplona). Las formas son aproximación de juego.
+- Los guardados del mapa de 47 provincias se apartan al abrir esta versión.
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

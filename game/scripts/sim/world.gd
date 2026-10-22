@@ -4,6 +4,7 @@ extends RefCounted
 const ProvinceScript := preload("res://scripts/sim/province.gd")
 const Fixed := preload("res://scripts/sim/fixed.gd")
 const TradeScript := preload("res://scripts/sim/trade.gd")
+const WarScript := preload("res://scripts/sim/war.gd")
 
 var data = null
 var step_count: int = 0
@@ -17,6 +18,18 @@ var trade_links: Dictionary = {}
 ## Esto sí se guarda.
 var shipments: Array = []
 var trade_lost: Dictionary = {}
+## Propietario de cada provincia (id -> reino) y reino que manda el jugador. Sin propietarios (mundos de prueba) o con
+## `player_realm` vacío no hay guerra y el jugador manda en todas. Se guardan.
+var owners: Dictionary = {}
+var player_realm: String = ""
+## Sube cada vez que cambia algún propietario (para que el mapa vuelva a colorearse). No se guarda.
+var owners_version: int = 0
+## Ejércitos en marcha [{from, to, soldiers, arrive}] (se guardan) y, sin guardar, los informes de las últimas batallas y
+## el total de muertos de la partida en curso.
+var armies: Array = []
+var battle_log: Array = []
+var war_dead: int = 0
+var battle_count: int = 0       ## batallas libradas (no se guarda): la interfaz lo usa para avisar de las nuevas
 ## Caché de saltos entre provincias (se vacía al cambiar la red)
 var hop_cache: Dictionary = {}
 var _index: Dictionary = {}
@@ -43,7 +56,20 @@ func find_province(province_id: String):
 
 ## Pone la red de comercio: {id: {"realm": String, "neighbors": Array}}.
 func set_network(links: Dictionary) -> void:
-	trade_links = links
+	trade_links = links.duplicate(true)
+	# Una provincia conquistada pasa a la red de su nuevo reino.
+	for id in owners.keys():
+		if trade_links.has(id):
+			trade_links[id]["realm"] = owners[id]
+	hop_cache = {}
+
+
+## Cambia el propietario de una provincia (conquista) y la pasa a la red de comercio de su nuevo reino.
+func set_owner(province_id: String, realm: String) -> void:
+	owners[province_id] = realm
+	owners_version += 1
+	if trade_links.has(province_id):
+		trade_links[province_id]["realm"] = realm
 	hop_cache = {}
 
 
@@ -52,6 +78,7 @@ func step() -> void:
 	for province in provinces:
 		province.step()
 	TradeScript.step(self)
+	WarScript.step(self)
 
 
 func run_steps(count: int) -> void:
@@ -74,7 +101,8 @@ func to_dict() -> Dictionary:
 	var list: Array = []
 	for province in provinces:
 		list.append(province.to_dict())
-	return {"step_count": step_count, "provinces": list, "shipments": shipments.duplicate(true), "trade_lost": trade_lost.duplicate()}
+	return {"step_count": step_count, "provinces": list, "shipments": shipments.duplicate(true), "trade_lost": trade_lost.duplicate(),
+		"owners": owners.duplicate(), "player_realm": player_realm, "armies": armies.duplicate(true)}
 
 
 ## Carga un estado guardado en este mundo (que debe estar vacío). Si falla devuelve false
@@ -110,16 +138,36 @@ func load_dict(raw: Variant) -> bool:
 	var parsed_lost = _parse_lost(raw.get("trade_lost", {}))
 	if parsed_lost == null:
 		return false
+	var parsed_owners = _parse_owners(raw.get("owners", {}), seen)
+	if parsed_owners == null:
+		return false
+	var parsed_player = raw.get("player_realm", "")
+	if typeof(parsed_player) != TYPE_STRING or (parsed_player != "" and not parsed_owners.values().has(parsed_player)):
+		last_error = "mundo: reino del jugador no válido"
+		return false
+	var parsed_armies = _parse_armies(raw.get("armies", []), seen, steps, parsed_owners)
+	if parsed_armies == null:
+		return false
 	provinces = loaded
 	step_count = steps
 	_index = {}
 	shipments = parsed_shipments
 	trade_lost = parsed_lost
+	owners = parsed_owners
+	owners_version += 1
+	player_realm = parsed_player
+	armies = parsed_armies
+	battle_log = []
+	battle_count = 0
+	war_dead = 0
 	var problems := TradeScript.check(self)
 	if not problems.is_empty():
 		provinces = []
 		shipments = []
 		trade_lost = {}
+		owners = {}
+		player_realm = ""
+		armies = []
 		last_error = problems[0]
 		return false
 	return true
@@ -169,4 +217,48 @@ func _parse_lost(raw: Variant) -> Variant:
 			return null
 		if amount > 0:
 			out[good] = amount
+	return out
+
+
+## Propietarios guardados (opcional). null si no son válidos: cada clave una provincia del guardado y cada valor un reino no vacío.
+func _parse_owners(raw: Variant, known_ids: Dictionary) -> Variant:
+	if typeof(raw) != TYPE_DICTIONARY:
+		last_error = "mundo: los propietarios no son un objeto"
+		return null
+	var out := {}
+	for id in raw.keys():
+		if typeof(id) != TYPE_STRING or not known_ids.has(id) or typeof(raw[id]) != TYPE_STRING or raw[id] == "":
+			last_error = "mundo: propietario no válido"
+			return null
+		out[id] = raw[id]
+	if not out.is_empty() and out.size() != known_ids.size():
+		last_error = "mundo: faltan propietarios de algunas provincias"
+		return null
+	return out
+
+
+## Ejércitos en marcha guardados (opcional). null si no son válidos.
+func _parse_armies(raw: Variant, known_ids: Dictionary, steps: int, parsed_owners: Dictionary) -> Variant:
+	if typeof(raw) != TYPE_ARRAY or raw.size() > WarScript.MAX_ARMIES:
+		last_error = "mundo: los ejércitos no son una lista razonable"
+		return null
+	var out: Array = []
+	for entry in raw:
+		if typeof(entry) != TYPE_DICTIONARY:
+			last_error = "mundo: un ejército no es un objeto"
+			return null
+		var from_id = entry.get("from", null)
+		var to_id = entry.get("to", null)
+		if typeof(from_id) != TYPE_STRING or typeof(to_id) != TYPE_STRING or not known_ids.has(from_id) or not known_ids.has(to_id) or from_id == to_id:
+			last_error = "mundo: ejército con provincias no válidas"
+			return null
+		var soldiers = Fixed.exact_int(entry.get("soldiers", null))
+		var arrive = Fixed.exact_int(entry.get("arrive", null))
+		if soldiers == null or soldiers < 1 or arrive == null or arrive < 0 or arrive > steps + TradeScript.MAX_ARRIVAL_AHEAD:
+			last_error = "mundo: ejército con soldados o llegada no válidos"
+			return null
+		out.append({"from": from_id, "to": to_id, "soldiers": soldiers, "arrive": arrive})
+	if not out.is_empty() and parsed_owners.is_empty():
+		last_error = "mundo: hay ejércitos pero no hay propietarios"
+		return null
 	return out

@@ -72,6 +72,14 @@ const RULE_OPTIONAL_INTS := {
 	"trade_cost_per_unit_hop": [0, 1000000],
 	"trade_route_cap": [0, 1000000000],
 	"trade_max_shipments": [0, 100000],
+	"war_march_steps_per_hop": [0, 100000],
+	"war_attack_percent": [0, 10000],
+	"war_defense_percent": [0, 10000],
+	"war_militia_percent": [0, 100],
+	"war_round_loss_percent": [0, 100],
+	"war_max_rounds": [0, 100000],
+	"war_conquest_unrest": [0, 1000000],
+	"war_admin_cost": [0, 100000000],
 }
 
 ## Mercancías por id: id -> {id, name, category, unit, physical}
@@ -245,6 +253,11 @@ func build_rules(raw: Dictionary) -> bool:
 				errors.append("regla \"trade_goods\": mercancía repetida (%s)" % good)
 			else:
 				trade_list.append(good)
+	if errors.size() == before and int(result.get("war_march_steps_per_hop", 0)) > 0:
+		if result["war_attack_percent"] < 1 or result["war_defense_percent"] < 1 or result["war_round_loss_percent"] < 1 or result["war_max_rounds"] < 1:
+			errors.append("reglas de guerra: ataque, defensa, bajas por ronda y rondas máximas deben ser al menos 1")
+		elif result["war_conquest_unrest"] > int(result.get("unrest_max", 0)):
+			errors.append("regla \"war_conquest_unrest\": no puede pasar de unrest_max")
 	if errors.size() == before and int(result.get("trade_interval", 0)) > 0:
 		var tr: Dictionary = result
 		if trade_list.is_empty():

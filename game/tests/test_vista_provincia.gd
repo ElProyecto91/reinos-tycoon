@@ -45,6 +45,8 @@ func _main_en_arbol(con_3d: bool = true, provincia_inicial: String = "cordoba"):
 	main.start_province = provincia_inicial
 	main.settings_path = ""
 	_raiz().add_child(main)
+	main.session.world.player_realm = ""     # estas pruebas son de la vista, no de la guerra: se manda en todas las provincias
+	main._refresh_card()
 	return main
 
 

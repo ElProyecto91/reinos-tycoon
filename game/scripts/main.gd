@@ -12,6 +12,7 @@ const ProvincePanelScript := preload("res://scripts/ui/province_panel.gd")
 const IconRectScript := preload("res://scripts/ui/icon_rect.gd")
 const CalendarScript := preload("res://scripts/sim/calendar.gd")
 const TradeScript := preload("res://scripts/sim/trade.gd")
+const WarScript := preload("res://scripts/sim/war.gd")
 const ProvinceViewScript := preload("res://scripts/ui/province_view.gd")
 const Texts := preload("res://scripts/ui/texts.gd")
 const Icons := preload("res://scripts/ui/icons.gd")
@@ -73,6 +74,8 @@ var _card_title: Label
 var _card_emblem: Control
 var _card_text: Label
 var _enter_button: Button
+var _attack_button: Button
+var _battle_seen := 0
 var _season_icon: Control
 var _in_province := false
 ## Presupuesto de simulación por fotograma (µs); las pruebas lo ponen enorme para ser deterministas.
@@ -261,6 +264,66 @@ func _build_map_card(root: VBoxContainer) -> void:
 	_enter_button.custom_minimum_size = Vector2(0, BUTTON_HEIGHT)
 	_enter_button.pressed.connect(_on_enter_pressed)
 	box.add_child(_enter_button)
+	_attack_button = Button.new()
+	_attack_button.custom_minimum_size = Vector2(0, BUTTON_HEIGHT)
+	_attack_button.pressed.connect(_on_attack_pressed)
+	_attack_button.visible = false
+	box.add_child(_attack_button)
+
+
+## La ficha solo se puede manejar en provincias propias.
+func _apply_ownership() -> void:
+	if _panel == null or session == null:
+		return
+	var id: String = _panel.current_province_id()
+	_panel.set_read_only(id != "" and not WarScript.is_player(session.world, id))
+
+
+## Provincia propia colindante con `target_id` que tiene más soldados ("" si ninguna tiene).
+func _best_attack_origin(target_id: String) -> String:
+	var best := ""
+	var best_soldiers := 0
+	for n in session.world.trade_links.get(target_id, {}).get("neighbors", []):
+		if not WarScript.is_player(session.world, n):
+			continue
+		var p = session.world.find_province(n)
+		if p != null and p.recruits > best_soldiers:
+			best = n
+			best_soldiers = p.recruits
+	return best
+
+
+func _on_attack_pressed() -> void:
+	var origin_id := _best_attack_origin(_selected_id)
+	if origin_id == "":
+		return
+	var count: int = session.world.find_province(origin_id).recruits
+	var result: Dictionary = WarScript.send(session.world, origin_id, _selected_id, count)
+	if not result["ok"]:
+		_show_modal("No se puede atacar", str(result["error"]), [{"text": "Entendido"}])
+	else:
+		_show_modal("Ejército en marcha", "%d soldados salen de %s hacia %s. Llegarán en %d horas de juego." % [count, session.world.find_province(origin_id).display_name, session.world.find_province(_selected_id).display_name, int(session.data.rules["war_march_steps_per_hop"])], [{"text": "Entendido"}])
+	_map_view.queue_redraw()
+	_refresh_card()
+
+
+## Si ha habido batallas nuevas, enseña el informe de la última.
+func _check_battles() -> void:
+	var world = session.world
+	if world.battle_count < _battle_seen:
+		_battle_seen = world.battle_count
+	if world.battle_count == _battle_seen or world.battle_log.is_empty() or has_modal():
+		return
+	_battle_seen = world.battle_count
+	var r: Dictionary = world.battle_log[world.battle_log.size() - 1]
+	var target = world.find_province(r["to"])
+	var name_to: String = target.display_name if target != null else str(r["to"])
+	var body := "%s\nAtacaban %d soldados contra %d defensores.\nBajas: %d atacantes y %d defensores, en %d %s." % [
+		"¡Victoria! %s pasa a ser tuya." % name_to if r["won"] else "Derrota: %s resiste." % name_to,
+		r["sent"], r["garrison"], r["sent"] - r["attacker_left"], r["garrison"] - r["defender_left"], r["rounds"], "ronda" if r["rounds"] == 1 else "rondas"]
+	if r["won"]:
+		body += "\nSuperviven %d soldados. La provincia queda inquieta y administrarla cuesta monedas cada día." % r["attacker_left"]
+	_show_modal("Batalla por %s" % name_to, body, [{"text": "Entendido"}])
 
 
 ## Pasa a la ficha lo que viaja hacia o desde la provincia mostrada.
@@ -275,7 +338,9 @@ func _refresh_card() -> void:
 		return
 	var province = session.world.find_province(_selected_id) if _selected_id != "" else null
 	_enter_button.visible = province != null
+	_attack_button.visible = false
 	_card_emblem.kind = ""
+	_apply_ownership()
 	if province == null:
 		_card_title.text = "El mapa del año 1000"
 		_card_text.text = "Toca un territorio para elegirlo. Arrastra para moverte y pellizca (o usa + y −) para acercar. Los colores son los reinos; las formas son aproximadas, no fronteras históricas."
@@ -286,15 +351,32 @@ func _refresh_card() -> void:
 	var lines: Array[String] = []
 	var emblem: String = "emblem_" + str(entry.get("realm", ""))
 	_card_emblem.kind = emblem if Icons.is_kind(emblem) else ""
-	lines.append("%s · emblema de juego, no histórico" % realm.get("name", ""))
+	var owner_id: String = session.world.owners.get(_selected_id, "")
+	var owner_realm: Dictionary = session.map.realms.get(owner_id, realm)
+	if owner_id != "" and owner_id != str(entry.get("realm", "")):
+		emblem = "emblem_" + owner_id
+		_card_emblem.kind = emblem if Icons.is_kind(emblem) else ""
+	lines.append("%s · emblema de juego, no histórico" % owner_realm.get("name", ""))
 	lines.append("Población: %d · Descontento: %d de %d" % [province.population, province.unrest, session.data.rules["unrest_max"]])
 	if not province.alerts.is_empty():
 		var names: Array[String] = []
 		for code in province.alerts:
 			names.append(Texts.alert_text(code))
 		lines.append("! " + "; ".join(names))
+	var mine := WarScript.is_player(session.world, _selected_id)
+	if not mine:
+		lines.append("Guarnición: %d soldados y milicia · defensa %d" % [province.recruits, WarScript.defense_strength(session.world, province)])
+	var origin_id := _best_attack_origin(_selected_id)
+	if not mine and WarScript.enabled(session.world):
+		if origin_id == "":
+			lines.append("Para atacar necesitas soldados en una provincia colindante tuya.")
+		else:
+			var soldiers: int = session.world.find_province(origin_id).recruits
+			lines.append("Atacarías con %d soldados desde %s (fuerza %d)." % [soldiers, session.world.find_province(origin_id).display_name, WarScript.attack_strength(session.world, soldiers)])
+			_attack_button.text = "Atacar con %d soldados" % soldiers
+			_attack_button.visible = true
 	_card_text.text = "\n".join(lines)
-	_enter_button.text = "Entrar en %s" % entry.get("short", province.display_name)
+	_enter_button.text = ("Entrar en %s" if mine else "Ver %s") % entry.get("short", province.display_name)
 
 
 ## Etiqueta sobre fondo oscuro semitransparente para rotular la vista 3D.
@@ -393,6 +475,7 @@ func _process(delta: float) -> void:
 					_step_accumulator = 0.0
 					break
 			_refresh_all()
+			_check_battles()
 	_autosave_timer += delta
 	if _autosave_timer >= AUTOSAVE_SECONDS:
 		_autosave_timer = 0.0
@@ -446,6 +529,8 @@ func _refresh_view() -> void:
 	if enable_3d:
 		_province_view.mostrar(province)
 	_view_title.text = "%s · %d habitantes" % [province.display_name, province.population]
+	if not WarScript.is_player(session.world, _selected_id):
+		_view_title.text += " · de %s" % session.map.realms.get(session.world.owners.get(_selected_id, ""), {}).get("name", "otro reino")
 	var hidden: Dictionary = _province_view.ocultos() if enable_3d else {}
 	var total := 0
 	for n in hidden.values():

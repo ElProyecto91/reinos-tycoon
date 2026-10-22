@@ -23,6 +23,7 @@ const COLOR_SELECTED := Color("#fff3c4")
 const COLOR_GOLD := Color("#c8902c")
 const COLOR_WARNING := Color("#b0781c")
 const COLOR_DANGER := Color("#b3321f")
+const WarScript := preload("res://scripts/sim/war.gd")
 const COLOR_PARCHMENT_MIX := 0.34   # cuánto pergamino se mezcla con el color del reino
 
 const MAX_ZOOM := 7.0
@@ -38,6 +39,8 @@ const ZOOM_POPULATION := 3.0
 
 var map = null
 var world = null
+## Versión de los propietarios con la que se pintaron las provincias (ver World.owners_version).
+var _painted_owners: int = -1
 var selected_id: String = ""
 ## Zoom respecto al encaje de todo el mapa (1 = mapa entero) y desplazamiento en píxeles.
 var zoom: float = 1.0
@@ -336,7 +339,9 @@ func _build_meshes() -> void:
 	colors = []
 	var index := 0
 	for p in map.provinces:
-		var base: Color = map.realms[p["realm"]]["color"]
+		# El color sigue al propietario actual (una provincia conquistada toma el color de su nuevo reino).
+		var owner_id: String = world.owners.get(p["id"], p["realm"]) if world != null else p["realm"]
+		var base: Color = map.realms[owner_id]["color"] if map.realms.has(owner_id) else map.realms[p["realm"]]["color"]
 		var tone := base.lerp(COLOR_LAND, COLOR_PARCHMENT_MIX)
 		# Un poco de variación entre provincias vecinas del mismo reino para distinguir sus límites.
 		var shade := 0.94 + 0.12 * float((index * 7) % 5) / 4.0
@@ -353,6 +358,9 @@ func _build_meshes() -> void:
 func _draw() -> void:
 	if map == null or world == null:
 		return
+	if _painted_owners != world.owners_version:
+		_painted_owners = world.owners_version
+		_build_meshes()
 	var s := view_scale()
 	var o := view_offset()
 	var inv := 1.0 / s
@@ -377,6 +385,7 @@ func _draw() -> void:
 		draw_polyline(_closed(ring), Color(COLOR_COAST, 0.75), 1.3 * inv)
 	for ring in map.land:
 		draw_polyline(_closed(ring), Color(COLOR_COAST, 0.9), 1.6 * inv)
+	_draw_war(inv)
 	if selected_id != "" and not map.find(selected_id).is_empty():
 		var sel: Dictionary = map.find(selected_id)
 		for ring in sel["rings"]:
@@ -389,6 +398,28 @@ func _draw() -> void:
 	_draw_frame()
 	_draw_scale_bar(s)
 	_draw_compass()
+
+
+## Guerra: contorno rojo en las provincias que se pueden atacar y un punto que avanza por cada ejército en marcha.
+func _draw_war(inv: float) -> void:
+	if not WarScript.enabled(world):
+		return
+	for id in WarScript.attackable(world):
+		var entry: Dictionary = map.find(id)
+		for ring in entry["rings"]:
+			draw_polyline(_closed(ring), Color(COLOR_DANGER, 0.95), 3.4 * inv)
+	var march: int = maxi(1, int(world.data.rules["war_march_steps_per_hop"]))
+	for army in world.armies:
+		var a: Dictionary = map.find(army["from"])
+		var b: Dictionary = map.find(army["to"])
+		if a.is_empty() or b.is_empty():
+			continue
+		var from := Vector2(a["x"], a["y"])
+		var to := Vector2(b["x"], b["y"])
+		var progress := clampf(1.0 - float(int(army["arrive"]) - world.step_count) / float(march), 0.0, 1.0)
+		draw_line(from, to, Color(COLOR_DANGER, 0.8), 2.4 * inv)
+		draw_circle(from.lerp(to, progress), 7.0 * inv, COLOR_DANGER)
+		draw_circle(from.lerp(to, progress), 3.5 * inv, Color.WHITE)
 
 
 func _closed(ring: PackedVector2Array) -> PackedVector2Array:

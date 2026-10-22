@@ -231,6 +231,7 @@ func test_building_buttons_build_and_report() -> void:
 	_clean()
 	var main = _main()
 	var province = main.session.world.find_province("cordoba")
+	main.session.world.player_realm = ""     # esta prueba es de construcción, no de guerra
 	main._on_province_selected("cordoba")
 	var projects_before: int = province.projects.size()
 	var button: Button = main._panel.build_button("house")
