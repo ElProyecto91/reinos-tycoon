@@ -114,6 +114,6 @@ Petición del usuario (2026-10-22): conquistar territorios colindantes de otros 
 
 **Lote 0.6.0 (2026-10-22, en local; falta CI):** muralla y refuerzos (D-042), mapa de 54 provincias (D-043). Pendiente: modelo 3D propio de la muralla, que la IA ataque a otros rivales, comida y paga de soldados en marcha, asedios, comercio entre reinos y probar de verdad en el móvil (ninguna versión desde la 0.2.0 se ha instalado).
 
-**Lote 0.6.1 (2026-10-22, en local; falta CI):** el usuario probó el APK y pidió que construir no mueva el resto del panel y fichas de construcción a mitad de tamaño sin scroll; también quiso saber a qué se debe el descontento (D-044). Es la primera retroalimentación de juego real en el móvil; el rendimiento del móvil sigue sin medirse.
+**Lote 0.6.1 (2026-10-22, CI #45 en verde):** el usuario probó el APK y pidió que construir no mueva el resto del panel y fichas de construcción a mitad de tamaño sin scroll; también quiso saber a qué se debe el descontento (D-044). Es la primera retroalimentación de juego real en el móvil; el rendimiento del móvil sigue sin medirse.
 
 Las fases 3 a 8 se detallarán en tareas pequeñas al terminar la anterior, no antes. Cada fase termina con pruebas ejecutadas, documentación actualizada y versión identificable (sección 37).
