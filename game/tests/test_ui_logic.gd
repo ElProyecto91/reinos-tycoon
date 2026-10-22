@@ -34,6 +34,11 @@ func _tap(view, point: Vector2) -> void:
 	event.pressed = true
 	event.position = point
 	view._gui_input(event)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT
+	release.pressed = false
+	release.position = point
+	view._gui_input(release)
 
 
 func test_amount_is_exact_and_trimmed() -> void:
@@ -119,36 +124,105 @@ func test_tapping_each_province_selects_it() -> void:
 	assert_eq(seen.size(), map.provinces.size(), "una señal por toque")
 	# Un toque en zona vacía no cambia la selección
 	var before: String = view.selected_id
-	_tap(view, Vector2(5, 5))
+	_tap(view, view.map_to_view(5, 150))
 	assert_eq(view.selected_id, before, "tocar el vacío no cambia nada")
 	assert_eq(seen.size(), map.provinces.size(), "ni emite señal")
 	main.free()
 	done()
 
 
-func test_tap_near_the_edge_of_the_touch_zone_still_selects() -> void:
+func test_tapping_the_open_sea_selects_nothing() -> void:
 	_clean()
 	var main = _main()
 	var view = main._map_view
-	var a: Dictionary = main.session.map.find("toledo")
-	var edge: Vector2 = view.map_to_view(a["x"], a["y"]) + Vector2(main.session.map.touch_radius * view.view_scale() * 0.95, 0)
-	_tap(view, edge)
-	assert_eq(view.selected_id, "toledo", "cerca del borde de la zona de toque")
-	var outside: Vector2 = view.map_to_view(a["x"], a["y"]) + Vector2(main.session.map.touch_radius * view.view_scale() * 1.2, 0)
 	view.selected_id = ""
-	_tap(view, outside)
-	assert_eq(view.selected_id, "", "fuera de la zona")
+	_tap(view, view.map_to_view(5, 150))
+	assert_eq(view.selected_id, "", "mar abierto: no se elige nada")
 	main.free()
 	done()
 
 
-func test_touch_zone_is_large_enough_for_a_finger() -> void:
+func test_the_map_opens_zoomed_in_and_the_home_button_returns_to_that_view() -> void:
 	_clean()
 	var main = _main()
-	# Base de 720 px de ancho = 1080 px físicos en el móvil de prueba (×1,5); 48 dp ≈ 132 px
-	# físicos ≈ 88 px base. El diámetro de la zona de toque debe llegar a eso.
-	var diameter: float = 2.0 * main.session.map.touch_radius * main._map_view.view_scale()
-	assert_true(diameter >= 88.0, "zona de toque de %.0f px base (mínimo 88)" % diameter)
+	var view = main._map_view
+	assert_eq(view.zoom, view.INITIAL_ZOOM, "se abre con el zoom inicial")
+	assert_true(view.INITIAL_ZOOM > 1.0, "que es mayor que el mapa entero")
+	view._on_zoom_button(1)
+	view.pan = Vector2(30, 30)
+	view._on_zoom_button(0)
+	assert_eq(view.zoom, view.INITIAL_ZOOM, "el botón de inicio recupera el zoom inicial")
+	assert_eq(view.pan, Vector2.ZERO, "y el centrado")
+	main.free()
+	done()
+
+
+func test_a_drag_does_not_select_and_moves_the_map() -> void:
+	_clean()
+	var main = _main()
+	var view = main._map_view
+	view.zoom = 2.0
+	var before: Vector2 = view.pan
+	var start: Vector2 = view.map_to_view(main.session.map.find("toledo")["x"], main.session.map.find("toledo")["y"])
+	var press := InputEventMouseButton.new()
+	press.button_index = MOUSE_BUTTON_LEFT
+	press.pressed = true
+	press.position = start
+	view._gui_input(press)
+	var motion := InputEventMouseMotion.new()
+	motion.position = start + Vector2(60, 0)
+	motion.relative = Vector2(60, 0)
+	motion.button_mask = MOUSE_BUTTON_MASK_LEFT
+	view._gui_input(motion)
+	motion = InputEventMouseMotion.new()
+	motion.position = start + Vector2(90, 0)
+	motion.relative = Vector2(30, 0)
+	motion.button_mask = MOUSE_BUTTON_MASK_LEFT
+	view._gui_input(motion)
+	var release := InputEventMouseButton.new()
+	release.button_index = MOUSE_BUTTON_LEFT
+	release.pressed = false
+	release.position = start + Vector2(90, 0)
+	view._gui_input(release)
+	assert_eq(view.selected_id, "", "arrastrar no elige provincia")
+	assert_true(view.pan != before, "el mapa se desplazó")
+	main.free()
+	done()
+
+
+func test_every_territory_is_big_enough_to_touch_at_full_zoom_out() -> void:
+	_clean()
+	var main = _main()
+	var map = main.session.map
+	var view = main._map_view
+	# Con todo el mapa a la vista, cada provincia debe tener al menos 24 px base de lado en el
+	# rectángulo que la envuelve (si no, se amplía con los botones o el gesto de pellizco).
+	var small: Array = []
+	for p in map.provinces:
+		var lo := Vector2(1e9, 1e9)
+		var hi := Vector2(-1e9, -1e9)
+		for ring in p["rings"]:
+			for v in ring:
+				lo = Vector2(minf(lo.x, v.x), minf(lo.y, v.y))
+				hi = Vector2(maxf(hi.x, v.x), maxf(hi.y, v.y))
+		var side: float = maxf(hi.x - lo.x, hi.y - lo.y) * view.view_scale()
+		if side < 24.0:
+			small.append(p["id"])
+	assert_eq(small, [], "provincias demasiado pequeñas para tocarlas con el mapa entero")
+	main.free()
+	done()
+
+
+func test_an_exhausted_frame_budget_slows_the_simulation_instead_of_freezing_the_screen() -> void:
+	_clean()
+	var main = _main()
+	var world = main.session.world
+	main.frame_budget_usec = 0
+	main._on_speed_pressed(3)
+	main._process(100000.0)
+	assert_eq(world.step_count, 1, "sin presupuesto, un solo paso en el fotograma (nunca cero: la partida avanza)")
+	main._process(0.0)
+	assert_eq(world.step_count, 1, "y no se acumula deuda de pasos para después")
 	main.free()
 	done()
 
@@ -215,6 +289,7 @@ func test_speed_controls_time() -> void:
 	_clean()
 	var main = _main()
 	var world = main.session.world
+	main.frame_budget_usec = 1 << 40
 	main._on_speed_pressed(0)
 	main._process(1000.0)
 	assert_eq(world.step_count, 0, "en pausa no avanza")

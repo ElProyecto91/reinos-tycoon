@@ -227,6 +227,7 @@ func test_a_year_of_play_through_the_real_screen_at_x600() -> void:
 	var main = _main()
 	var world = main.session.world
 	var data = main.session.data
+	main.frame_budget_usec = 1 << 40
 	main._on_speed_pressed(3)
 	var presses := 0
 	var provinces: Array = main.session.map.provinces

@@ -20,6 +20,8 @@ const AUTOSAVE_SECONDS := 15.0
 const SPEEDS: Array[int] = [0, 1, 60, 600]
 const SPEED_LABELS: Array[String] = ["Pausa", "×1", "×60", "×600"]
 const MAX_STEPS_PER_FRAME := 30
+## Tiempo máximo (µs) dedicado a simular en un fotograma antes de dejarlo para el siguiente.
+const FRAME_BUDGET_USEC := 12000
 const BUTTON_HEIGHT := 88
 
 ## Colores cálidos (tierra, pergamino y oro viejo) para que la interfaz no choque con el paisaje 3D.
@@ -48,7 +50,7 @@ var animation_enabled: bool = true
 ## Dónde se guardan los ajustes de pantalla; vacío = no se leen ni se guardan (pruebas).
 var settings_path: String = SETTINGS_PATH
 ## Provincia que se muestra al arrancar (si existe en el mapa). Vacía: ninguna.
-var start_province: String = "cordoba"
+var start_province: String = ""
 
 var _speed_index: int = 2
 var _step_accumulator: float = 0.0
@@ -62,6 +64,13 @@ var _map_view: Control
 var _province_view: Control
 var _center: MarginContainer
 var _map_button: Button
+var _map_card: PanelContainer
+var _card_title: Label
+var _card_text: Label
+var _enter_button: Button
+var _in_province := false
+## Presupuesto de simulación por fotograma (µs); las pruebas lo ponen enorme para ser deterministas.
+var frame_budget_usec: int = FRAME_BUDGET_USEC
 var _view_title: Label
 var _view_note: Label
 var _chip_title: Control
@@ -166,7 +175,7 @@ func _build_ui() -> void:
 	_center.add_child(_province_view)
 	_map_view = MapViewScript.new()
 	_map_view.setup(session.map, session.world)
-	_map_view.province_selected.connect(_on_province_selected)
+	_map_view.province_selected.connect(_on_map_province_tapped)
 	_center.add_child(_map_view)
 	var chips := VBoxContainer.new()
 	chips.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -188,7 +197,6 @@ func _build_ui() -> void:
 	_chip_note = _chip(_view_note)
 	_chip_note.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	chips.add_child(_chip_note)
-	_show_map(false)
 
 	_scroll = ScrollContainer.new()
 	_scroll.custom_minimum_size = Vector2(0, 300)
@@ -196,18 +204,69 @@ func _build_ui() -> void:
 	_scroll.size_flags_stretch_ratio = 10.0
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	root.add_child(_scroll)
+	_build_map_card(root)
 	_panel = ProvincePanelScript.new()
 	_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_scroll.add_child(_panel)
 	_panel.setup(session.data)
 	_panel.changed.connect(_on_panel_changed)
 
+	_show_map(true)
 	_version_label = Label.new()
 	_version_label.text = "v%s · prototipo: provincias históricas, cifras de ejemplo" % game_version
 	_version_label.add_theme_font_size_override("font_size", 20)
 	_version_label.add_theme_color_override("font_color", COLOR_TEXT_DISABLED)
 	_version_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	root.add_child(_version_label)
+
+
+## Tarjeta de la provincia tocada en el mapa (nombre, reino, población) con el botón para entrar en ella.
+func _build_map_card(root: VBoxContainer) -> void:
+	_map_card = PanelContainer.new()
+	_map_card.custom_minimum_size = Vector2(0, 250)
+	_map_card.size_flags_vertical = Control.SIZE_SHRINK_END
+	root.add_child(_map_card)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 6)
+	_map_card.add_child(box)
+	_card_title = Label.new()
+	_card_title.add_theme_font_size_override("font_size", 34)
+	_card_title.add_theme_color_override("font_color", COLOR_ACCENT)
+	box.add_child(_card_title)
+	_card_text = Label.new()
+	_card_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_card_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	box.add_child(_card_text)
+	_enter_button = Button.new()
+	_enter_button.text = "Entrar en la provincia"
+	_enter_button.custom_minimum_size = Vector2(0, BUTTON_HEIGHT)
+	_enter_button.pressed.connect(_on_enter_pressed)
+	box.add_child(_enter_button)
+
+
+## Pone al día la tarjeta del mapa con la provincia elegida (o la ayuda si no hay ninguna).
+func _refresh_card() -> void:
+	if _map_card == null:
+		return
+	var province = session.world.find_province(_selected_id) if _selected_id != "" else null
+	_enter_button.visible = province != null
+	if province == null:
+		_card_title.text = "El mapa del año 1000"
+		_card_text.text = "Toca un territorio para elegirlo. Arrastra para moverte y pellizca (o usa + y −) para acercar. Los colores son los reinos; las formas son aproximadas, no fronteras históricas."
+		return
+	var entry: Dictionary = session.map.find(_selected_id)
+	var realm: Dictionary = session.map.realm_of(_selected_id)
+	_card_title.text = province.display_name
+	var lines: Array[String] = []
+	lines.append("%s" % realm.get("name", ""))
+	lines.append("Población: %d · Descontento: %d de %d" % [province.population, province.unrest, session.data.rules["unrest_max"]])
+	if not province.alerts.is_empty():
+		var names: Array[String] = []
+		for code in province.alerts:
+			names.append(Texts.alert_text(code))
+		lines.append("! " + "; ".join(names))
+	_card_text.text = "\n".join(lines)
+	_enter_button.text = "Entrar en %s" % entry.get("short", province.display_name)
 
 
 ## Etiqueta sobre fondo oscuro semitransparente para rotular la vista 3D.
@@ -227,18 +286,22 @@ func _chip(label: Label) -> PanelContainer:
 	return chip
 
 
-## Cambia la zona central entre el mapa (elegir provincia) y la vista 3D de la provincia elegida.
+## Cambia entre la pantalla del mapa (mapa grande y tarjeta de la provincia tocada) y la de la provincia
+## elegida (vista 3D y ficha). Sin provincia elegida solo hay mapa.
 func _show_map(show_map: bool) -> void:
 	var has_selection := _selected_id != ""
-	if not enable_3d or not has_selection:
-		show_map = true
-	_map_view.visible = show_map
-	_province_view.visible = enable_3d and not show_map
-	_chip_title.visible = enable_3d and not show_map
-	_chip_note.visible = enable_3d and not show_map and _view_note.text != ""
+	_in_province = has_selection and not show_map
+	# Sin vista 3D la provincia se mira solo en la ficha; el mapa se queda en el centro.
+	_map_view.visible = not _in_province or not enable_3d
+	_province_view.visible = enable_3d and _in_province
+	_chip_title.visible = enable_3d and _in_province
+	_chip_note.visible = enable_3d and _in_province and _view_note.text != ""
+	_scroll.visible = _in_province
+	_map_card.visible = not _in_province
 	if _map_button != null:
-		_map_button.text = "Provincia" if show_map else "Mapa"
-		_map_button.disabled = show_map and (not has_selection or not enable_3d)
+		_map_button.text = "Mapa" if _in_province else "Provincia"
+		_map_button.disabled = not _in_province and not has_selection
+	_refresh_card()
 
 
 func _make_theme() -> Theme:
@@ -291,7 +354,16 @@ func _process(delta: float) -> void:
 			if due > MAX_STEPS_PER_FRAME:
 				due = MAX_STEPS_PER_FRAME
 				_step_accumulator = 0.0
-			session.world.run_steps(due)
+			# Con muchas provincias cada paso cuesta; si se agota el presupuesto del fotograma se avanza
+			# menos (la simulación va más lenta que el reloj) en vez de congelar la pantalla.
+			var started := Time.get_ticks_usec()
+			var done_steps := 0
+			while done_steps < due:
+				session.world.run_steps(1)
+				done_steps += 1
+				if Time.get_ticks_usec() - started > frame_budget_usec:
+					_step_accumulator = 0.0
+					break
 			_refresh_all()
 	_autosave_timer += delta
 	if _autosave_timer >= AUTOSAVE_SECONDS:
@@ -328,6 +400,7 @@ func _save_now(show_result: bool) -> void:
 func _refresh_all() -> void:
 	_time_label.text = session.time_text()
 	_map_view.queue_redraw()
+	_refresh_card()
 	_panel.refresh()
 	_refresh_view()
 
@@ -359,22 +432,45 @@ func _neighbor_names(province_id: String) -> Array:
 
 # --- Acciones ----------------------------------------------------------------------
 
+## Entra en una provincia: ficha y vista 3D.
 func _on_province_selected(province_id: String) -> void:
-	var province = session.world.find_province(province_id)
-	if province != null:
-		_selected_id = province_id
-		_panel.show_province(province, _neighbor_names(province_id))
-		_scroll.scroll_vertical = 0
+	if _choose(province_id):
 		_show_map(false)
 		_refresh_view()
 
 
+## Toque en el mapa: elige la provincia (tarjeta y ficha preparadas) pero se queda en el mapa.
+func _on_map_province_tapped(province_id: String) -> void:
+	if _choose(province_id):
+		_show_map(true)
+		_refresh_view()
+
+
+func _choose(province_id: String) -> bool:
+	var province = session.world.find_province(province_id)
+	if province == null:
+		return false
+	_selected_id = province_id
+	_map_view.selected_id = province_id
+	_map_view.queue_redraw()
+	_panel.show_province(province, _neighbor_names(province_id))
+	_scroll.scroll_vertical = 0
+	_refresh_card()
+	return true
+
+
+func _on_enter_pressed() -> void:
+	_show_map(false)
+	_refresh_view()
+
+
 func _on_map_button_pressed() -> void:
-	_show_map(not _map_view.visible)
+	_show_map(_in_province)
 
 
 func _on_panel_changed() -> void:
 	_map_view.queue_redraw()
+	_refresh_card()
 	_refresh_view()
 
 
@@ -486,7 +582,7 @@ func _save_settings() -> void:
 func _on_toggle_3d_pressed() -> void:
 	enable_3d = not enable_3d
 	_save_settings()
-	_show_map(false)
+	_show_map(not _in_province)
 	_refresh_view()
 
 

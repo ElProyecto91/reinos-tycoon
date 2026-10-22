@@ -2,23 +2,35 @@ extends RefCounted
 ## Mapa de provincias: posiciones, vecindades y estado inicial de cada una (tarea 1.8).
 ##
 ## Solo lógica y datos, sin pantalla: la interfaz (1.9) dibuja lo que este módulo dice.
-## Las coordenadas son enteros en unidades de mapa. Seleccionar con el dedo usa un radio
-## de toque: las provincias deben estar separadas al menos el doble del radio para que
-## un toque nunca sea ambiguo.
+## Formato 2 (mapa grande): cada provincia es un territorio con forma (anillos de puntos) que
+## pertenece a un reino; seleccionar con el dedo es ver en qué territorio cae el toque.
+## Las formas son una aproximación de juego, no fronteras históricas (ver docs/REGION_IBERIA_1000.md).
 
 const WorldScript := preload("res://scripts/sim/world.gd")
 const Fixed := preload("res://scripts/sim/fixed.gd")
 
-const SUPPORTED_FORMAT_VERSION := 1
+const SUPPORTED_FORMAT_VERSION := 2
 const DEFAULT_PATH := "res://data/map.json"
-const MAX_PROVINCES := 20
+const MAX_PROVINCES := 60
+const LOOKS := ["cordoba", "toledo", "zaragoza", "norte"]
+const MAX_RING_POINTS := 4000
 const MAX_BUILDINGS_PER_PROVINCE := 60
 
 var width: int = 0
 var height: int = 0
-var touch_radius: int = 0
-## Provincias en el orden del archivo: {id, name, short (nombre para el mapa; si falta, el nombre), x, y, neighbors: Array, start: {population, buildings, stock}}
+## Margen en unidades de mapa para tocar cerca de un territorio (el toque que cae en el mar junto a la costa elige la provincia más cercana).
+var touch_slop: int = 0
+## Provincias en el orden del archivo: {id, name, short, realm, look, x, y, lon, lat, rings: Array[PackedVector2Array], neighbors: Array, start: {population, buildings, stock}}
 var provinces: Array = []
+## Reinos: id -> {name, label, color: Color, note, outline: Array[PackedVector2Array], label_x, label_y, label_room}
+var realms: Dictionary = {}
+## Tierra (todas las orillas), tierra fuera de la partida, ríos [{name, points}] y proyección, para dibujar.
+var land: Array = []
+var foreign_land: Array = []
+var rivers: Array = []
+var projection: Dictionary = {}
+## Rótulos sueltos [{text, x, y, kind: "mar" | "ajena"}]
+var labels: Array = []
 var errors: Array[String] = []
 
 var _id_regex := RegEx.new()
@@ -58,13 +70,14 @@ func build(raw: Dictionary, data) -> bool:
 		return false
 	var w = Fixed.exact_int(raw.get("width", null))
 	var h = Fixed.exact_int(raw.get("height", null))
-	var r = Fixed.exact_int(raw.get("touch_radius", null))
+	var slop = Fixed.exact_int(raw.get("touch_slop", null))
 	if w == null or w < 100 or w > 100000:
 		errors.append("mapa: \"width\" debe ser un entero entre 100 y 100000")
 	if h == null or h < 100 or h > 100000:
 		errors.append("mapa: \"height\" debe ser un entero entre 100 y 100000")
-	if r == null or r < 10 or r > 10000:
-		errors.append("mapa: \"touch_radius\" debe ser un entero entre 10 y 10000")
+	if slop == null or slop < 0 or slop > 500:
+		errors.append("mapa: \"touch_slop\" debe ser un entero entre 0 y 500")
+	var parsed_realms := _parse_realms(raw.get("realms", null), w if w != null else 0, h if h != null else 0)
 	var list = raw.get("provinces", null)
 	if typeof(list) != TYPE_ARRAY or list.is_empty():
 		errors.append("mapa: \"provinces\" debe ser una lista no vacía")
@@ -89,15 +102,39 @@ func build(raw: Dictionary, data) -> bool:
 		loaded.append(province)
 	if not errors.is_empty():
 		return false
+	for p in loaded:
+		if not parsed_realms.has(p["realm"]):
+			errors.append("provincia \"%s\": reino desconocido (%s)" % [p["id"], p["realm"]])
 	_check_neighbors(loaded, seen)
-	_check_separation(loaded, r)
 	_check_connected(loaded)
+	var parsed_land := _parse_rings(raw.get("land", null), "tierra", w, h, true)
+	var parsed_foreign := _parse_rings(raw.get("foreign_land", null), "tierra ajena", w, h, true)
+	var parsed_rivers := _parse_rivers(raw.get("rivers", null), w, h)
+	var parsed_labels: Array = []
+	var raw_labels = raw.get("labels", [])
+	if typeof(raw_labels) != TYPE_ARRAY:
+		errors.append("mapa: \"labels\" debe ser una lista")
+	else:
+		for l in raw_labels:
+			if typeof(l) != TYPE_DICTIONARY or typeof(l.get("text", null)) != TYPE_STRING or typeof(l.get("x", null)) not in [TYPE_FLOAT, TYPE_INT] or typeof(l.get("y", null)) not in [TYPE_FLOAT, TYPE_INT] or not (l.get("kind", "") in ["mar", "ajena"]):
+				errors.append("mapa: rótulo no válido")
+				break
+			parsed_labels.append({"text": l["text"], "x": float(l["x"]), "y": float(l["y"]), "kind": l["kind"]})
+	var proj = raw.get("projection", null)
+	if typeof(proj) != TYPE_DICTIONARY or typeof(proj.get("km_per_unit", null)) not in [TYPE_FLOAT, TYPE_INT]:
+		errors.append("mapa: falta \"projection\" con \"km_per_unit\"")
 	if not errors.is_empty():
 		return false
 	width = w
 	height = h
-	touch_radius = r
+	touch_slop = slop
 	provinces = loaded
+	realms = parsed_realms
+	land = parsed_land
+	foreign_land = parsed_foreign
+	rivers = parsed_rivers
+	projection = proj
+	labels = parsed_labels
 	return true
 
 
@@ -121,6 +158,19 @@ func _parse_province(entry: Variant, where: String, w: int, h: int, data) -> Dic
 			errors.append("%s: \"short\" debe ser un texto de 1 a 20 caracteres" % where)
 		else:
 			short_name = raw_short
+	var realm = entry.get("realm", null)
+	if typeof(realm) != TYPE_STRING or realm == "":
+		errors.append("%s: falta el reino (\"realm\")" % where)
+	var look = entry.get("look", null)
+	if typeof(look) != TYPE_STRING or not (look in LOOKS):
+		errors.append("%s: \"look\" debe ser uno de %s" % [where, ", ".join(LOOKS)])
+	var rings := _parse_rings(entry.get("polygons", null), where, w, h, false)
+	if rings.is_empty():
+		errors.append("%s: falta el territorio (\"polygons\")" % where)
+	var lon = entry.get("lon", null)
+	var lat = entry.get("lat", null)
+	if typeof(lon) not in [TYPE_FLOAT, TYPE_INT] or typeof(lat) not in [TYPE_FLOAT, TYPE_INT]:
+		errors.append("%s: faltan \"lon\" y \"lat\" (la capital histórica)" % where)
 	var x = Fixed.exact_int(entry.get("x", null))
 	var y = Fixed.exact_int(entry.get("y", null))
 	if x == null or x < 0 or x > w or y == null or y < 0 or y > h:
@@ -140,7 +190,8 @@ func _parse_province(entry: Variant, where: String, w: int, h: int, data) -> Dic
 	var start := _parse_start(entry.get("start", null), where, data)
 	if errors.size() > before:
 		return {}
-	return {"id": id, "name": name, "short": short_name if short_name != "" else name, "x": x, "y": y, "neighbors": neighbors, "start": start}
+	return {"id": id, "name": name, "short": short_name if short_name != "" else name, "realm": realm, "look": look, "x": x, "y": y,
+		"lon": float(lon), "lat": float(lat), "rings": rings, "neighbors": neighbors, "start": start}
 
 
 func _parse_start(raw: Variant, where: String, data) -> Dictionary:
@@ -193,13 +244,76 @@ func _check_neighbors(loaded: Array, ids: Dictionary) -> void:
 				errors.append("provincia \"%s\": %s figura como vecino, pero %s no la nombra a ella (la vecindad debe ser mutua)" % [p["id"], n, n])
 
 
-func _check_separation(loaded: Array, r: int) -> void:
-	for i in range(loaded.size()):
-		for j in range(i + 1, loaded.size()):
-			var dx: int = loaded[i]["x"] - loaded[j]["x"]
-			var dy: int = loaded[i]["y"] - loaded[j]["y"]
-			if dx * dx + dy * dy < 4 * r * r:
-				errors.append("provincias \"%s\" y \"%s\": demasiado juntas; las zonas de toque (radio %d) se solaparían" % [loaded[i]["id"], loaded[j]["id"], r])
+## Anillos de puntos [[x, y], ...] dentro del mapa. Con `allow_empty` una lista vacía vale.
+func _parse_rings(raw: Variant, where: String, w: int, h: int, allow_empty: bool) -> Array:
+	var out: Array = []
+	if typeof(raw) != TYPE_ARRAY:
+		if not allow_empty:
+			errors.append("%s: los anillos deben ser una lista" % where)
+		return out
+	for ring in raw:
+		if typeof(ring) != TYPE_ARRAY or ring.size() < 3 or ring.size() > MAX_RING_POINTS:
+			errors.append("%s: un anillo debe tener entre 3 y %d puntos" % [where, MAX_RING_POINTS])
+			return []
+		var points := PackedVector2Array()
+		for pt in ring:
+			if typeof(pt) != TYPE_ARRAY or pt.size() != 2 or typeof(pt[0]) not in [TYPE_FLOAT, TYPE_INT] or typeof(pt[1]) not in [TYPE_FLOAT, TYPE_INT]:
+				errors.append("%s: punto no válido en un anillo" % where)
+				return []
+			if pt[0] < -1.0 or pt[0] > w + 1.0 or pt[1] < -1.0 or pt[1] > h + 1.0:
+				errors.append("%s: un punto cae fuera del mapa" % where)
+				return []
+			points.append(Vector2(float(pt[0]), float(pt[1])))
+		out.append(points)
+	return out
+
+
+func _parse_rivers(raw: Variant, w: int, h: int) -> Array:
+	var out: Array = []
+	if typeof(raw) != TYPE_ARRAY:
+		errors.append("mapa: \"rivers\" debe ser una lista")
+		return out
+	for r in raw:
+		if typeof(r) != TYPE_DICTIONARY or typeof(r.get("name", null)) != TYPE_STRING:
+			errors.append("mapa: un río no tiene nombre")
+			return []
+		var rings := _parse_rings([r.get("points", null)], "río " + str(r.get("name", "")), w, h, false)
+		if rings.is_empty():
+			return []
+		out.append({"name": r["name"], "points": rings[0]})
+	return out
+
+
+func _parse_realms(raw: Variant, w: int, h: int) -> Dictionary:
+	var out := {}
+	if typeof(raw) != TYPE_DICTIONARY or raw.is_empty():
+		errors.append("mapa: \"realms\" debe ser un objeto no vacío")
+		return out
+	for id in raw.keys():
+		var r = raw[id]
+		var where := "reino \"%s\"" % str(id)
+		if typeof(r) != TYPE_DICTIONARY:
+			errors.append("%s: debe ser un objeto" % where)
+			continue
+		var color = r.get("color", null)
+		var ok_color: bool = typeof(color) == TYPE_ARRAY and color.size() == 3
+		if ok_color:
+			for c in color:
+				if typeof(c) not in [TYPE_FLOAT, TYPE_INT] or c < 0 or c > 255:
+					ok_color = false
+		if not ok_color:
+			errors.append("%s: \"color\" debe ser [r, g, b] de 0 a 255" % where)
+			continue
+		for key in ["name", "label", "note"]:
+			if typeof(r.get(key, null)) != TYPE_STRING or r[key] == "":
+				errors.append("%s: falta \"%s\"" % [where, key])
+		out[str(id)] = {
+			"name": str(r.get("name", "")), "label": str(r.get("label", "")), "note": str(r.get("note", "")),
+			"color": Color8(int(color[0]), int(color[1]), int(color[2])),
+			"outline": _parse_rings(r.get("outline", null), where, w, h, true),
+			"label_x": float(r.get("label_x", 0.0)), "label_y": float(r.get("label_y", 0.0)), "label_room": float(r.get("label_room", 0.0)),
+		}
+	return out
 
 
 func _check_connected(loaded: Array) -> void:
@@ -232,19 +346,32 @@ func neighbors_of(province_id: String) -> Array:
 	return [] if p.is_empty() else p["neighbors"].duplicate()
 
 
-## Provincia tocada en el punto (x, y) en unidades de mapa, o "" si el toque cae fuera de
-## toda zona de toque. Con la separación validada puede haber como mucho una.
-func province_at(x: int, y: int) -> String:
-	var best := ""
-	var best_distance := -1
+## Provincia tocada en el punto (x, y) en unidades de mapa, o "" si cae lejos de todo territorio.
+## Dentro de un territorio gana ese territorio; en el mar o fuera, la provincia con la orilla a menos de `touch_slop`.
+func province_at(x: float, y: float) -> String:
+	var point := Vector2(x, y)
 	for p in provinces:
-		var dx: int = p["x"] - x
-		var dy: int = p["y"] - y
-		var d := dx * dx + dy * dy
-		if d <= touch_radius * touch_radius and (best_distance < 0 or d < best_distance):
-			best = p["id"]
-			best_distance = d
+		for ring in p["rings"]:
+			if Geometry2D.is_point_in_polygon(point, ring):
+				return p["id"]
+	if touch_slop <= 0:
+		return ""
+	var best := ""
+	var best_distance := float(touch_slop)
+	for p in provinces:
+		for ring in p["rings"]:
+			for i in range(ring.size()):
+				var closest := Geometry2D.get_closest_point_to_segment(point, ring[i], ring[(i + 1) % ring.size()])
+				var d := point.distance_to(closest)
+				if d < best_distance:
+					best_distance = d
+					best = p["id"]
 	return best
+
+
+func realm_of(province_id: String) -> Dictionary:
+	var p := find(province_id)
+	return {} if p.is_empty() or not realms.has(p["realm"]) else realms[p["realm"]]
 
 
 ## Crea el mundo de una partida nueva. Devuelve {ok, world, error}. Falla (sin devolver un

@@ -255,6 +255,16 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Vista 3D: el cuartel (patio con empalizada, sala, maniquí, lanzas, estandarte rojo) y una figura de guardia con casco y lanza por cada 5 soldados (tope 8) junto a él.
 - Estado: **provisional**.
 
+## D-030. Mapa grande de 40 provincias y mapa como pantalla principal (M1 a M3, versión 0.1.0)
+
+- El juego abre en un **mapa de pergamino** (arrastrar, pellizcar o «+/−», botón de inicio) con **40 provincias jugables** repartidas en **6 entidades** (Califato de Córdoba, León, Portugal, Castilla, Pamplona y condados catalanes). Tocar un territorio enseña su tarjeta (reino, población, descontento, avisos); «Entrar» abre la vista 3D y la ficha; el botón «Mapa» vuelve.
+- Formato de `map.json` **2**: territorios como polígonos, reinos con contorno y color, tierra y orillas, ríos grandes y rótulos. Se genera fuera del juego con `tools/mapa/generar_mapa.py` (Natural Earth, dominio público) y se guarda en el repositorio; el juego no necesita ese script ni descargar nada. Máximo 60 provincias. La selección ya no usa radio: se toca el territorio (con un pequeño margen de `touch_slop` junto a la costa).
+- **Las formas de los territorios y la línea califato/norte son una aproximación de juego, no fronteras históricas.** Las referencias H-39 a H-44 no están registradas (ver `HISTORICAL_SOURCES.md`).
+- Un guardado de las 5 provincias anteriores se aparta sin borrarse («partida de otro mapa») y se empieza una partida nueva.
+- Rendimiento: 40 provincias cuestan ≈1,4 ms por paso en el servidor de pruebas (**sin medir en el móvil**). Para que ×600 no congele la pantalla, cada fotograma tiene un presupuesto de 12 ms de simulación; si se agota, la simulación va más lenta que el reloj en vez de bloquearse.
+- Las poblaciones y edificios iniciales son parámetros de juego, no históricos. Mallorca y las Baleares no son jugables.
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

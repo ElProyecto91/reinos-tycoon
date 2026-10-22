@@ -17,14 +17,20 @@ extends RefCounted
 
 const RADIO := 4
 
-## Aspecto de cada provincia del mapa (map.json). Las pruebas exigen que toda provincia tenga uno.
-const ASPECTOS := {
-	"cordoba": "cordoba",
-	"toledo": "toledo",
-	"zaragoza": "zaragoza",
-	"castilla": "norte",
-	"leon": "norte",
-}
+## Aspecto de cada provincia: lo dice el campo «look» de cada provincia en map.json (se lee una vez).
+## Las pruebas exigen que toda provincia tenga uno que exista en ciudad_epoca.gd.
+static var _aspectos: Dictionary = {}
+
+
+static func _cargar_aspectos() -> void:
+	if not _aspectos.is_empty():
+		return
+	var json := JSON.new()
+	if json.parse(FileAccess.get_file_as_string("res://data/map.json")) != OK or typeof(json.data) != TYPE_DICTIONARY:
+		return
+	for p in json.data.get("provinces", []):
+		_aspectos[str(p.get("id", ""))] = str(p.get("look", ""))
+
 
 ## Qué ocupa cada tipo de edificio del juego (buildings.json). La vivienda no tiene hueco propio:
 ## su efecto es añadir una manzana al caserío (ver `manzanas`).
@@ -57,7 +63,8 @@ const MAX_GUARDIAS := 8
 
 ## Aspecto («cordoba», «toledo», «zaragoza» o «norte») de una provincia; vacío si no se conoce.
 static func aspecto_de(province_id: String) -> String:
-	return ASPECTOS.get(province_id, "")
+	_cargar_aspectos()
+	return _aspectos.get(province_id, "")
 
 
 ## Plantilla de un aspecto: «sur» para cordoba, toledo y zaragoza; «norte» para el norte.

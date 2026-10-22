@@ -292,6 +292,17 @@ func test_the_main_screen_starts_on_the_3d_view_of_the_start_province() -> void:
 	done()
 
 
+func test_the_map_highlights_the_chosen_province_even_when_chosen_from_outside_the_map() -> void:
+	var main = _main_en_arbol()
+	assert_eq(main._map_view.selected_id, "cordoba", "la provincia inicial sale resaltada en el mapa")
+	main._on_map_button_pressed()
+	assert_eq(main._map_view.selected_id, "cordoba", "y sigue al volver al mapa")
+	main._map_view.select("toledo")
+	assert_eq(main._map_view.selected_id, "toledo", "tocar otra cambia el resaltado")
+	_quitar(main)
+	done()
+
+
 func test_the_map_button_swaps_between_map_and_landscape_and_picking_a_province_returns() -> void:
 	var main = _main_en_arbol()
 	main._on_map_button_pressed()
@@ -302,7 +313,11 @@ func test_the_map_button_swaps_between_map_and_landscape_and_picking_a_province_
 	assert_true(main._province_view.visible and not main._map_view.visible, "otro pulso vuelve al paisaje")
 	main._on_map_button_pressed()
 	main._map_view.select("toledo")
-	assert_true(main._province_view.visible and not main._map_view.visible, "elegir una provincia en el mapa vuelve al paisaje")
+	assert_true(main._map_view.visible and not main._province_view.visible, "tocar una provincia en el mapa no cambia de pantalla")
+	assert_true(main._map_card.visible and main._enter_button.visible, "enseña su tarjeta con el botón de entrar")
+	assert_true("Toledo" in main._card_title.text, "tarjeta de la provincia tocada: %s" % main._card_title.text)
+	main._on_enter_pressed()
+	assert_true(main._province_view.visible and not main._map_view.visible, "entrar lleva al paisaje")
 	assert_eq(main._province_view.aspecto(), "toledo", "de la provincia elegida")
 	assert_eq(main._panel.current_province_id(), "toledo", "con su ficha")
 	_quitar(main)
@@ -339,7 +354,6 @@ func test_building_something_changes_the_landscape_through_the_real_screen() -> 
 func test_without_3d_the_screen_is_the_map_and_nothing_is_built() -> void:
 	var main = _main_en_arbol(false)
 	assert_true(main._map_view.visible and not main._province_view.visible, "solo el mapa")
-	assert_true(main._map_button.disabled, "el botón no lleva a ninguna parte")
 	assert_eq(main._province_view.reconstrucciones, 0, "no se construyó paisaje")
 	main._map_view.select("toledo")
 	assert_eq(main._panel.current_province_id(), "toledo", "la ficha sigue funcionando")
@@ -355,7 +369,10 @@ func test_without_a_start_province_the_screen_opens_on_the_map() -> void:
 	assert_true(main._map_button.disabled, "sin provincia no hay paisaje al que volver")
 	assert_eq(main._panel.current_province_id(), "", "y sin ficha")
 	main._map_view.select("leon")
-	assert_true(main._province_view.visible, "al elegir una provincia, aparece su paisaje")
+	assert_true(main._map_view.visible and not main._province_view.visible, "tocar una provincia solo enseña su tarjeta")
+	assert_true(not main._map_button.disabled, "y ya hay provincia a la que ir")
+	main._on_enter_pressed()
+	assert_true(main._province_view.visible, "al entrar, aparece su paisaje")
 	assert_eq(main._province_view.aspecto(), "norte", "León es del norte")
 	_quitar(main)
 	done()
@@ -380,6 +397,7 @@ func _main_con_ajustes(ajustes_path: String):
 	main.session = load(SESSION).new(PATH, "0.0.test")
 	main.fixed_now = T0
 	main.settings_path = ajustes_path
+	main.start_province = "cordoba"
 	_raiz().add_child(main)
 	return main
 
@@ -415,7 +433,6 @@ func test_the_menu_offers_3d_and_shadow_switches_that_are_saved_apart_from_the_g
 	assert_true(not sol.shadow_enabled, "y en la luz de la escena ya construida")
 	main._on_toggle_3d_pressed()
 	assert_true(not main.enable_3d and main._map_view.visible and not main._province_view.visible, "sin 3D se ve el mapa")
-	assert_true(main._map_button.disabled, "y el botón de mapa no lleva a ninguna parte")
 	var guardado = JSON.parse_string(FileAccess.get_file_as_string(AJUSTES))
 	assert_eq(guardado, {"view_3d": false, "shadows": false, "animation": true}, "los ajustes quedan en su archivo, no en la partida")
 	main._on_menu_pressed()

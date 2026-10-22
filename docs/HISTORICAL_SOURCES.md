@@ -76,6 +76,12 @@ Consultadas el 2026-10-21 a petición del usuario («todos los castillos present
 - Población por provincia, y cualquier superficie cultivada o rendimiento.
 - Rutas comerciales concretas entre estas provincias (las fuentes de la sección 32 hablan de la Ruta de la Seda y no de la península).
 
+### Mapa grande de 40 provincias (M1): referencias H-39 a H-44 SIN FUENTE REGISTRADA
+
+`tools/mapa/provincias.py` y `game/data/map.json` citan las referencias H-39 a H-44 (coras del califato, condados catalanes, Portugal y Galicia, Pamplona y Aragón). **Esas lecturas se hicieron en una sesión cuyo contexto se compactó y no conservé las direcciones ni los extractos.** Por eso no las describo aquí: sería inventarlas. Hasta que se vuelvan a consultar y registrar con su dirección, **todo el reparto de entidades, nombres de cora/condado y capitales del mapa debe tratarse como de confianza baja-media y sin respaldo verificable en este repositorio**. Lo que sí está dicho en el propio código: se desconoce el estatus de Galicia en 997-1000 (se trata como parte de la corona leonesa) y la línea de frontera entre el califato y el norte es dibujada a mano.
+- Las **coordenadas** de cada capital son las de la ciudad actual con ese nombre, no las de la ciudad de entonces.
+- Las **formas** de los territorios son una aproximación de juego (reparto del suelo por cercanía a cada capital con pesos a ojo), no fronteras históricas.
+
 ### Fortalezas (V1d)
 
 - **Lista completa de castillos y fortalezas hacia el año 1000**: no se ha encontrado ninguna fuente con ella. Lo más cercano es H-28 (158 castillos entre 850 y 1200 en el territorio que estudia ese libro, con menos menciones a comienzos del siglo XI), sin nombres. «Todos» no se puede respaldar.

@@ -2,6 +2,8 @@
 
 ## Sin versionar (2026-10-21, fase 1 en curso)
 
+- **Versión 0.1.0 (M1 a M3, D-030)**: mapa de pergamino como pantalla principal con 40 provincias en 6 entidades (`map.json` formato 2, `tools/mapa/`, `map_view.gd` nuevo, flujo mapa → tarjeta → entrar). Fuente Lora. Zoom inicial 1,25. Presupuesto de 12 ms de simulación por fotograma. 300 pruebas en local; falta confirmar en GitHub Actions. Referencias H-39..H-44 sin registrar (ver fuentes).
+
 - Fase 1, tareas 1.1 a 1.7: datos validados, almacén con conservación, población, producción, obras, hambre gradual, guardado con versión de formato y suma de control. Cantidades enteras en milésimas (D-012); reglas de la simulación (D-013).
 - D-014: el descontento ralentiza el trabajo en vez de recortar lo producido, y la población come antes de producir. Motivo: la provincia no se recuperaba de una mala cosecha.
 - El APK se numera con el recuento de commits (`version/code`) para que un APK nuevo pueda instalarse sobre el anterior. Escrito en el flujo, **todavía no ejecutado** (el trabajo `apk` se omite si fallan las pruebas).

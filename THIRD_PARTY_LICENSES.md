@@ -4,8 +4,10 @@
 |---|---|---|---|
 | Godot Engine 4.7.2 (motor y plantillas de exportación) | incluido en el APK | MIT | La licencia no se ha consultado en esta sesión. Su texto debe mostrarse en una pantalla de créditos antes de distribuir (fase 9) |
 | KayKit: Medieval Hexagon Pack 1.0 (Kay Lousberg), subconjunto de 118 modelos 3D y su paleta, en `game/assets/kaykit/models/` | vista 3D (`game/scripts/view/diorama.gd`), incluido en el APK | CC0 1.0 (dominio público) | Leída la licencia el 2026-10-21 (copia en `game/assets/kaykit/LICENSE_KayKit.txt`). No exige atribución; se acredita igualmente (pantalla de créditos, fase 9). Detalle abajo |
+| Lora (variable), fuente tipográfica en `game/assets/fonts/Lora-Variable.ttf` | rótulos del mapa | SIL Open Font License 1.1 | Añadida el 2026-10-22; **no quedó anotado el origen exacto de la descarga ni se copió el texto de la licencia: anotar origen y copiar el texto antes de distribuir** (pantalla de créditos, fase 9) |
+| Natural Earth 1:50m (tierra y países), vía `nvkelso/natural-earth-vector` | solo en `tools/mapa/generar_mapa.py` para generar `game/data/map.json`; los datos derivados van en el APK | Dominio público | Según la información del propio proyecto; no se ha copiado su texto aquí |
 
-Fuentes tipográficas y sonido: no hay recursos externos todavía. Se usa la fuente por defecto del motor, cubierta por los avisos de terceros de Godot.
+Fuentes tipográficas y sonido (resto): no hay recursos externos todavía. Se usa la fuente por defecto del motor, cubierta por los avisos de terceros de Godot.
 
 Cada recurso externo que se añada debe registrarse aquí con origen, licencia y fecha de consulta (sección 26).
 

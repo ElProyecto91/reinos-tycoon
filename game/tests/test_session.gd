@@ -14,6 +14,29 @@ func _clean() -> void:
 		DirAccess.remove_absolute(DIR + "/" + file_name)
 
 
+func _map_ids() -> Array[String]:
+	var data = load("res://scripts/sim/game_data.gd").new()
+	data.load_defaults()
+	var map = load("res://scripts/sim/game_map.gd").new()
+	map.load_defaults(data)
+	var ids: Array[String] = []
+	for p in map.provinces:
+		ids.append(p["id"])
+	return ids
+
+
+func _with_extra(ids: Array[String]) -> Array[String]:
+	var out: Array[String] = ids.duplicate()
+	out.append("sobrante")
+	return out
+
+
+func _without_first(ids: Array[String]) -> Array[String]:
+	var out: Array[String] = ids.duplicate()
+	out.remove_at(0)
+	return out
+
+
 func _session():
 	return load(SESSION).new(PATH, "0.0.test")
 
@@ -22,7 +45,7 @@ func test_first_start_creates_a_new_game() -> void:
 	_clean()
 	var s = _session()
 	assert_true(s.start(T0), "arranca: %s" % "\n".join(s.errors))
-	assert_eq(s.world.provinces.size(), 5, "partida nueva con las 5 provincias")
+	assert_eq(s.world.provinces.size(), _map_ids().size(), "partida nueva con todas las provincias del mapa")
 	assert_eq(s.world.step_count, 0, "paso 0")
 	assert_eq(s.notice, "", "sin avisos")
 	assert_eq(s.last_report, {}, "sin ausencia que contar")
@@ -124,7 +147,10 @@ func test_save_from_another_map_is_set_aside_and_a_new_game_starts() -> void:
 	for province in s.world.provinces:
 		ids.append(province.id)
 	ids.sort()
-	assert_eq(ids, ["castilla", "cordoba", "leon", "toledo", "zaragoza"], "las provincias son las del mapa actual")
+	var expected := _map_ids()
+	expected.sort()
+	assert_eq(ids, expected, "las provincias son las del mapa actual")
+	assert_true(expected.size() >= 30, "y son muchas")
 	assert_eq(s.last_report, {}, "sin ausencia que contar")
 	assert_true(not FileAccess.file_exists(PATH), "el guardado viejo ya no ocupa el sitio")
 	assert_eq(_kept_copy_with_label("mapa-anterior"), original, "se conserva el guardado viejo tal cual")
@@ -133,14 +159,14 @@ func test_save_from_another_map_is_set_aside_and_a_new_game_starts() -> void:
 
 func test_save_with_a_missing_or_extra_province_is_also_set_aside() -> void:
 	_clean()
-	var original := _write_save_with_provinces(["toledo", "zaragoza", "castilla", "cordoba"])
+	var original := _write_save_with_provinces(_without_first(_map_ids()))
 	var s = _session()
 	assert_true(s.start(T0), "arranca")
 	assert_true("otro mapa" in s.notice, "falta una provincia: %s" % s.notice)
-	assert_eq(s.world.provinces.size(), 5, "partida nueva con las 5 provincias")
+	assert_eq(s.world.provinces.size(), _map_ids().size(), "partida nueva con todas las provincias del mapa")
 	assert_eq(_kept_copy_with_label("mapa-anterior"), original, "copia intacta")
 	_clean()
-	original = _write_save_with_provinces(["toledo", "zaragoza", "castilla", "cordoba", "leon", "pamplona"])
+	original = _write_save_with_provinces(_with_extra(_map_ids()))
 	var t = _session()
 	assert_true(t.start(T0), "arranca")
 	assert_true("otro mapa" in t.notice, "sobra una provincia: %s" % t.notice)
@@ -149,7 +175,7 @@ func test_save_with_a_missing_or_extra_province_is_also_set_aside() -> void:
 
 func test_save_with_exactly_the_map_provinces_loads_normally() -> void:
 	_clean()
-	_write_save_with_provinces(["toledo", "zaragoza", "castilla", "cordoba", "leon"])
+	_write_save_with_provinces(_map_ids())
 	var s = _session()
 	assert_true(s.start(T0 + 600), "arranca")
 	assert_eq(s.notice, "", "sin avisos")
@@ -204,7 +230,7 @@ func test_measure_speed_does_not_touch_the_game_in_progress() -> void:
 	s.world.run_steps(7)
 	var result: Dictionary = s.measure_speed(100)
 	assert_eq(result["steps"], 100, "pasos medidos")
-	assert_eq(result["provinces"], 5, "provincias")
+	assert_eq(result["provinces"], _map_ids().size(), "provincias")
 	assert_true(result["microseconds"] >= 0, "tiempo no negativo")
 	assert_eq(s.world.step_count, 7, "la partida en curso no avanza")
 	done()
