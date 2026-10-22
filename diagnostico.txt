@@ -1,0 +1,127 @@
+Unable to find image 'barichello/godot-ci@sha256:cdcca31e9194fd59a68a63f4b1b9c3981716819c520cd6f7966c5d72ca7246bd' locally
+docker.io/barichello/godot-ci@sha256:cdcca31e9194fd59a68a63f4b1b9c3981716819c520cd6f7966c5d72ca7246bd: Pulling from barichello/godot-ci
+0926a8eb0e60: Pulling fs layer
+883fd005942b: Pulling fs layer
+8d9c0a57444f: Pulling fs layer
+91be0ff7fdd1: Pulling fs layer
+845c55820c86: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+ff3184e638d4: Pulling fs layer
+a2101e14cd52: Pulling fs layer
+d5b06116b8f2: Pulling fs layer
+db02f4004af7: Pulling fs layer
+b07fcafb1c97: Pulling fs layer
+0b88486805b2: Pulling fs layer
+6f58e4d65e3c: Pulling fs layer
+b151aeec11b6: Pulling fs layer
+57871aeef6b6: Pulling fs layer
+f781aae8c479: Pulling fs layer
+b293794f04e7: Pulling fs layer
+b63013f6ec69: Pulling fs layer
+7a2893154bee: Pulling fs layer
+7b6983266ae4: Pulling fs layer
+b07fcafb1c97: Waiting
+91be0ff7fdd1: Waiting
+845c55820c86: Waiting
+4f4fb700ef54: Waiting
+ff3184e638d4: Waiting
+a2101e14cd52: Waiting
+d5b06116b8f2: Waiting
+db02f4004af7: Waiting
+0b88486805b2: Waiting
+6f58e4d65e3c: Waiting
+f781aae8c479: Waiting
+b151aeec11b6: Waiting
+57871aeef6b6: Waiting
+b293794f04e7: Waiting
+b63013f6ec69: Waiting
+7b6983266ae4: Waiting
+7a2893154bee: Waiting
+0926a8eb0e60: Verifying Checksum
+0926a8eb0e60: Download complete
+91be0ff7fdd1: Verifying Checksum
+91be0ff7fdd1: Download complete
+845c55820c86: Verifying Checksum
+845c55820c86: Download complete
+883fd005942b: Verifying Checksum
+883fd005942b: Download complete
+4f4fb700ef54: Verifying Checksum
+4f4fb700ef54: Download complete
+ff3184e638d4: Verifying Checksum
+ff3184e638d4: Download complete
+d5b06116b8f2: Verifying Checksum
+d5b06116b8f2: Download complete
+db02f4004af7: Verifying Checksum
+db02f4004af7: Download complete
+b07fcafb1c97: Verifying Checksum
+b07fcafb1c97: Download complete
+0b88486805b2: Verifying Checksum
+0b88486805b2: Download complete
+0926a8eb0e60: Pull complete
+6f58e4d65e3c: Verifying Checksum
+6f58e4d65e3c: Download complete
+b151aeec11b6: Verifying Checksum
+b151aeec11b6: Download complete
+57871aeef6b6: Verifying Checksum
+57871aeef6b6: Download complete
+f781aae8c479: Verifying Checksum
+f781aae8c479: Download complete
+b293794f04e7: Verifying Checksum
+b293794f04e7: Download complete
+b63013f6ec69: Verifying Checksum
+b63013f6ec69: Download complete
+7a2893154bee: Download complete
+7b6983266ae4: Verifying Checksum
+7b6983266ae4: Download complete
+a2101e14cd52: Verifying Checksum
+a2101e14cd52: Download complete
+8d9c0a57444f: Verifying Checksum
+8d9c0a57444f: Download complete
+883fd005942b: Pull complete
+8d9c0a57444f: Pull complete
+91be0ff7fdd1: Pull complete
+845c55820c86: Pull complete
+4f4fb700ef54: Pull complete
+ff3184e638d4: Pull complete
+a2101e14cd52: Pull complete
+d5b06116b8f2: Pull complete
+db02f4004af7: Pull complete
+b07fcafb1c97: Pull complete
+0b88486805b2: Pull complete
+6f58e4d65e3c: Pull complete
+b151aeec11b6: Pull complete
+57871aeef6b6: Pull complete
+f781aae8c479: Pull complete
+b293794f04e7: Pull complete
+b63013f6ec69: Pull complete
+7a2893154bee: Pull complete
+7b6983266ae4: Pull complete
+Digest: sha256:cdcca31e9194fd59a68a63f4b1b9c3981716819c520cd6f7966c5d72ca7246bd
+Status: Downloaded newer image for barichello/godot-ci@sha256:cdcca31e9194fd59a68a63f4b1b9c3981716819c520cd6f7966c5d72ca7246bd
+--- plantillas de exportación ---
+4.7.2.stable
+--- ajustes del editor ---
+editor_settings-4.7.tres
+feature_profiles
+script_templates
+text_editor_themes
+[gd_resource type="EditorSettings" format=3]
+[resource]
+export/android/java_sdk_path = "/usr/lib/jvm/java-17-openjdk-amd64"
+export/android/android_sdk_path = "/usr/lib/android-sdk"
+export/android/debug_keystore = "/root/debug.keystore"
+export/android/debug_keystore_user = "androiddebugkey"
+export/android/debug_keystore_pass = "android"
+export/android/force_system_user = false
+export/android/timestamping_authority_url = ""
+export/android/shutdown_adb_on_exit = true
+--- clave de depuración ---
+-rw-r--r-- 1 root root 2666 Aug 18 23:48 /root/debug.keystore
+Keystore type: PKCS12
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+androiddebugkey, Aug 18, 2026, PrivateKeyEntry, 
+--- java ---
+openjdk version "17.0.19" 2026-04-21

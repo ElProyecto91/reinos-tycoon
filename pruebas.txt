@@ -1,0 +1,543 @@
+libfontconfig.so.1: cannot open shared object file: No such file or directory
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+== test_smoke.gd
+OK    test_smoke.gd::test_basic_arithmetic
+OK    test_smoke.gd::test_project_version_defined
+== test_game_data.gd
+OK    test_game_data.gd::test_real_files_load_without_errors
+OK    test_game_data.gd::test_prototype_ids_are_stable
+OK    test_game_data.gd::test_coin_is_not_physical_and_wheat_is
+OK    test_game_data.gd::test_real_buildings_have_integer_amounts
+OK    test_game_data.gd::test_every_good_in_buildings_exists
+OK    test_game_data.gd::test_invalid_json_is_reported
+OK    test_game_data.gd::test_missing_file_is_reported
+OK    test_game_data.gd::test_wrong_format_version_is_rejected
+OK    test_game_data.gd::test_missing_list_is_rejected
+OK    test_game_data.gd::test_duplicate_good_id_is_rejected
+OK    test_game_data.gd::test_invalid_id_format_is_rejected
+OK    test_game_data.gd::test_unknown_category_is_rejected
+OK    test_game_data.gd::test_physical_must_be_boolean
+OK    test_game_data.gd::test_valid_building_is_accepted
+OK    test_game_data.gd::test_defense_percent_is_optional_and_validated
+OK    test_game_data.gd::test_unknown_good_in_building_is_rejected
+OK    test_game_data.gd::test_non_positive_amount_is_rejected
+OK    test_game_data.gd::test_fractional_amount_is_rejected
+OK    test_game_data.gd::test_whole_float_amount_is_accepted_as_integer
+OK    test_game_data.gd::test_inputs_without_outputs_is_rejected
+OK    test_game_data.gd::test_empty_build_cost_is_rejected
+OK    test_game_data.gd::test_cycle_steps_must_be_positive
+OK    test_game_data.gd::test_negative_workers_rejected
+OK    test_game_data.gd::test_duplicate_building_id_is_rejected
+OK    test_game_data.gd::test_errors_are_cleared_on_new_load
+OK    test_game_data.gd::test_load_defaults_loads_everything
+OK    test_game_data.gd::test_valid_rules_are_accepted
+OK    test_game_data.gd::test_missing_rule_is_rejected
+OK    test_game_data.gd::test_rule_out_of_range_is_rejected
+OK    test_game_data.gd::test_max_buildings_must_be_at_least_one
+OK    test_game_data.gd::test_fractional_rule_is_rejected
+OK    test_game_data.gd::test_unknown_rule_name_is_rejected
+OK    test_game_data.gd::test_currency_must_exist_and_not_be_physical
+OK    test_game_data.gd::test_food_goods_validation
+OK    test_game_data.gd::test_unrest_threshold_must_be_below_max
+OK    test_game_data.gd::test_building_requires_build_workers
+OK    test_game_data.gd::test_storage_share_is_required_and_in_range
+OK    test_game_data.gd::test_storage_shares_cannot_add_more_than_100
+OK    test_game_data.gd::test_non_physical_goods_do_not_count_for_shares
+OK    test_game_data.gd::test_real_goods_shares_add_up_to_at_most_100
+OK    test_game_data.gd::test_army_rules_are_optional_but_validated
+== test_store.gd
+OK    test_store.gd::test_new_store_is_empty_and_consistent
+OK    test_store.gd::test_add_within_capacity
+OK    test_store.gd::test_add_beyond_capacity_is_cut
+OK    test_store.gd::test_capacity_is_shared_between_goods
+OK    test_store.gd::test_coin_does_not_use_space
+OK    test_store.gd::test_remove_never_goes_negative
+OK    test_store.gd::test_negative_amounts_are_rejected
+OK    test_store.gd::test_unknown_good_is_rejected
+OK    test_store.gd::test_invalid_kinds_are_rejected
+OK    test_store.gd::test_ledger_matches_movements
+OK    test_store.gd::test_conservation_detects_tampering
+OK    test_store.gd::test_cannot_shrink_capacity_below_used_space
+OK    test_store.gd::test_can_afford
+OK    test_store.gd::test_conservation_over_10000_pseudorandom_steps
+OK    test_store.gd::test_limit_is_share_of_capacity
+OK    test_store.gd::test_good_cannot_exceed_its_share
+OK    test_store.gd::test_share_grows_with_capacity
+OK    test_store.gd::test_can_fit_checks_total_and_each_share
+OK    test_store.gd::test_can_fit_counts_extra_free_space
+OK    test_store.gd::test_conservation_flags_stock_above_share
+OK    test_store.gd::test_can_fit_any_and_room_with_extra_free_space
+== test_population.gd
+OK    test_population.gd::test_labor_force_is_half_of_population
+OK    test_population.gd::test_assigned_workers_never_exceed_available
+OK    test_population.gd::test_assign_rejects_invalid_requests
+OK    test_population.gd::test_assigning_fewer_workers_frees_them
+OK    test_population.gd::test_recruiting_reduces_available_workers
+OK    test_population.gd::test_labor_limit_is_enforced_when_population_falls
+OK    test_population.gd::test_auto_staff_fills_buildings_in_order
+OK    test_population.gd::test_auto_staff_is_limited_by_labor_force
+OK    test_population.gd::test_population_eats_every_step
+OK    test_population.gd::test_bread_is_eaten_before_wheat
+OK    test_population.gd::test_wheat_is_eaten_when_there_is_no_bread
+OK    test_population.gd::test_mixed_food_covers_the_gap
+OK    test_population.gd::test_taxes_add_coin_each_step
+OK    test_population.gd::test_no_food_means_full_shortage
+OK    test_population.gd::test_partial_shortage_is_measured
+OK    test_population.gd::test_population_grows_slowly_when_fed_and_there_is_room
+OK    test_population.gd::test_population_does_not_grow_beyond_housing
+OK    test_population.gd::test_house_raises_housing_capacity
+== test_production.gd
+OK    test_production.gd::test_farm_produces_after_a_full_cycle
+OK    test_production.gd::test_farm_starts_the_next_cycle_at_once
+OK    test_production.gd::test_mill_without_wheat_reports_missing_inputs
+OK    test_production.gd::test_mill_converts_wheat_into_flour
+OK    test_production.gd::test_inputs_are_not_spent_when_the_cycle_cannot_start
+OK    test_production.gd::test_bakery_reports_missing_firewood
+OK    test_production.gd::test_bakery_bakes_bread
+OK    test_production.gd::test_full_chain_makes_bread
+OK    test_production.gd::test_building_without_enough_workers_does_not_run
+OK    test_production.gd::test_disabled_building_does_not_run
+OK    test_production.gd::test_missing_upkeep_stops_the_building
+OK    test_production.gd::test_full_storage_stops_production_and_says_why
+OK    test_production.gd::test_one_good_at_its_limit_blocks_only_its_producers
+OK    test_production.gd::test_finishing_waits_for_space_and_then_completes
+OK    test_production.gd::test_productivity_percent_follows_unrest
+OK    test_production.gd::test_unrest_slows_work_without_wasting_inputs
+OK    test_production.gd::test_bad_harvest_modifier_scales_wheat_and_expires
+OK    test_production.gd::test_granary_adds_storage_capacity
+OK    test_production.gd::test_passive_buildings_stay_idle
+OK    test_production.gd::test_surplus_coproduct_is_wasted_but_the_rest_is_delivered
+OK    test_production.gd::test_nothing_is_delivered_when_every_output_is_blocked
+== test_construction.gd
+OK    test_construction.gd::test_construction_charges_the_cost_only_once
+OK    test_construction.gd::test_building_limit_counts_finished_buildings_and_projects
+OK    test_construction.gd::test_construction_is_rejected_without_materials
+OK    test_construction.gd::test_construction_is_rejected_without_coin
+OK    test_construction.gd::test_construction_is_rejected_without_workers
+OK    test_construction.gd::test_construction_takes_workers_from_buildings_when_staffing_is_automatic
+OK    test_construction.gd::test_construction_does_not_take_workers_when_staffing_is_manual
+OK    test_construction.gd::test_builders_are_released_when_the_work_ends
+OK    test_construction.gd::test_granary_construction_increases_capacity
+OK    test_construction.gd::test_project_queue_has_a_limit
+OK    test_construction.gd::test_second_project_is_not_partially_charged
+OK    test_construction.gd::test_unknown_building_type_is_rejected
+OK    test_construction.gd::test_new_building_works_after_construction
+== test_economia_nueva.gd
+OK    test_economia_nueva.gd::test_each_new_building_produces_what_its_data_says
+OK    test_economia_nueva.gd::test_the_market_turns_oil_and_cloth_into_coin
+OK    test_economia_nueva.gd::test_new_buildings_without_inputs_report_what_is_missing
+OK    test_economia_nueva.gd::test_the_whole_new_chain_runs_for_a_month_without_creating_or_losing_goods
+OK    test_economia_nueva.gd::test_every_batch_of_every_building_fits_in_the_base_storage
+== test_ejercito.gd
+OK    test_ejercito.gd::test_recruiting_needs_a_barracks
+OK    test_ejercito.gd::test_recruiting_costs_weapons_and_is_atomic
+OK    test_ejercito.gd::test_barracks_capacity_limits_soldiers
+OK    test_ejercito.gd::test_recruits_come_out_of_free_workers
+OK    test_ejercito.gd::test_soldiers_cost_coin_every_step
+OK    test_ejercito.gd::test_unpaid_soldiers_raise_unrest_and_alert
+OK    test_ejercito.gd::test_soldiers_survive_save_and_load
+OK    test_ejercito.gd::test_panel_shows_army_and_buttons_work
+OK    test_ejercito.gd::test_barracks_is_drawn_and_guards_follow_soldiers
+OK    test_ejercito.gd::test_the_view_shows_guards_for_the_real_soldiers_of_the_province
+== test_ficha.gd
+OK    test_ficha.gd::test_compact_amounts_are_truncated_never_rounded_up
+OK    test_ficha.gd::test_every_good_building_symbol_and_alert_has_an_icon
+OK    test_ficha.gd::test_status_classes
+OK    test_ficha.gd::test_key_figures_follow_the_province
+OK    test_ficha.gd::test_stock_tiles_show_truncated_amounts_and_full_goods
+OK    test_ficha.gd::test_tapping_a_stock_tile_shows_the_exact_amount_and_taps_again_hide_it
+OK    test_ficha.gd::test_buildings_are_grouped_by_type_with_count_workers_and_status_color
+OK    test_ficha.gd::test_projects_show_progress_and_blocked_ones_warn
+OK    test_ficha.gd::test_build_tiles_show_costs_and_flag_missing_goods
+OK    test_ficha.gd::test_alert_tiles_appear_only_while_the_alert_is_active_and_explain_on_tap
+OK    test_ficha.gd::test_upgrade_button_shows_costs_and_starts_the_upgrade
+OK    test_ficha.gd::test_upgrade_button_is_disabled_without_resources_and_says_so
+OK    test_ficha.gd::test_house_detail_has_no_upgrade_button
+OK    test_ficha.gd::test_building_tile_counts_upgraded_buildings_with_a_star
+OK    test_ficha.gd::test_wheat_detail_shows_the_season_percentage_with_the_season_icon
+OK    test_ficha.gd::test_cold_alert_tile_appears_in_winter_without_firewood_only
+OK    test_ficha.gd::test_tapping_the_unrest_tile_explains_the_cause_and_the_remedy
+== test_comercio.gd
+OK    test_comercio.gd::test_trade_rules_are_validated
+OK    test_comercio.gd::test_surplus_travels_to_a_neighbour_with_a_shortage_and_arrives_later
+OK    test_comercio.gd::test_the_destination_pays_in_coin_per_unit_and_hop
+OK    test_comercio.gd::test_without_coin_nothing_is_sent
+OK    test_comercio.gd::test_coin_limits_the_amount_instead_of_blocking_it
+OK    test_comercio.gd::test_the_nearest_supplier_serves_first_and_travel_time_follows_distance
+OK    test_comercio.gd::test_a_far_supplier_completes_what_the_nearest_cannot_and_takes_longer
+OK    test_comercio.gd::test_provinces_of_other_realms_never_trade
+OK    test_comercio.gd::test_the_route_never_crosses_another_realm
+OK    test_comercio.gd::test_hungry_provinces_are_served_before_those_with_a_light_shortage
+OK    test_comercio.gd::test_the_route_cap_limits_one_shipment
+OK    test_comercio.gd::test_goods_in_flight_count_as_already_covered
+OK    test_comercio.gd::test_total_goods_are_conserved_across_many_rounds
+OK    test_comercio.gd::test_what_does_not_fit_on_arrival_goes_back_to_the_origin
+OK    test_comercio.gd::test_goods_are_lost_and_counted_only_when_neither_end_has_room
+OK    test_comercio.gd::test_the_same_state_gives_the_same_caravans
+OK    test_comercio.gd::test_never_more_caravans_in_flight_than_the_maximum
+OK    test_comercio.gd::test_changing_the_network_changes_the_routes
+OK    test_comercio.gd::test_a_world_without_a_network_or_with_trade_off_does_not_trade
+OK    test_comercio.gd::test_saving_in_the_middle_of_a_journey_keeps_the_caravan
+OK    test_comercio.gd::test_a_save_from_before_trade_still_loads
+OK    test_comercio.gd::test_damaged_caravans_in_a_save_are_rejected
+OK    test_comercio.gd::test_the_real_map_has_a_network_per_realm_and_every_province_is_reachable_inside_its_realm
+LENTA test_comercio.gd::test_a_province_without_bread_is_fed_by_its_realm_in_the_real_map: 2.9 s
+OK    test_comercio.gd::test_a_province_without_bread_is_fed_by_its_realm_in_the_real_map
+LENTA test_comercio.gd::test_the_whole_map_trades_for_a_year_and_everything_still_adds_up: 16.9 s
+OK    test_comercio.gd::test_the_whole_map_trades_for_a_year_and_everything_still_adds_up
+OK    test_comercio.gd::test_every_realm_of_the_map_has_a_game_emblem_and_the_icon_is_never_missing
+OK    test_comercio.gd::test_the_map_card_shows_the_realm_emblem_and_says_it_is_not_historical
+OK    test_comercio.gd::test_the_sheet_shows_caravans_coming_and_going
+== test_guerra.gd
+OK    test_guerra.gd::test_war_rules_are_validated
+OK    test_guerra.gd::test_resolve_is_deterministic_and_monotonic
+OK    test_guerra.gd::test_resolve_edge_cases
+OK    test_guerra.gd::test_order_validation
+OK    test_guerra.gd::test_march_takes_time_and_reinforcement_joins_the_garrison
+OK    test_guerra.gd::test_conquest_changes_owner_network_unrest_and_conserves_soldiers
+OK    test_guerra.gd::test_soldiers_that_arrive_never_leave_more_workers_than_the_labor_force
+OK    test_guerra.gd::test_defeat_costs_the_attackers_and_changes_no_owner
+OK    test_guerra.gd::test_militia_losses_come_out_of_the_population_after_the_garrison
+OK    test_guerra.gd::test_administration_cost_grows_with_the_empire_and_is_consumed
+OK    test_guerra.gd::test_rivals_only_defend
+OK    test_guerra.gd::test_attackable_lists_only_foreign_provinces_next_to_yours
+OK    test_guerra.gd::test_war_state_survives_save_and_load_in_the_middle_of_a_march
+OK    test_guerra.gd::test_invalid_war_data_is_rejected_on_load
+OK    test_guerra.gd::test_old_saves_without_owners_still_load_and_have_no_war
+OK    test_guerra.gd::test_the_real_map_starts_with_owners_and_the_player_in_leon
+OK    test_guerra.gd::test_a_whole_campaign_on_the_real_map_keeps_everything_consistent
+OK    test_guerra.gd::test_foreign_provinces_are_read_only_and_yours_are_not
+OK    test_guerra.gd::test_the_card_offers_to_attack_only_with_soldiers_next_door
+OK    test_guerra.gd::test_attacking_from_the_card_sends_the_army_and_the_report_pops_up
+OK    test_guerra.gd::test_walls_add_a_capped_defense_bonus_only_when_finished
+OK    test_guerra.gd::test_walls_make_a_battle_harder_for_the_attacker
+OK    test_guerra.gd::test_a_walled_province_is_defeated_less_easily_in_a_real_march
+OK    test_guerra.gd::test_the_card_offers_reinforcements_from_a_neighbor_and_sends_half
+OK    test_guerra.gd::test_the_empty_map_card_shows_how_much_you_rule
+== test_ia.gd
+OK    test_ia.gd::test_ai_rules_are_validated
+OK    test_ia.gd::test_rival_provinces_levy_soldiers_up_to_a_share_of_their_population
+OK    test_ia.gd::test_a_poor_rival_province_does_not_levy_soldiers_it_cannot_pay
+OK    test_ia.gd::test_no_attack_before_the_start_delay_or_when_disabled_or_paused
+OK    test_ia.gd::test_the_rival_attacks_when_it_is_strong_enough_and_keeps_a_garrison
+OK    test_ia.gd::test_walls_discourage_the_rival
+OK    test_ia.gd::test_the_rival_does_not_send_a_second_army_at_a_target_already_under_attack
+OK    test_ia.gd::test_the_rival_does_not_attack_without_enough_superiority_or_soldiers
+OK    test_ia.gd::test_the_last_province_of_the_player_is_never_attacked
+OK    test_ia.gd::test_each_rival_realm_attacks_once_and_rivals_never_fight_each_other
+OK    test_ia.gd::test_the_rival_picks_the_best_ratio_among_its_candidates
+OK    test_ia.gd::test_an_undefended_province_falls_and_the_report_says_who_took_it
+OK    test_ia.gd::test_a_defended_province_holds_and_the_attackers_are_lost
+OK    test_ia.gd::test_ai_armies_keep_their_realm_through_save_and_load_and_bad_realms_are_rejected
+OK    test_ia.gd::test_the_ai_is_deterministic
+OK    test_ia.gd::test_offline_time_never_loses_provinces_and_restores_the_flag
+OK    test_ia.gd::test_an_incoming_attack_pauses_the_game_and_warns_the_player
+OK    test_ia.gd::test_the_battle_report_tells_losses_to_a_rival_apart_from_your_victories
+OK    test_ia.gd::test_new_game_lets_you_choose_the_realm
+LENTA test_ia.gd::test_the_real_map_with_a_passive_player_stays_consistent_for_a_season: 3.9 s
+OK    test_ia.gd::test_the_real_map_with_a_passive_player_stays_consistent_for_a_season
+== test_descontento.gd
+OK    test_descontento.gd::test_a_calm_province_has_no_causes
+OK    test_descontento.gd::test_hunger_is_a_cause_only_after_the_warning_steps
+OK    test_descontento.gd::test_unpaid_soldiers_are_a_cause
+OK    test_descontento.gd::test_cold_is_a_cause_below_its_cap_and_not_at_it
+OK    test_descontento.gd::test_every_rise_has_a_cause_in_the_scenarios_that_raise_it
+OK    test_descontento.gd::test_the_text_names_each_cause_and_its_remedy_with_things_that_exist
+== test_calendario.gd
+OK    test_calendario.gd::test_month_lengths_add_up_to_a_year
+OK    test_calendario.gd::test_known_dates
+OK    test_calendario.gd::test_every_day_of_the_year_maps_to_a_valid_unique_date
+OK    test_calendario.gd::test_seasons_follow_the_month_convention
+OK    test_calendario.gd::test_invalid_start_day_and_negative_steps_never_break
+LENTA test_calendario.gd::test_the_game_starts_on_the_reference_date_and_the_clock_follows_the_step_counter: 8.4 s
+OK    test_calendario.gd::test_the_game_starts_on_the_reference_date_and_the_clock_follows_the_step_counter
+OK    test_calendario.gd::test_the_calendar_is_not_part_of_the_save_file
+== test_estaciones.gd
+OK    test_estaciones.gd::test_real_seasons_file_has_twelve_months_averaging_100
+OK    test_estaciones.gd::test_seasons_validation_rejects_bad_tables
+OK    test_estaciones.gd::test_farm_output_follows_the_month
+OK    test_estaciones.gd::test_a_year_of_one_farm_averages_close_to_normal_and_conserves_goods
+OK    test_estaciones.gd::test_the_month_is_the_same_after_saving_and_loading
+OK    test_estaciones.gd::test_current_season_follows_the_start_day_and_the_step_counter
+OK    test_estaciones.gd::test_winter_consumes_one_firewood_per_person_per_step
+OK    test_estaciones.gd::test_summer_needs_no_firewood
+OK    test_estaciones.gd::test_heating_switches_on_when_december_begins
+OK    test_estaciones.gd::test_missing_firewood_is_gradual_and_nobody_starves_of_cold
+OK    test_estaciones.gd::test_cold_never_pushes_unrest_above_its_limit_but_other_causes_can
+OK    test_estaciones.gd::test_firewood_arriving_ends_the_cold_and_unrest_recovers
+OK    test_estaciones.gd::test_heating_can_be_disabled_by_the_rules
+OK    test_estaciones.gd::test_cold_state_is_saved_and_an_old_save_without_it_still_loads
+OK    test_estaciones.gd::test_a_cold_winter_with_a_woodcutter_stays_warm
+== test_forestal_mejoras.gd
+OK    test_forestal_mejoras.gd::test_the_kiln_turns_wood_into_charcoal
+OK    test_forestal_mejoras.gd::test_the_kiln_without_wood_says_what_is_missing
+OK    test_forestal_mejoras.gd::test_the_toolsmith_needs_iron_and_charcoal
+OK    test_forestal_mejoras.gd::test_the_whole_forest_and_tools_chain_conserves_goods_for_a_season
+OK    test_forestal_mejoras.gd::test_mine_and_smithy_stop_without_tools_and_say_so
+OK    test_forestal_mejoras.gd::test_smithy_upkeep_is_20_tools_per_cycle
+OK    test_forestal_mejoras.gd::test_farms_and_woodcutters_do_not_need_tools
+OK    test_forestal_mejoras.gd::test_upgrade_cost_and_steps_follow_the_rules
+OK    test_forestal_mejoras.gd::test_upgrade_takes_resources_once_and_raises_level_after_the_work
+OK    test_forestal_mejoras.gd::test_level_two_produces_150_percent_and_costs_150_percent_upkeep_once
+OK    test_forestal_mejoras.gd::test_upgrade_is_rejected_without_resources_workers_or_a_valid_building
+OK    test_forestal_mejoras.gd::test_upgrade_does_not_need_a_free_building_slot_but_does_use_the_project_queue
+OK    test_forestal_mejoras.gd::test_upgrade_project_is_saved_and_loaded_and_bad_data_is_rejected
+OK    test_forestal_mejoras.gd::test_max_level_is_validated_in_the_data
+OK    test_forestal_mejoras.gd::test_every_map_province_starts_with_tools_so_a_new_mine_can_work
+OK    test_forestal_mejoras.gd::test_loading_rejects_a_level_above_the_building_maximum_in_the_parser_itself
+== test_scarcity.gd
+OK    test_scarcity.gd::test_first_steps_without_food_only_warn
+OK    test_scarcity.gd::test_unrest_rises_gradually_after_the_warning
+OK    test_scarcity.gd::test_starvation_starts_only_after_a_long_shortage
+OK    test_scarcity.gd::test_population_never_collapses_in_one_step
+OK    test_scarcity.gd::test_unrest_and_hunger_recover_when_food_returns
+OK    test_scarcity.gd::test_partial_shortage_raises_unrest_less
+  t=25 pob=100 desc=0 hambre=0 falta=0% prod=100% pan=4325 trigo=2000 harina=0 lena=10500 mon=20200 | idle runn runn miss miss runn 
+  t=50 pob=100 desc=350 hambre=17 falta=100% prod=97% pan=0 trigo=0 harina=0 lena=12000 mon=35400 | idle runn runn miss miss stor 
+  t=75 pob=80 desc=975 hambre=42 falta=100% prod=52% pan=0 trigo=0 harina=0 lena=12000 mon=50288 | idle runn runn miss miss stor 
+  t=100 pob=55 desc=1000 hambre=67 falta=100% prod=50% pan=0 trigo=0 harina=0 lena=12000 mon=61488 | idle runn runn miss miss stor 
+  t=125 pob=46 desc=760 hambre=0 falta=0% prod=68% pan=3079 trigo=8525 harina=0 lena=13000 mon=66848 | idle runn runn runn miss runn 
+  t=150 pob=46 desc=385 hambre=0 falta=0% prod=94% pan=11404 trigo=12525 harina=0 lena=12000 mon=70248 | idle stor stor runn runn stor 
+  t=175 pob=47 desc=10 hambre=0 falta=0% prod=100% pan=15680 trigo=16525 harina=3000 lena=12500 mon=75504 | idle runn stor runn stor stor 
+  t=200 pob=49 desc=0 hambre=0 falta=0% prod=100% pan=15654 trigo=14525 harina=3000 lena=11500 mon=82928 | idle stor stor runn stor runn 
+  t=225 pob=51 desc=0 hambre=0 falta=0% prod=100% pan=15278 trigo=12525 harina=3000 lena=12000 mon=90168 | idle stor stor stor stor stor 
+  t=250 pob=53 desc=0 hambre=0 falta=0% prod=100% pan=14554 trigo=16525 harina=3000 lena=12500 mon=97824 | idle stor stor stor stor stor 
+  t=275 pob=55 desc=0 hambre=0 falta=0% prod=100% pan=13489 trigo=14525 harina=3000 lena=13000 mon=105296 | idle stor stor stor stor stor 
+  t=300 pob=58 desc=0 hambre=0 falta=0% prod=100% pan=12074 trigo=14525 harina=0 lena=11500 mon=112984 | idle runn stor runn runn runn 
+  t=325 pob=60 desc=0 hambre=0 falta=0% prod=100% pan=14302 trigo=12525 harina=3000 lena=12000 mon=121896 | idle stor stor stor stor stor 
+  t=350 pob=62 desc=0 hambre=0 falta=0% prod=100% pan=12190 trigo=12525 harina=0 lena=12000 mon=130424 | idle stor stor runn runn stor 
+  t=375 pob=64 desc=0 hambre=0 falta=0% prod=100% pan=13729 trigo=16525 harina=3000 lena=12500 mon=138968 | idle stor stor stor stor stor 
+  t=400 pob=66 desc=0 hambre=0 falta=0% prod=100% pan=14918 trigo=10525 harina=3000 lena=12500 mon=147728 | idle runn runn runn stor stor 
+  t=425 pob=68 desc=0 hambre=0 falta=0% prod=100% pan=11764 trigo=16525 harina=0 lena=12500 mon=157504 | idle runn stor runn runn stor 
+  t=450 pob=70 desc=0 hambre=0 falta=0% prod=100% pan=12264 trigo=10525 harina=0 lena=12500 mon=167096 | idle stor stor runn runn stor 
+  t=475 pob=72 desc=0 hambre=0 falta=0% prod=100% pan=12414 trigo=10525 harina=0 lena=12500 mon=177704 | idle stor stor runn runn stor 
+  t=500 pob=74 desc=0 hambre=0 falta=0% prod=100% pan=12218 trigo=10525 harina=0 lena=12500 mon=187528 | idle stor stor runn runn stor 
+  t=525 pob=76 desc=0 hambre=0 falta=0% prod=100% pan=11679 trigo=16525 harina=0 lena=12500 mon=197768 | idle runn runn runn runn stor 
+  t=550 pob=78 desc=0 hambre=0 falta=0% prod=100% pan=14790 trigo=10525 harina=3000 lena=12500 mon=209024 | idle runn runn runn stor stor 
+  t=575 pob=80 desc=0 hambre=0 falta=0% prod=100% pan=13552 trigo=16525 harina=3000 lena=12500 mon=221296 | idle stor stor stor stor stor 
+  t=600 pob=83 desc=0 hambre=0 falta=0% prod=100% pan=11974 trigo=12525 harina=0 lena=12000 mon=231984 | idle stor stor runn runn stor 
+  t=625 pob=85 desc=0 hambre=0 falta=0% prod=100% pan=14039 trigo=12525 harina=3000 lena=12000 mon=244496 | idle stor stor stor stor stor 
+  t=650 pob=87 desc=0 hambre=0 falta=0% prod=100% pan=11754 trigo=8525 harina=0 lena=11500 mon=255424 | idle runn runn runn runn runn 
+  t=675 pob=89 desc=0 hambre=0 falta=0% prod=100% pan=13128 trigo=14525 harina=3000 lena=13000 mon=269368 | idle stor stor stor stor stor 
+  t=700 pob=91 desc=0 hambre=0 falta=0% prod=100% pan=14154 trigo=16525 harina=3000 lena=12500 mon=281728 | idle stor stor runn stor stor 
+  t=725 pob=93 desc=0 hambre=0 falta=0% prod=100% pan=14830 trigo=12525 harina=0 lena=12000 mon=294504 | idle stor stor runn runn stor 
+  t=750 pob=95 desc=0 hambre=0 falta=0% prod=100% pan=11162 trigo=14525 harina=0 lena=11500 mon=307096 | idle runn runn runn runn runn 
+  t=775 pob=97 desc=0 hambre=0 falta=0% prod=100% pan=11149 trigo=16525 harina=0 lena=12500 mon=320704 | idle runn runn runn runn stor 
+  t=800 pob=99 desc=0 hambre=0 falta=0% prod=100% pan=14786 trigo=12525 harina=0 lena=12000 mon=335328 | idle stor stor runn runn stor 
+crisis: hambre máx. 76 pasos, descontento máx. 1000, población mín. 46, final 99, recuperada en el paso 176
+OK    test_scarcity.gd::test_bad_harvest_causes_scarcity_and_the_province_recovers
+OK    test_scarcity.gd::test_reserves_cover_a_short_harvest_failure
+== test_long_run.gd
+10000 pasos: población 100, descontento 0, hambre 0, pan producido 6604000, trigo producido 6720000
+OK    test_long_run.gd::test_conservation_holds_for_10000_steps
+30 días: obras empezadas 15, edificios 21, población 200
+OK    test_long_run.gd::test_thirty_days_have_no_invalid_values
+OK    test_long_run.gd::test_same_start_gives_identical_results
+OK    test_long_run.gd::test_different_start_gives_different_results
+OK    test_long_run.gd::test_invalid_values_detector_catches_bad_state
+== test_save.gd
+OK    test_save.gd::test_round_trip_gives_the_same_state
+OK    test_save.gd::test_round_trip_in_a_crisis_keeps_every_saved_field
+OK    test_save.gd::test_loaded_crisis_keeps_simulating_identically
+OK    test_save.gd::test_loaded_state_keeps_simulating_identically
+OK    test_save.gd::test_loaded_numbers_are_integers
+OK    test_save.gd::test_truncated_text_is_rejected_with_a_message
+OK    test_save.gd::test_tampered_content_is_detected_by_the_checksum
+OK    test_save.gd::test_newer_format_version_is_rejected_with_a_message
+OK    test_save.gd::test_invalid_format_version_is_rejected
+OK    test_save.gd::test_garbage_is_rejected_without_crashing
+OK    test_save.gd::test_invalid_contents_are_rejected_even_with_a_valid_checksum
+OK    test_save.gd::test_valid_payload_through_pack_is_accepted
+OK    test_save.gd::test_file_round_trip
+OK    test_save.gd::test_missing_file_gives_a_message
+OK    test_save.gd::test_interrupted_write_does_not_destroy_a_valid_save
+OK    test_save.gd::test_corrupted_main_file_falls_back_to_the_previous_save
+OK    test_save.gd::test_both_files_broken_gives_a_clear_error
+== test_offline.gd
+OK    test_offline.gd::test_negative_time_gives_no_reward
+OK    test_offline.gd::test_unknown_saved_time_gives_no_reward
+OK    test_offline.gd::test_whole_steps_only_and_the_remainder_is_kept
+OK    test_offline.gd::test_limit_caps_the_reward_and_discards_the_excess
+OK    test_offline.gd::test_offline_is_the_same_simulation_as_playing
+OK    test_offline.gd::test_splitting_the_absence_changes_nothing
+OK    test_offline.gd::test_loading_again_with_the_same_time_does_not_duplicate
+OK    test_offline.gd::test_loading_the_same_save_file_twice_gives_the_same_world
+OK    test_offline.gd::test_invariants_and_conservation_hold_after_a_capped_absence
+OK    test_offline.gd::test_summary_reports_what_happened
+OK    test_offline.gd::test_summary_reports_the_worst_moment_of_a_famine
+OK    test_offline.gd::test_new_rules_are_validated
+OK    test_offline.gd::test_save_time_is_stored_and_bad_values_become_unknown
+OK    test_offline.gd::test_save_time_survives_the_file_round_trip
+== test_map.gd
+OK    test_map.gd::test_default_map_loads_and_has_many_playable_provinces
+OK    test_map.gd::test_historical_entities_of_the_default_map
+OK    test_map.gd::test_neighbors_are_mutual_in_the_default_map
+OK    test_map.gd::test_touch_selects_the_territory_under_the_finger
+OK    test_map.gd::test_territories_never_overlap
+OK    test_map.gd::test_slop_selects_the_nearest_territory_just_off_the_coast
+OK    test_map.gd::test_new_world_matches_the_map
+OK    test_map.gd::test_new_world_is_deterministic_and_independent
+LENTA test_map.gd::test_all_start_provinces_run_30_days_and_a_long_absence_cleanly: 2.6 s
+OK    test_map.gd::test_all_start_provinces_run_30_days_and_a_long_absence_cleanly
+OK    test_map.gd::test_new_world_fails_cleanly_when_the_start_stock_does_not_fit
+OK    test_map.gd::test_version_0_2_adds_tolosa_gascuna_and_the_two_sea_provinces_all_reachable
+OK    test_map.gd::test_valid_small_map_is_accepted
+OK    test_map.gd::test_invalid_maps_are_rejected_with_clear_messages
+OK    test_map.gd::test_garbage_files_fail_cleanly
+== test_diorama.gd
+OK    test_diorama.gd::test_every_model_loads_for_every_faction
+OK    test_diorama.gd::test_every_tile_of_the_auto_tables_loads
+OK    test_diorama.gd::test_the_six_neighbors_of_a_tile_are_exactly_two_units_away_in_the_edge_directions
+OK    test_diorama.gd::test_layers_from_cells_shapes_defaults_and_out_of_range
+OK    test_diorama.gd::test_a_valid_layout_has_no_errors
+OK    test_diorama.gd::test_layout_with_wrong_shape_or_symbols_is_rejected
+ERROR: Diorama no válido: fila 1 del terreno: debe tener 3 casillas y tiene 2
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] build (res://scripts/view/diorama.gd:231)
+       [1] test_invalid_layout_builds_nothing (res://tests/test_diorama.gd:153)
+       [2] _run_all (res://tests/run_tests.gd:101)
+       [3] _init (res://tests/run_tests.gd:53)
+OK    test_diorama.gd::test_invalid_layout_builds_nothing
+OK    test_diorama.gd::test_each_land_tile_is_a_thin_grass_cap_on_a_rock_pillar_down_to_the_base
+OK    test_diorama.gd::test_water_cells_are_single_flat_tiles
+OK    test_diorama.gd::test_things_sit_on_top_of_the_tile_height
+OK    test_diorama.gd::test_straight_road_bend_and_dead_end_pick_the_tile_with_the_right_edges
+OK    test_diorama.gd::test_a_road_with_no_neighbors_is_plain_grass
+OK    test_diorama.gd::test_river_open_end_continues_off_the_map_and_closed_end_becomes_a_pond
+OK    test_diorama.gd::test_river_connects_to_lakes_and_bends_by_edges
+OK    test_diorama.gd::test_shore_tiles_face_the_water
+OK    test_diorama.gd::test_wall_ring_uses_corners_and_straights_facing_outward
+OK    test_diorama.gd::test_gate_has_a_road_under_it_and_replaces_a_straight_piece
+OK    test_diorama.gd::test_every_allowed_symbol_builds_something
+== test_epoca.gd
+OK    test_epoca.gd::test_a_box_has_five_faces_inside_its_bounds_and_faces_outward
+OK    test_epoca.gd::test_push_moves_and_turns_following_the_documented_convention
+OK    test_epoca.gd::test_shapes_keep_to_their_parameters
+OK    test_epoca.gd::test_arches_horseshoe_is_wider_inside_than_at_the_floor_and_round_is_not
+OK    test_epoca.gd::test_lump_hills_are_irregular_but_always_the_same
+OK    test_epoca.gd::test_every_period_building_fits_its_tile_and_its_budget
+OK    test_epoca.gd::test_building_generation_is_deterministic_and_seeds_change_the_town
+OK    test_epoca.gd::test_denser_districts_have_more_houses_and_the_horseshoe_minaret_stands_tallest
+OK    test_epoca.gd::test_wall_styles_differ_and_gates_add_geometry
+OK    test_epoca.gd::test_every_region_builds_every_symbol_and_counts_its_triangles
+ERROR: Región desconocida: atlantida
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] build (res://scripts/view/ciudad_epoca.gd:58)
+       [1] test_unknown_region_builds_nothing (res://tests/test_epoca.gd:279)
+       [2] _run_all (res://tests/run_tests.gd:101)
+       [3] _init (res://tests/run_tests.gd:53)
+OK    test_epoca.gd::test_unknown_region_builds_nothing
+OK    test_epoca.gd::test_regions_swap_the_ground_palette_and_leave_the_original_view_alone
+OK    test_epoca.gd::test_the_period_view_keeps_kaykit_for_what_it_does_not_replace
+OK    test_epoca.gd::test_undergrowth_stays_inside_the_cell_is_deterministic_and_differs_between_cells
+OK    test_epoca.gd::test_undergrowth_only_on_empty_cells
+== test_vista_provincia.gd
+OK    test_vista_provincia.gd::test_every_province_of_the_map_has_a_3d_look_and_its_start_fits
+OK    test_vista_provincia.gd::test_templates_are_inside_the_map_and_their_slots_never_collide
+OK    test_vista_provincia.gd::test_every_game_building_type_has_a_slot_kind
+OK    test_vista_provincia.gd::test_an_upgrade_project_draws_no_new_cell_and_the_new_buildings_get_a_cell
+OK    test_vista_provincia.gd::test_each_building_appears_in_its_first_free_slot_and_only_then
+OK    test_vista_provincia.gd::test_a_project_is_drawn_as_a_building_site_where_the_building_will_stand
+OK    test_vista_provincia.gd::test_housing_grows_with_population_and_with_each_finished_house
+OK    test_vista_provincia.gd::test_what_does_not_fit_is_counted_not_lost
+OK    test_vista_provincia.gd::test_the_fingerprint_changes_only_when_what_is_drawn_changes
+OK    test_vista_provincia.gd::test_the_view_builds_once_rebuilds_only_on_change_and_clears
+WARNING: Provincia sin aspecto 3D: atlantida
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] mostrar (res://scripts/ui/province_view.gd:141)
+         [1] test_the_view_switches_look_between_provinces_without_piling_up_scenes (res://tests/test_vista_provincia.gd:253)
+         [2] _run_all (res://tests/run_tests.gd:101)
+         [3] _init (res://tests/run_tests.gd:53)
+OK    test_vista_provincia.gd::test_the_view_switches_look_between_provinces_without_piling_up_scenes
+OK    test_vista_provincia.gd::test_the_3d_viewport_follows_the_size_but_never_exceeds_the_limit
+OK    test_vista_provincia.gd::test_the_view_redraws_once_a_second_not_every_frame
+OK    test_vista_provincia.gd::test_the_main_screen_starts_on_the_3d_view_of_the_start_province
+OK    test_vista_provincia.gd::test_the_map_highlights_the_chosen_province_even_when_chosen_from_outside_the_map
+OK    test_vista_provincia.gd::test_the_map_button_swaps_between_map_and_landscape_and_picking_a_province_returns
+OK    test_vista_provincia.gd::test_building_something_changes_the_landscape_through_the_real_screen
+OK    test_vista_provincia.gd::test_without_3d_the_screen_is_the_map_and_nothing_is_built
+OK    test_vista_provincia.gd::test_without_a_start_province_the_screen_opens_on_the_map
+OK    test_vista_provincia.gd::test_a_new_game_returns_to_the_map_with_no_province
+OK    test_vista_provincia.gd::test_the_menu_offers_3d_and_shadow_switches_that_are_saved_apart_from_the_game
+OK    test_vista_provincia.gd::test_unreadable_settings_are_ignored_and_the_game_still_opens
+OK    test_vista_provincia.gd::test_settings_text_is_read_keeping_only_what_is_valid
+OK    test_vista_provincia.gd::test_settings_file_is_never_touched_when_persistence_is_off
+== test_gente.gd
+OK    test_gente.gd::test_walking_routes_stay_inside_the_map_and_have_at_least_two_points
+OK    test_gente.gd::test_routes_only_exist_when_what_they_lead_to_is_built
+OK    test_gente.gd::test_walkers_follow_the_population_with_a_floor_and_a_cap
+OK    test_gente.gd::test_builders_work_at_each_building_site_and_ovens_smoke
+OK    test_gente.gd::test_people_change_does_not_change_the_ground_signature
+OK    test_gente.gd::test_walkers_move_along_their_route_turn_back_at_the_ends_and_never_leave_it
+OK    test_gente.gd::test_the_bridge_is_walked_on_the_deck_not_through_the_river
+OK    test_gente.gd::test_builders_stand_at_the_sites_and_the_market_has_people
+OK    test_gente.gd::test_smoke_rises_and_starts_over
+OK    test_gente.gd::test_the_view_animates_only_when_enabled_and_changing_people_does_not_rebuild_the_ground
+== test_session.gd
+OK    test_session.gd::test_first_start_creates_a_new_game
+OK    test_session.gd::test_save_then_start_restores_and_applies_the_absence
+OK    test_session.gd::test_resume_applies_the_pause_once
+OK    test_session.gd::test_resume_with_clock_set_back_gives_nothing
+OK    test_session.gd::test_broken_save_is_set_aside_not_deleted
+OK    test_session.gd::test_save_from_another_map_is_set_aside_and_a_new_game_starts
+OK    test_session.gd::test_save_with_a_missing_or_extra_province_is_also_set_aside
+OK    test_session.gd::test_save_with_exactly_the_map_provinces_loads_normally
+OK    test_session.gd::test_damaged_main_falls_back_to_backup_with_a_notice
+OK    test_session.gd::test_new_game_replaces_the_world
+OK    test_session.gd::test_time_text
+OK    test_session.gd::test_measure_speed_does_not_touch_the_game_in_progress
+== test_ui_logic.gd
+OK    test_ui_logic.gd::test_amount_is_exact_and_trimmed
+OK    test_ui_logic.gd::test_duration_text
+OK    test_ui_logic.gd::test_every_status_and_alert_has_a_text_and_a_severity
+OK    test_ui_logic.gd::test_offline_text_covers_the_cases
+OK    test_ui_logic.gd::test_tapping_each_province_selects_it
+OK    test_ui_logic.gd::test_tapping_the_open_sea_selects_nothing
+OK    test_ui_logic.gd::test_the_map_opens_zoomed_in_and_the_home_button_returns_to_that_view
+OK    test_ui_logic.gd::test_a_drag_does_not_select_and_moves_the_map
+OK    test_ui_logic.gd::test_every_territory_is_big_enough_to_touch_at_full_zoom_out
+OK    test_ui_logic.gd::test_an_exhausted_frame_budget_slows_the_simulation_instead_of_freezing_the_screen
+OK    test_ui_logic.gd::test_building_buttons_build_and_report
+OK    test_ui_logic.gd::test_build_buttons_sit_right_after_the_stats_and_nothing_above_them_can_change_size
+OK    test_ui_logic.gd::test_build_tiles_are_small_four_per_row_and_still_a_finger_wide
+OK    test_ui_logic.gd::test_the_province_title_never_exceeds_the_limit
+OK    test_ui_logic.gd::test_projects_limit_disables_the_buttons
+OK    test_ui_logic.gd::test_building_limit_disables_the_buttons_and_is_shown
+OK    test_ui_logic.gd::test_speed_controls_time
+OK    test_ui_logic.gd::test_autosave_writes_the_file_with_the_time
+OK    test_ui_logic.gd::test_pause_saves_and_resume_applies_the_absence_with_a_summary
+OK    test_ui_logic.gd::test_start_with_a_save_shows_the_summary_and_a_fresh_start_does_not
+OK    test_ui_logic.gd::test_new_game_flow_resets_the_world
+OK    test_ui_logic.gd::test_broken_save_shows_a_notice_and_still_plays
+OK    test_ui_logic.gd::test_speed_text_formats_milliseconds_per_step
+OK    test_ui_logic.gd::test_menu_offers_the_speed_measurement
+OK    test_ui_logic.gd::test_late_update_response_after_cancelling_is_ignored
+== test_closure.gd
+2 años: cordoba pob 10 desc 1000 edif 30 | toledo pob 10 desc 1000 edif 30 | zaragoza pob 10 desc 1000 edif 30 | leon pob 200 desc 0 edif 30 | castilla pob 10 desc 1000 edif 30; población mínima vista 10
+LENTA test_closure.gd::test_two_game_years_of_the_whole_world: 8.9 s
+OK    test_closure.gd::test_two_game_years_of_the_whole_world
+LENTA test_closure.gd::test_the_whole_map_runs_a_year_without_corruption: 6.8 s
+OK    test_closure.gd::test_the_whole_map_runs_a_year_without_corruption
+guardados en un momento con: { "obras": 21, "efectos": 38, "descontento": 177, "hambre": 176, "reclutas": 244 }
+LENTA test_closure.gd::test_saving_and_loading_never_changes_the_course_of_the_game: 7.2 s
+OK    test_closure.gd::test_saving_and_loading_never_changes_the_course_of_the_game
+14 ciclos: 3286 pasos en total, 1992 de ellos ausente
+LENTA test_closure.gd::test_close_and_reopen_cycles_with_every_kind_of_odd_absence: 50.8 s
+OK    test_closure.gd::test_close_and_reopen_cycles_with_every_kind_of_odd_absence
+LENTA test_closure.gd::test_a_year_of_play_through_the_real_screen_at_x600: 10.4 s
+OK    test_closure.gd::test_a_year_of_play_through_the_real_screen_at_x600
+OK    test_closure.gd::test_touch_input_is_converted_to_mouse_events
+== test_update_check.gd
+OK    test_update_check.gd::test_parse_version_accepts_only_three_numbers
+OK    test_update_check.gd::test_compare_is_numeric_not_textual
+OK    test_update_check.gd::test_newer_release_is_reported_with_trusted_links
+OK    test_update_check.gd::test_same_or_older_release_is_not_newer
+OK    test_update_check.gd::test_drafts_and_prereleases_are_ignored
+OK    test_update_check.gd::test_untrusted_links_are_dropped
+OK    test_update_check.gd::test_garbage_responses_fail_cleanly
+OK    test_update_check.gd::test_describe_covers_every_outcome
+Pruebas: 441, fallos: 0
