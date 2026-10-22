@@ -4,6 +4,7 @@ extends RefCounted
 const ProvinceScript := preload("res://scripts/sim/province.gd")
 const Fixed := preload("res://scripts/sim/fixed.gd")
 const TradeScript := preload("res://scripts/sim/trade.gd")
+const RivalAIScript := preload("res://scripts/sim/rival_ai.gd")
 const WarScript := preload("res://scripts/sim/war.gd")
 
 var data = null
@@ -29,6 +30,9 @@ var owners_version: int = 0
 var armies: Array = []
 var battle_log: Array = []
 var war_dead: int = 0
+var ai_paused: bool = false     ## los rivales no atacan (la ausencia offline se simula con esto puesto; no se guarda)
+var incoming_count: int = 0     ## ataques rivales lanzados contra el jugador (no se guarda): la interfaz avisa de los nuevos
+var incoming_log: Array = []
 var battle_count: int = 0       ## batallas libradas (no se guarda): la interfaz lo usa para avisar de las nuevas
 ## Caché de saltos entre provincias (se vacía al cambiar la red)
 var hop_cache: Dictionary = {}
@@ -79,6 +83,7 @@ func step() -> void:
 		province.step()
 	TradeScript.step(self)
 	WarScript.step(self)
+	RivalAIScript.step(self)
 
 
 func run_steps(count: int) -> void:
@@ -159,6 +164,8 @@ func load_dict(raw: Variant) -> bool:
 	armies = parsed_armies
 	battle_log = []
 	battle_count = 0
+	incoming_count = 0
+	incoming_log = []
 	war_dead = 0
 	var problems := TradeScript.check(self)
 	if not problems.is_empty():
@@ -257,7 +264,13 @@ func _parse_armies(raw: Variant, known_ids: Dictionary, steps: int, parsed_owner
 		if soldiers == null or soldiers < 1 or arrive == null or arrive < 0 or arrive > steps + TradeScript.MAX_ARRIVAL_AHEAD:
 			last_error = "mundo: ejército con soldados o llegada no válidos"
 			return null
-		out.append({"from": from_id, "to": to_id, "soldiers": soldiers, "arrive": arrive})
+		var army := {"from": from_id, "to": to_id, "soldiers": soldiers, "arrive": arrive}
+		if entry.has("realm"):
+			if typeof(entry["realm"]) != TYPE_STRING or not parsed_owners.values().has(entry["realm"]):
+				last_error = "mundo: ejército de un reino desconocido"
+				return null
+			army["realm"] = entry["realm"]
+		out.append(army)
 	if not out.is_empty() and parsed_owners.is_empty():
 		last_error = "mundo: hay ejércitos pero no hay propietarios"
 		return null

@@ -3,7 +3,7 @@ extends SceneTree
 ##   xvfb-run -a -s "-screen 0 1080x2400x24" godot --path game --rendering-driver opengl3 \
 ##     --resolution 1080x2400 -s ../tools/captura_guerra.gd -- salida.png escena
 ## escena: "tarjeta" (mapa con la tarjeta de una provincia atacable y un ejército en marcha),
-##         "informe" (informe de batalla tras conquistar), "conquista" (mapa tras conquistar, sin el informe), "ajena" (ficha de una provincia ajena, solo lectura).
+##         "informe" (informe de batalla tras conquistar), "conquista" (mapa tras conquistar, sin el informe), "ajena" (ficha de una provincia ajena, solo lectura), "selector" (elegir reino), "aviso" (ejército enemigo en marcha), "perdida" (informe de una provincia perdida).
 ## Limitación: dibujado por software (llvmpipe); no mide el rendimiento del móvil.
 
 const SESSION := "res://scripts/sim/game_session.gd"
@@ -26,6 +26,23 @@ func _init() -> void:
 	await process_frame
 	var world = main.session.world
 	var war = load(WAR)
+	if escena == "selector":
+		main._show_realm_picker()
+		await _frames(8)
+		_guardar(out)
+		return
+	if escena == "aviso" or escena == "perdida":
+		# Un León pasivo: se avanza hasta que un rival lance su primer ataque (o hasta que caiga una provincia).
+		var limite := 24 * 150
+		while limite > 0 and (world.incoming_count == 0 if escena == "aviso" else world.battle_count == 0):
+			world.run_steps(1)
+			limite -= 1
+		main._refresh_all()
+		main._check_incoming() if escena == "aviso" else main._check_battles()
+		main._show_map(true)
+		await _frames(8)
+		_guardar(out)
+		return
 	var target: String = war.attackable(world)[0]
 	var origin := ""
 	for n in world.trade_links[target]["neighbors"]:
@@ -65,4 +82,16 @@ func _init() -> void:
 	var img := root.get_texture().get_image()
 	img.save_png(out)
 	print("guardada ", out, " objetivo ", target, " origen ", origin)
+	quit()
+
+
+func _frames(n: int) -> void:
+	for i in range(n):
+		await process_frame
+
+
+func _guardar(out: String) -> void:
+	var img := root.get_texture().get_image()
+	img.save_png(out)
+	print("guardada ", out)
 	quit()

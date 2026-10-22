@@ -110,4 +110,6 @@ Petición del usuario (2026-10-22): conquistar territorios colindantes de otros 
 
 **Lote 0.4.0 (2026-10-22, en local; falta CI):** rendimiento −30 % (D-037), guerra y conquista CQ1 a CQ5 con defensa de CQ6 (D-038), mapa de 49 provincias (D-039), botón de ataque, informe de batalla y fichas ajenas en solo lectura. Pendiente de la guerra: IA de los rivales (CQ6), elegir el reino de partida, comida y paga de los soldados en marcha, asedios y fortificaciones. Pendiente: medir el rendimiento en el móvil.
 
+**Lote 0.5.0 (2026-10-22, en local; falta CI):** reinos rivales que se arman y atacan (D-040), elección de reino en «Partida nueva» y mapa de 52 provincias (D-041). Pendiente de la guerra: IA que ataque a otros rivales, comida y paga de soldados en marcha, asedios y fortificaciones, ajustar el ritmo de la IA jugando de verdad. Sigue sin medirse el rendimiento en el móvil.
+
 Las fases 3 a 8 se detallarán en tareas pequeñas al terminar la anterior, no antes. Cada fase termina con pruebas ejecutadas, documentación actualizada y versión identificable (sección 37).

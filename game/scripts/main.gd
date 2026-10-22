@@ -76,6 +76,7 @@ var _card_text: Label
 var _enter_button: Button
 var _attack_button: Button
 var _battle_seen := 0
+var _incoming_seen := 0
 var _season_icon: Control
 var _in_province := false
 ## Presupuesto de simulación por fotograma (µs); las pruebas lo ponen enorme para ser deterministas.
@@ -307,6 +308,11 @@ func _on_attack_pressed() -> void:
 	_refresh_card()
 
 
+## Nombre de un reino para los textos.
+func _realm_name(realm_id: String) -> String:
+	return str(session.map.realms.get(realm_id, {}).get("name", realm_id))
+
+
 ## Si ha habido batallas nuevas, enseña el informe de la última.
 func _check_battles() -> void:
 	var world = session.world
@@ -318,12 +324,34 @@ func _check_battles() -> void:
 	var r: Dictionary = world.battle_log[world.battle_log.size() - 1]
 	var target = world.find_province(r["to"])
 	var name_to: String = target.display_name if target != null else str(r["to"])
+	var rounds_word := "ronda" if r["rounds"] == 1 else "rondas"
+	var head: String
+	if r["attacker_realm"] == world.player_realm:
+		head = "¡Victoria! %s pasa a ser tuya." % name_to if r["won"] else "Derrota: %s resiste." % name_to
+	else:
+		head = "¡Perdida! %s ha tomado %s." % [_realm_name(r["attacker_realm"]), name_to] if r["won"] else "Ataque rechazado: %s resiste a %s." % [name_to, _realm_name(r["attacker_realm"])]
 	var body := "%s\nAtacaban %d soldados contra %d defensores.\nBajas: %d atacantes y %d defensores, en %d %s." % [
-		"¡Victoria! %s pasa a ser tuya." % name_to if r["won"] else "Derrota: %s resiste." % name_to,
-		r["sent"], r["garrison"], r["sent"] - r["attacker_left"], r["garrison"] - r["defender_left"], r["rounds"], "ronda" if r["rounds"] == 1 else "rondas"]
-	if r["won"]:
+		head, r["sent"], r["garrison"], r["sent"] - r["attacker_left"], r["garrison"] - r["defender_left"], r["rounds"], rounds_word]
+	if r["won"] and r["attacker_realm"] == world.player_realm:
 		body += "\nSuperviven %d soldados. La provincia queda inquieta y administrarla cuesta monedas cada día." % r["attacker_left"]
 	_show_modal("Batalla por %s" % name_to, body, [{"text": "Entendido"}])
+
+
+## Si un reino rival ha lanzado un ataque nuevo contra el jugador, avisa para que dé tiempo a reaccionar.
+func _check_incoming() -> void:
+	var world = session.world
+	if world.incoming_count < _incoming_seen:
+		_incoming_seen = world.incoming_count
+	if world.incoming_count == _incoming_seen or world.incoming_log.is_empty() or has_modal():
+		return
+	_incoming_seen = world.incoming_count
+	_on_speed_pressed(0)     # a ×600 la marcha dura segundos: se pausa para poder reaccionar
+	var a: Dictionary = world.incoming_log[world.incoming_log.size() - 1]
+	var from_p = world.find_province(a["from"])
+	var to_p = world.find_province(a["to"])
+	_show_modal("¡Ejército enemigo!", "%s manda %d soldados desde %s contra %s. Llegarán en %d horas de juego. El juego está en pausa. Puedes reforzar %s con soldados de provincias vecinas o reclutar más." % [
+		_realm_name(a["realm"]), a["soldiers"], from_p.display_name if from_p != null else a["from"], to_p.display_name if to_p != null else a["to"],
+		int(session.data.rules["war_march_steps_per_hop"]), to_p.display_name if to_p != null else a["to"]], [{"text": "Entendido"}])
 
 
 ## Pasa a la ficha lo que viaja hacia o desde la provincia mostrada.
@@ -475,6 +503,7 @@ func _process(delta: float) -> void:
 					_step_accumulator = 0.0
 					break
 			_refresh_all()
+			_check_incoming()
 			_check_battles()
 	_autosave_timer += delta
 	if _autosave_timer >= AUTOSAVE_SECONDS:
@@ -721,13 +750,26 @@ func _on_save_pressed() -> void:
 
 func _on_new_game_pressed() -> void:
 	_show_modal("¿Empezar de nuevo?", "Se perderá la partida actual. Esta acción no se puede deshacer.", [
-		{"text": "Sí, empezar de nuevo", "action": _confirm_new_game},
+		{"text": "Sí, elegir reino", "action": _show_realm_picker},
 		{"text": "Cancelar"},
 	])
 
 
-func _confirm_new_game() -> void:
-	if not session.new_game(_now()):
+## Los reinos del mapa con sus provincias de partida, para elegir con cuál jugar.
+func _show_realm_picker() -> void:
+	var counts := {}
+	for entry in session.map.provinces:
+		counts[entry["realm"]] = int(counts.get(entry["realm"], 0)) + 1
+	var buttons: Array = []
+	for realm_id in session.map.realms.keys():
+		var n: int = int(counts.get(realm_id, 0))
+		buttons.append({"text": "%s · %d %s" % [session.map.realms[realm_id]["name"], n, "provincia" if n == 1 else "provincias"], "action": _confirm_new_game.bind(realm_id)})
+	buttons.append({"text": "Cancelar"})
+	_show_modal("¿Con qué reino juegas?", "Mandas en las provincias de tu reino y puedes conquistar las vecinas de otros. Los reinos con menos provincias lo tienen más difícil. Los rivales se arman y atacan pasados unos 60 días de partida, y no atacan mientras estás fuera.", buttons)
+
+
+func _confirm_new_game(realm: String = "leon") -> void:
+	if not session.new_game(_now(), realm):
 		_show_modal("Error", "No se pudo crear la partida nueva:\n" + "\n".join(session.errors), [{"text": "Entendido"}])
 		return
 	_map_view.setup(session.map, session.world)

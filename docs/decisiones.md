@@ -346,6 +346,24 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Los guardados del mapa de 47 provincias se apartan al abrir esta versión.
 - Estado: **provisional**.
 
+## D-040. Reinos rivales que se arman y atacan (versión 0.5.0)
+
+- Cierra la pieza CQ6 de `docs/DISENO_CONQUISTA.md` en su versión mínima. Sin ella (0.4.0) el jugador no podía perder nada.
+- **Leva abstracta**: cada día cada provincia rival que pueda pagar la paga de un día de todos sus soldados levanta 2 soldados, hasta el 30 % de su población. No gasta madera ni armas.
+- **Ataque**: cada 96 pasos, pasados 1 440 pasos (60 días) de partida, cada reino rival elige UN ataque contra una provincia del jugador colindante: el de mejor relación entre su fuerza y la defensa del objetivo, y solo si llega al 150 %. Manda todos sus soldados menos el 25 %. Mínimo 10 soldados. Los rivales **no se atacan entre sí**.
+- **Protecciones** (decididas por mí, para que un teléfono apagado o una racha mala no arruinen la partida): nunca se ataca la **última provincia** del jugador; **no hay ataques mientras estás ausente** (el progreso offline corre con la IA pausada, la economía sí corre); cuando sale un ejército enemigo el juego se **pausa** y se avisa, porque a ×600 la marcha dura segundos.
+- Medido en el servidor con el mapa de 49 provincias y un León que no hace nada: la primera tanda de ataques llega entre los días 60 y 90 y quita **3 de las 4 provincias**; luego la protección de la última las deja en 1. **No sé si ese ritmo es divertido o injusto**: no se ha jugado.
+- Todas las cifras son parámetros de juego (`war_ai_*` en `rules.json`); `war_ai_interval = 0` apaga la IA.
+- Elegir reino: el menú «Partida nueva» ofrece los 9 reinos con su número de provincias. La primera partida sigue con León sin preguntar.
+- Guardado: los ejércitos llevan un `realm` opcional (si falta, es del jugador); un guardado anterior carga igual.
+- Estado: **provisional**.
+
+## D-041. Mapa de 52 provincias (versión 0.5.0)
+
+- Se añaden **Lisboa** (H-55), **Dénia** (H-56) y **Madrid** (H-57), las tres en el califato. Las dos primeras son inferencia (las fuentes solo dicen que la taifa vino después del califato); confianza baja.
+- Las formas son aproximación de juego. Los guardados del mapa de 49 provincias se apartan al abrir esta versión.
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

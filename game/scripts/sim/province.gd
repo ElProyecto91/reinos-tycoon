@@ -281,6 +281,12 @@ func recruit(count: int) -> bool:
 	return true
 
 
+## Pone al día la mano de obra tras un cambio de fuera del paso (soldados que llegan, bajas, leva): si ahora hay más
+## trabajadores asignados que mano de obra, se liberan los que sobran. Sin esto el estado guardado sería incoherente.
+func settle_labor() -> void:
+	_enforce_labor_limit()
+
+
 func release_recruits(count: int) -> bool:
 	last_error = ""
 	if count < 0 or count > recruits:

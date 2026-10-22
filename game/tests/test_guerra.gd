@@ -171,6 +171,28 @@ func test_conquest_changes_owner_network_unrest_and_conserves_soldiers() -> void
 	done()
 
 
+func test_soldiers_that_arrive_never_leave_more_workers_than_the_labor_force() -> void:
+	var data = new_data()
+	var world = _world(data)
+	var war = load(WAR)
+	var b = world.find_province("b")
+	for type_id in ["granary", "farm", "farm", "mill", "bakery", "woodcutter"]:
+		b.add_building(type_id)
+	b.store.seed_initial("wheat", 6000)
+	world.run_steps(5)
+	assert_true(b.assigned_labor() > 10, "la provincia tiene trabajadores asignados (%d)" % b.assigned_labor())
+	world.find_province("a").recruits = 45
+	war.send(world, "a", "b", 45)
+	world.step_count = int(world.armies[0]["arrive"])
+	war.step(world)
+	assert_eq(b.recruits, 45, "llegan los refuerzos")
+	assert_true(b.assigned_labor() <= b.labor_force(), "y no sobran trabajadores asignados (%d de %d)" % [b.assigned_labor(), b.labor_force()])
+	assert_eq(world.check_invariants().size(), 0, "estado coherente: %s" % str(world.check_invariants()))
+	var result: Dictionary = load(SAVE_GAME).decode(data, load(SAVE_GAME).encode(world, "0.5.0"), LINKS)
+	assert_true(result["ok"], "y el guardado se puede volver a cargar: %s" % str(result.get("error", "")))
+	done()
+
+
 func test_defeat_costs_the_attackers_and_changes_no_owner() -> void:
 	var data = new_data()
 	var world = _world(data)
@@ -348,6 +370,7 @@ func test_the_real_map_starts_with_owners_and_the_player_in_leon() -> void:
 
 func test_a_whole_campaign_on_the_real_map_keeps_everything_consistent() -> void:
 	var data = new_data()
+	data.rules["war_ai_interval"] = 0     # esta prueba es de la campaña del jugador: los rivales no se arman aquí
 	var map = load(GAME_MAP).new()
 	assert_true(map.load_defaults(data), "mapa: %s" % str(map.errors))
 	var world = map.new_world(data)["world"]

@@ -1,6 +1,6 @@
 {
 	"format_version": 1,
-	"status": "Parámetros de juego provisionales. No son datos históricos. Cantidades en milésimas; tiempos en pasos de simulación (un paso equivale a una hora de juego; el día tiene 24 pasos). heating_per_person: leña por persona y paso en invierno (0 = sin necesidad); cold_warning_steps/cold_unrest_rise/cold_unrest_limit: escasez de leña gradual, sin muertes y con tope de descontento (con tope 1000 las provincias sin leñador llegaban a trabajar al 50 %, experimento del 2026-10-22); upgrade_*: coste y pasos de una mejora en porcentaje del coste de construcción, y aumento de producción y de mantenimiento por nivel. trade_*: reparto entre provincias del mismo reino (cada trade_interval pasos; déficit/objetivo/excedente en % del límite de almacén; trade_steps_per_hop pasos por salto; coste en milésimas de moneda por unidad y salto, que paga el destino; tope por ruta y reparto en milésimas; envíos en vuelo como máximo); PARÁMETROS DE JUEGO, sin fuente histórica. war_*: guerra y conquista (docs/DISENO_CONQUISTA.md): pasos de marcha por provincia colindante; fuerza de ataque y de defensa en %; milicia = % de la población que defiende; bajas por ronda en % de la fuerza del contrario; rondas máximas; descontento al conquistar; coste diario de administración por cada otra provincia propia (en milésimas de moneda). PARÁMETROS DE JUEGO, sin fuente histórica. calendar_start_day: día del año de la partida nueva (0 a 364; 181 = 1 de julio, la fecha de referencia de la región, D-021).",
+	"status": "Parámetros de juego provisionales. No son datos históricos. Cantidades en milésimas; tiempos en pasos de simulación (un paso equivale a una hora de juego; el día tiene 24 pasos). heating_per_person: leña por persona y paso en invierno (0 = sin necesidad); cold_warning_steps/cold_unrest_rise/cold_unrest_limit: escasez de leña gradual, sin muertes y con tope de descontento (con tope 1000 las provincias sin leñador llegaban a trabajar al 50 %, experimento del 2026-10-22); upgrade_*: coste y pasos de una mejora en porcentaje del coste de construcción, y aumento de producción y de mantenimiento por nivel. trade_*: reparto entre provincias del mismo reino (cada trade_interval pasos; déficit/objetivo/excedente en % del límite de almacén; trade_steps_per_hop pasos por salto; coste en milésimas de moneda por unidad y salto, que paga el destino; tope por ruta y reparto en milésimas; envíos en vuelo como máximo); PARÁMETROS DE JUEGO, sin fuente histórica. war_*: guerra y conquista (docs/DISENO_CONQUISTA.md): pasos de marcha por provincia colindante; fuerza de ataque y de defensa en %; milicia = % de la población que defiende; bajas por ronda en % de la fuerza del contrario; rondas máximas; descontento al conquistar; coste diario de administración por cada otra provincia propia (en milésimas de moneda). war_ai_*: reinos rivales (CQ6): cada cuántos pasos deciden atacar (0 = nunca), pasos de partida antes del primer ataque, soldados que levantan por día y provincia, tope de leva en % de la población, mínimo de soldados para atacar, relación de fuerza mínima en % y % que se queda de guarnición. PARÁMETROS DE JUEGO, sin fuente histórica. calendar_start_day: día del año de la partida nueva (0 a 364; 181 = 1 de julio, la fecha de referencia de la región, D-021).",
 	"rules": {
 		"currency": "coin",
 		"base_capacity": 60000,
@@ -53,6 +53,13 @@
 		"war_max_rounds": 60,
 		"war_conquest_unrest": 600,
 		"war_admin_cost": 400,
+		"war_ai_interval": 96,
+		"war_ai_start_steps": 1440,
+		"war_ai_levy_per_day": 2,
+		"war_ai_levy_target_percent": 30,
+		"war_ai_min_soldiers": 10,
+		"war_ai_ratio_percent": 150,
+		"war_ai_keep_percent": 25,
 		"trade_goods": ["bread", "wheat", "flour", "firewood", "wood", "tools"],
 		"calendar_start_year": 1000,
 		"calendar_start_day": 181,

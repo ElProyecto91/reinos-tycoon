@@ -65,12 +65,16 @@ static func _run_with_summary(world, steps: int) -> Array:
 			"stock": _stocks(world.data, province),
 		}
 		worst[province.id] = {"hunger": province.hunger_steps, "unrest": province.unrest}
+	# Mientras el jugador está ausente los rivales no atacan: la economía corre igual, pero no se pierden provincias con el móvil apagado.
+	var was_paused: bool = world.ai_paused
+	world.ai_paused = true
 	for i in range(steps):
 		world.step()
 		for province in world.provinces:
 			var w: Dictionary = worst[province.id]
 			w["hunger"] = maxi(w["hunger"], province.hunger_steps)
 			w["unrest"] = maxi(w["unrest"], province.unrest)
+	world.ai_paused = was_paused
 	var list: Array = []
 	for province in world.provinces:
 		var b: Dictionary = before[province.id]

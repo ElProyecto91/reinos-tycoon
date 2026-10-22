@@ -92,10 +92,27 @@ static func send(world, from_id: String, to_id: String, count: int) -> Dictionar
 	var problem := order_problem(world, from_id, to_id, count)
 	if problem != "":
 		return {"ok": false, "error": problem}
+	return _launch(world, world.player_realm, from_id, to_id, count)
+
+
+## Lo mismo para un reino rival (la IA): la salida debe ser suya y el destino colindante.
+static func send_as(world, realm: String, from_id: String, to_id: String, count: int) -> Dictionary:
 	var origin = world.find_province(from_id)
-	origin.release_recruits(count)
+	if not enabled(world) or origin == null or world.find_province(to_id) == null or from_id == to_id:
+		return {"ok": false, "error": "provincias no válidas"}
+	if world.owners.get(from_id, "") != realm or realm == world.player_realm:
+		return {"ok": false, "error": "la provincia de salida no es de ese reino"}
+	if not world.trade_links.has(from_id) or not (to_id in world.trade_links[from_id]["neighbors"]):
+		return {"ok": false, "error": "solo se marcha a una provincia colindante"}
+	if count < 1 or count > origin.recruits or world.armies.size() >= MAX_ARMIES:
+		return {"ok": false, "error": "no hay tantos soldados o demasiados ejércitos"}
+	return _launch(world, realm, from_id, to_id, count)
+
+
+static func _launch(world, realm: String, from_id: String, to_id: String, count: int) -> Dictionary:
+	world.find_province(from_id).release_recruits(count)
 	world.armies.append({
-		"from": from_id, "to": to_id, "soldiers": count,
+		"from": from_id, "to": to_id, "soldiers": count, "realm": realm,
 		"arrive": world.step_count + int(world.data.rules["war_march_steps_per_hop"]),
 	})
 	return {"ok": true, "error": ""}
@@ -144,14 +161,16 @@ static func _arrive(world, army: Dictionary) -> void:
 	if target == null:
 		return
 	var soldiers: int = army["soldiers"]
-	if is_player(world, army["to"]):
+	var realm: String = army.get("realm", world.player_realm)
+	if world.owners.get(army["to"], "") == realm:
 		target.recruits += soldiers     # refuerzo (o el ejército llega a una provincia que ya es suya)
+		target.settle_labor()
 		return
 	var rules: Dictionary = world.data.rules
 	var garrison: int = garrison_of(world, target)
 	var result := resolve(soldiers, garrison, rules)
 	var report := {
-		"step": world.step_count, "from": army["from"], "to": army["to"], "attacker_realm": world.player_realm,
+		"step": world.step_count, "from": army["from"], "to": army["to"], "attacker_realm": realm,
 		"defender_realm": world.owners.get(army["to"], ""), "sent": soldiers, "garrison": garrison,
 		"attacker_left": result["attacker_left"], "defender_left": result["defender_left"],
 		"won": result["won"], "rounds": result["rounds"],
@@ -164,9 +183,10 @@ static func _arrive(world, army: Dictionary) -> void:
 	target.population = maxi(target.population - (defender_losses - from_garrison), mini(min_population, target.population))
 	world.war_dead += (soldiers - result["attacker_left"]) + defender_losses
 	if result["won"]:
-		world.set_owner(army["to"], world.player_realm)
+		world.set_owner(army["to"], realm)
 		target.recruits += result["attacker_left"]
 		target.unrest = maxi(target.unrest, mini(int(rules.get("war_conquest_unrest", 0)), int(rules["unrest_max"])))
+	target.settle_labor()
 	world.battle_log.append(report)
 	world.battle_count += 1
 	if world.battle_log.size() > 20:

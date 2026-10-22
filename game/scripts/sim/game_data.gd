@@ -80,6 +80,13 @@ const RULE_OPTIONAL_INTS := {
 	"war_max_rounds": [0, 100000],
 	"war_conquest_unrest": [0, 1000000],
 	"war_admin_cost": [0, 100000000],
+	"war_ai_interval": [0, 1000000],
+	"war_ai_start_steps": [0, 100000000],
+	"war_ai_levy_per_day": [0, 1000],
+	"war_ai_levy_target_percent": [0, 100],
+	"war_ai_min_soldiers": [0, 100000],
+	"war_ai_ratio_percent": [0, 100000],
+	"war_ai_keep_percent": [0, 99],
 }
 
 ## Mercancías por id: id -> {id, name, category, unit, physical}
@@ -256,6 +263,8 @@ func build_rules(raw: Dictionary) -> bool:
 	if errors.size() == before and int(result.get("war_march_steps_per_hop", 0)) > 0:
 		if result["war_attack_percent"] < 1 or result["war_defense_percent"] < 1 or result["war_round_loss_percent"] < 1 or result["war_max_rounds"] < 1:
 			errors.append("reglas de guerra: ataque, defensa, bajas por ronda y rondas máximas deben ser al menos 1")
+		elif int(result.get("war_ai_interval", 0)) > 0 and (result["war_ai_ratio_percent"] < 1 or result["war_ai_min_soldiers"] < 1 or result["war_ai_interval"] < 2):
+			errors.append("reglas de la IA rival: relación mínima y soldados mínimos al menos 1 e intervalo al menos 2")
 		elif result["war_conquest_unrest"] > int(result.get("unrest_max", 0)):
 			errors.append("regla \"war_conquest_unrest\": no puede pasar de unrest_max")
 	if errors.size() == before and int(result.get("trade_interval", 0)) > 0:

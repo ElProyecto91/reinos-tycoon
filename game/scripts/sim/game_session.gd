@@ -69,8 +69,8 @@ func start(now: int) -> bool:
 	return new_game(now)
 
 
-func new_game(now: int) -> bool:
-	var created: Dictionary = map.new_world(data)
+func new_game(now: int, realm: String = GameMapScript.DEFAULT_PLAYER_REALM) -> bool:
+	var created: Dictionary = map.new_world(data, realm)
 	if not created["ok"]:
 		errors.append(created["error"])
 		return false
