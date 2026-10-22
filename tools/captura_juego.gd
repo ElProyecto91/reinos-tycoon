@@ -51,6 +51,12 @@ func _init() -> void:
 		p.store.seed_initial("weapons", 3000)
 		if not p.recruit(soldados):
 			printerr("No se pudo reclutar: ", p.last_error)
+	if OS.get_environment("CAP_HAMBRE") != "":
+		# Escenario de hambre para la ficha de descontento: se vacían los alimentos y pasa un día
+		for i in range(10):
+			for good in ["bread", "wheat", "flour"]:
+				p.store.remove(good, p.store.stock(good), "consumed")
+			main.session.world.run_steps(1)
 	if pasos > 0:
 		main.session.world.run_steps(pasos)
 	main._refresh_all()
@@ -60,7 +66,8 @@ func _init() -> void:
 		main._panel.select_detail(detalle)
 	for i in range(8):
 		await process_frame
-	main._scroll.scroll_vertical = desplazar
+	if desplazar > 0:
+		main._scroll.scroll_vertical = desplazar
 	for i in range(4):
 		await process_frame
 	var img := root.get_texture().get_image()

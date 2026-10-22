@@ -136,6 +136,22 @@ func productivity_percent() -> int:
 	return clampi(100 - lost, min_percent, 100)
 
 
+## Causas que están subiendo el descontento AHORA, con los mismos umbrales que usa `_update_population`
+## (así lo que se enseña al jugador no puede contradecir a la simulación): "hunger", "cold", "unpaid".
+func unrest_causes() -> Array:
+	var causes: Array = []
+	if food_shortage_percent > 0 and hunger_steps > _rules["hunger_warning_steps"]:
+		causes.append("hunger")
+	if soldiers_unpaid:
+		causes.append("unpaid")
+	var limit: int = int(_rules.get("cold_unrest_limit", 0))
+	if limit <= 0 or limit > _rules["unrest_max"]:
+		limit = _rules["unrest_max"]
+	if food_shortage_percent == 0 and cold_shortage_percent > 0 and cold_steps > int(_rules.get("cold_warning_steps", 0)) and unrest < limit:
+		causes.append("cold")
+	return causes
+
+
 ## Mes del año (0 a 11) de este paso.
 func current_month() -> int:
 	_update_calendar()

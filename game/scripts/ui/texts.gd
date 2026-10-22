@@ -95,6 +95,29 @@ static func status_text(status: String) -> String:
 	return STATUS_TEXT.get(status, status)
 
 
+## Explicación del descontento para la ficha: qué lo causa ahora mismo y cómo arreglarlo.
+## `causes` viene de Province.unrest_causes(). Los remedios nombran edificios y botones que existen en el juego.
+static func unrest_explanation(causes: Array, unrest: int, rules: Dictionary) -> String:
+	var max_value: int = rules["unrest_max"]
+	var tenths: int = int(rules["unrest_fall"]) * 1000 / maxi(1, max_value)
+	var lines: Array[String] = ["Descontento %d %%." % (unrest * 100 / maxi(1, max_value))]
+	if causes.has("hunger"):
+		lines.append("Sube por HAMBRE: no hay comida para todos. Arréglalo con más Granjas (y Molino y Panadería para convertir el trigo en pan), o con comida en el almacén.")
+	if causes.has("unpaid"):
+		lines.append("Sube porque los SOLDADOS NO COBRAN: falta moneda. Licencia soldados con el botón del ejército o consigue moneda (cada habitante paga impuestos).")
+	if causes.has("cold"):
+		lines.append("Sube por FRÍO: falta leña en invierno. Construye un Leñador (da madera y leña). Con leña suficiente, el frío deja de subirlo.")
+	if causes.is_empty():
+		if unrest > 0:
+			lines.append("Ahora nada lo sube: baja solo, un %d,%d %% por hora. Una provincia recién conquistada empieza con %d %%." % [tenths / 10, tenths % 10, int(rules.get("war_conquest_unrest", 0)) * 100 / maxi(1, max_value)])
+		else:
+			lines.append("Sin problemas. Lo suben: hambre, frío en invierno sin leña, soldados sin paga y conquistar una provincia.")
+	var slow: int = int(rules["unrest_slow_threshold"]) * 100 / maxi(1, max_value)
+	var grow: int = int(rules["growth_unrest_limit"]) * 100 / maxi(1, max_value)
+	lines.append("Por encima del %d %% se trabaja más despacio; por debajo del %d %% la población puede crecer." % [slow, grow])
+	return "\n".join(lines)
+
+
 static func alert_text(code: String) -> String:
 	return ALERT_TEXT.get(code, code)
 

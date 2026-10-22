@@ -22,6 +22,8 @@ const SAVE_PATH := "user://partida.json"
 const SETTINGS_PATH := "user://ajustes.json"
 const AUTOSAVE_SECONDS := 15.0
 ## Multiplicador de tiempo real (0 = pausa). Con 60 s por paso, ×60 es un paso por segundo.
+## Letras máximas del título sobre la vista 3D (a 34 px caben unas 30 en una pantalla de 1080).
+const TITLE_MAX_CHARS := 30
 const SPEEDS: Array[int] = [0, 1, 60, 600]
 const SPEED_LABELS: Array[String] = ["Pausa", "×1", "×60", "×600"]
 const MAX_STEPS_PER_FRAME := 30
@@ -582,9 +584,11 @@ func _refresh_view() -> void:
 		return
 	if enable_3d:
 		_province_view.mostrar(province)
-	_view_title.text = "%s · %d habitantes" % [province.display_name, province.population]
+	var title := "%s · %d hab." % [province.display_name, province.population]
 	if not WarScript.is_player(session.world, _selected_id):
-		_view_title.text += " · de %s" % session.map.realms.get(session.world.owners.get(_selected_id, ""), {}).get("name", "otro reino")
+		title += " · %s" % session.map.realms.get(session.world.owners.get(_selected_id, ""), {}).get("name", "otro reino")
+	# El título es una etiqueta que no se recorta sola: uno largo ensancharía toda la pantalla; se corta a mano.
+	_view_title.text = title if title.length() <= TITLE_MAX_CHARS else title.substr(0, TITLE_MAX_CHARS - 1) + "…"
 	var hidden: Dictionary = _province_view.ocultos() if enable_3d else {}
 	var total := 0
 	for n in hidden.values():

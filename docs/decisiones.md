@@ -378,6 +378,14 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Las formas son aproximación de juego. Los guardados del mapa de 52 provincias se apartan al abrir esta versión.
 - Estado: **provisional**.
 
+## D-044. Panel de construcción sin saltos y explicación del descontento (versión 0.6.1)
+
+- **Motivo:** el usuario jugó en el móvil y dijo que al construir «se mueve todo lo demás» y que no quiere hacer scroll para llegar a los botones. Causa medida en el código: el mensaje de resultado y la lista de obras estaban POR ENCIMA de los botones y cambiaban de tamaño al pulsar.
+- **Cambio:** los botones de construcción van justo tras las cifras y los avisos; mensaje, obras, ejército, existencias y detalle van debajo. La fila de avisos reserva siempre su altura. Fichas de construcción de tamaño mitad (diseño `mini`: icono a la izquierda, nombre y costes a la derecha), 4 por fila, 88 de alto (mínimo para el dedo que ya exigía una prueba). Se quitó el encabezado «N/30» de la sección (la cifra «edificios» de arriba ya lo da y se pone roja al llegar al máximo). Con 17 edificios caben 5 filas sin desplazar la pantalla (comprobado en captura de 1080×2400; **sin comprobar en el móvil**).
+- El título de la provincia se recorta a 30 caracteres: el de una provincia ajena («Córdoba · 140 hab. · Califato de Córdoba») ensanchaba toda la interfaz.
+- **Descontento:** la ficha de la cifra explica ahora las causas que lo suben en ese momento (`Province.unrest_causes()`, con los mismos umbrales que la simulación: hambre pasado el aviso, soldados sin paga, falta de leña en invierno por debajo de su tope) y cómo arreglarlas, más los umbrales de efecto (más del 30 %: trabajo más lento; menos del 20 %: la población puede crecer). Conquistar una provincia la deja en 60 %. **No existe «felicidad» positiva en el juego**: solo se evita el descontento; nada la sube por encima de 0. Al abrir un detalle que queda fuera de pantalla, el panel se desplaza lo justo para mostrarlo.
+- Estado: **provisional**; no cambia ninguna regla de la simulación.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

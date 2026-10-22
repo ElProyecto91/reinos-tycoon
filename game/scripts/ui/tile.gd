@@ -26,7 +26,7 @@ var ratio: float = -1.0
 var bar_color: Color = COLOR_OK
 ## Fila de costes o datos bajo el nombre: [{"icon": "coin", "text": "4,5", "bad": false}].
 var footer: Array = []
-## "chip" o "card".
+## "chip", "card" o "mini" (carta pequeña: icono a la izquierda; nombre y costes a la derecha).
 var layout: String = "card"
 ## Color del texto principal (se pone rojo cuando algo va mal).
 var text_color: Color = COLOR_TEXT
@@ -57,6 +57,8 @@ func _draw() -> void:
 	var h := size.y
 	if layout == "chip":
 		_draw_chip(font, w, h)
+	elif layout == "mini":
+		_draw_mini(font, w, h)
 	else:
 		_draw_card(font, w, h)
 	if dot.a > 0.0:
@@ -85,6 +87,19 @@ func _draw_chip(font: Font, w: float, h: float) -> void:
 	draw_string(font, Vector2(text_x, ty), caption, HORIZONTAL_ALIGNMENT_LEFT, room, fs, text_color)
 
 
+func _draw_mini(font: Font, w: float, h: float) -> void:
+	var icon_size := h - 16.0
+	if kind != "":
+		Icons.draw(self, kind, Rect2(8.0, 8.0, icon_size, icon_size))
+	var x := 8.0 + icon_size + 6.0
+	var room := w - x - 6.0
+	if caption != "":
+		var fs := _fit_size(font, caption, 20, room)
+		draw_string(font, Vector2(x, 10.0 + fs * 0.85), caption, HORIZONTAL_ALIGNMENT_LEFT, room, fs, text_color)
+	if not footer.is_empty():
+		_draw_footer(font, room, h - 36.0, x)
+
+
 func _draw_card(font: Font, w: float, h: float) -> void:
 	var has_footer := not footer.is_empty()
 	var has_caption := caption != ""
@@ -108,7 +123,8 @@ func _draw_card(font: Font, w: float, h: float) -> void:
 		_draw_footer(font, w, y)
 
 
-func _draw_footer(font: Font, w: float, y: float) -> void:
+## `x0`: desplazamiento a la izquierda de la zona donde se centra la fila de costes.
+func _draw_footer(font: Font, w: float, y: float, x0: float = 0.0) -> void:
 	var fs := 20
 	var icon := 22.0
 	var gap := 8.0
@@ -124,7 +140,7 @@ func _draw_footer(font: Font, w: float, y: float) -> void:
 	var scale := 1.0
 	if total > w - 10.0:
 		scale = (w - 10.0) / total
-	var x := (w - total * scale) * 0.5
+	var x := x0 + (w - total * scale) * 0.5
 	for i in footer.size():
 		var entry: Dictionary = footer[i]
 		var name: String = entry.get("icon", "")

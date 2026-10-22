@@ -252,6 +252,73 @@ func test_building_buttons_build_and_report() -> void:
 	done()
 
 
+func test_build_buttons_sit_right_after_the_stats_and_nothing_above_them_can_change_size() -> void:
+	## Queja real al jugar: «al intentar construir se mueve todo lo demás». Causa: el mensaje y las obras estaban encima
+	## de los botones y crecían al pulsar. Sin ventana no hay posiciones, así que se comprueba el ORDEN en la columna
+	## y que la fila de avisos reserve su altura aunque no haya avisos.
+	_clean()
+	var main = _main()
+	main.session.world.player_realm = ""
+	main._on_province_selected("cordoba")
+	var panel = main._panel
+	var body: Control = panel._body
+	var build_grid: Node = panel.build_button("house").get_parent()
+	var order := func(node: Node) -> int: return body.get_children().find(node)
+	assert_true(order.call(build_grid) >= 0, "la rejilla de construcción cuelga de la columna")
+	assert_true(order.call(panel._feedback) > order.call(build_grid), "el mensaje va DEBAJO de los botones, no encima")
+	assert_true(order.call(panel._projects_header) > order.call(build_grid), "las obras van debajo de los botones")
+	assert_true(order.call(panel._army_header) > order.call(build_grid), "el ejército va debajo de los botones")
+	var alert_grid: Node = panel._alert_tiles.values()[0].get_parent()
+	assert_true(order.call(alert_grid) < order.call(build_grid), "los avisos están encima, en una fila reservada")
+	assert_true(alert_grid.custom_minimum_size.y >= 40.0 and alert_grid.custom_minimum_size.y >= panel._alert_tiles.values()[0].custom_minimum_size.y, "la fila de avisos reserva al menos lo que mide un aviso (%s)" % alert_grid.custom_minimum_size.y)
+	var above := 0
+	for child in body.get_children():
+		if order.call(child) < order.call(build_grid) and child is Control and child.visible and child != alert_grid:
+			above += 1
+	assert_eq(above, 1, "solo las cifras (una rejilla) quedan entre los avisos y los botones")
+	main.free()
+	done()
+
+
+func test_build_tiles_are_small_four_per_row_and_still_a_finger_wide() -> void:
+	_clean()
+	var main = _main()
+	main.session.world.player_realm = ""
+	main._on_province_selected("cordoba")
+	var panel = main._panel
+	var grid: GridContainer = panel.build_button("house").get_parent()
+	assert_eq(grid.columns, panel.BUILD_COLUMNS, "columnas de la rejilla")
+	assert_eq(panel.BUILD_COLUMNS, 4, "cuatro por fila")
+	var count := 0
+	for tile in grid.get_children():
+		count += 1
+		assert_eq(tile.layout, "mini", "ficha pequeña: " + tile.kind)
+		assert_true(tile.custom_minimum_size.y >= 80.0 and tile.custom_minimum_size.y <= 88.0, "alto entre 80 y 88: %s" % tile.custom_minimum_size.y)
+	assert_eq(count, main.session.data.buildings.size(), "hay una ficha por tipo de edificio")
+	# 17 fichas en 4 columnas = 5 filas; que no crezcan sin querer
+	assert_true(ceili(float(count) / panel.BUILD_COLUMNS) <= 5, "como mucho cinco filas")
+	main.free()
+	done()
+
+
+func test_the_province_title_never_exceeds_the_limit() -> void:
+	_clean()
+	var main = _main()
+	for id in ["cordoba", "leon", "toledo"]:
+		if main.session.world.find_province(id) == null:
+			continue
+		main._on_province_selected(id)
+		assert_true(main._view_title.text.length() <= main.TITLE_MAX_CHARS, "título corto (%s): «%s»" % [id, main._view_title.text])
+	main.session.world.player_realm = "leon"
+	main._on_province_selected("cordoba")
+	var title: String = main._view_title.text
+	assert_true(title.length() <= main.TITLE_MAX_CHARS, "provincia ajena: «%s» (%d)" % [title, title.length()])
+	assert_true(title.ends_with("…"), "se nota que se recortó: «%s»" % title)
+	assert_true(title.begins_with("Córdoba"), "empieza por el nombre")
+	main.free()
+	done()
+
+
 func test_projects_limit_disables_the_buttons() -> void:
 	_clean()
 	var main = _main()

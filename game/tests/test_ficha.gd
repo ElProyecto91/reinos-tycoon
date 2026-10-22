@@ -317,3 +317,19 @@ func test_cold_alert_tile_appears_in_winter_without_firewood_only() -> void:
 	assert_true(not panel.alert_tile("cold").visible, "con leña desaparece")
 	panel.free()
 	done()
+
+
+func test_tapping_the_unrest_tile_explains_the_cause_and_the_remedy() -> void:
+	var data = new_data()
+	var p = new_province(data, 100)          # sin comida: hambre
+	run_steps(p, 6)
+	var panel = _panel(data, p)
+	panel.select_detail("stat:unrest")
+	var text: String = panel.detail_text()
+	assert_true("HAMBRE" in text and "Granjas" in text, "dice la causa y el remedio: " + text)
+	p.store.seed_initial("bread", 100000)
+	run_steps(p, 2)
+	panel.refresh()
+	assert_true(not ("HAMBRE" in panel.detail_text()), "con comida deja de acusar al hambre: " + panel.detail_text())
+	panel.free()
+	done()

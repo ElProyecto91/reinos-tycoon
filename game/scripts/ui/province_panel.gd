@@ -53,7 +53,6 @@ var _army_costs: HBoxContainer
 var _feedback: Label
 var _recruit_button: Button
 var _release_button: Button
-var _build_header: Button
 var _build_buttons := {}
 var _army_info := {}
 var _upgrade_button: Button = null
@@ -65,6 +64,10 @@ var _caravan_tiles := {}
 var _caravans := {"in": {}, "out": {}}
 ## Provincia de otro reino: se puede mirar pero no mandar en ella (lo pone main según el propietario).
 var _read_only := false
+const BUILD_COLUMNS := 4
+const BUILD_TILE_HEIGHT := 88.0
+const ALERT_HEIGHT := 48.0
+const STAT_HEIGHT := 60.0
 const READ_ONLY_TEXT := "Provincia de otro reino: solo se puede mirar. Para tomarla hay que conquistarla."
 
 
@@ -85,13 +88,44 @@ func setup(game_data) -> void:
 		stats.add_child(_make_stat(entry[0], entry[1]))
 	# Avisos: solo aparecen los activos.
 	var alerts := _grid(4)
+	alerts.custom_minimum_size = Vector2(0, ALERT_HEIGHT)     # la fila de avisos siempre ocupa su sitio: que aparezca un aviso no mueve lo de abajo
 	for code in Texts.ALERT_TEXT.keys():
-		var tile := _make_tile("chip", 64)
+		var tile := _make_tile("chip", ALERT_HEIGHT)
 		tile.kind = ALERT_ICON.get(code, "warning")
 		tile.pressed.connect(_select_detail.bind("alert:" + code))
 		tile.visible = false
 		alerts.add_child(tile)
 		_alert_tiles[code] = tile
+
+	# Construcción justo tras las cifras: nada que cambie de tamaño queda por encima de estos botones (el aviso va debajo),
+	# así que al pulsar no se mueven. Fichas pequeñas en 4 columnas para que quepan sin desplazarse.
+	var build := _grid(BUILD_COLUMNS)
+	build.add_theme_constant_override("v_separation", 6)
+	for type_id in _data.buildings.keys():
+		var tile := _make_tile("mini", BUILD_TILE_HEIGHT)
+		tile.kind = type_id
+		tile.pressed.connect(_on_build_pressed.bind(type_id))
+		build.add_child(tile)
+		_build_buttons[type_id] = tile
+	_feedback = Label.new()
+	_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_body.add_child(_feedback)
+
+	_army_header = _header("helmet")
+	_army_costs = HBoxContainer.new()
+	_army_costs.add_theme_constant_override("separation", 8)
+	_body.add_child(_army_costs)
+	var army_row := HBoxContainer.new()
+	army_row.add_theme_constant_override("separation", 10)
+	_body.add_child(army_row)
+	_recruit_button = _make_tile("chip", 88)
+	_recruit_button.kind = "helmet"
+	_recruit_button.pressed.connect(_on_recruit_pressed)
+	army_row.add_child(_recruit_button)
+	_release_button = _make_tile("chip", 88)
+	_release_button.kind = "helmet"
+	_release_button.pressed.connect(_on_release_pressed)
+	army_row.add_child(_release_button)
 
 	_stock_header = _header("storage")
 	var stock := _grid(4)
@@ -128,33 +162,6 @@ func setup(game_data) -> void:
 	_projects_header = _header("hammer")
 	_projects_grid = _grid(5)
 
-	_army_header = _header("helmet")
-	_army_costs = HBoxContainer.new()
-	_army_costs.add_theme_constant_override("separation", 8)
-	_body.add_child(_army_costs)
-	var army_row := HBoxContainer.new()
-	army_row.add_theme_constant_override("separation", 10)
-	_body.add_child(army_row)
-	_recruit_button = _make_tile("chip", 88)
-	_recruit_button.kind = "helmet"
-	_recruit_button.pressed.connect(_on_recruit_pressed)
-	army_row.add_child(_recruit_button)
-	_release_button = _make_tile("chip", 88)
-	_release_button.kind = "helmet"
-	_release_button.pressed.connect(_on_release_pressed)
-	army_row.add_child(_release_button)
-
-	_build_header = _header("hammer")
-	_feedback = Label.new()
-	_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_body.add_child(_feedback)
-	var build := _grid(3)
-	for type_id in _data.buildings.keys():
-		var tile := _make_tile("card", 176)
-		tile.kind = type_id
-		tile.pressed.connect(_on_build_pressed.bind(type_id))
-		build.add_child(tile)
-		_build_buttons[type_id] = tile
 	_body.visible = false
 
 
@@ -220,7 +227,7 @@ func header_color(which: String) -> Color:
 		"projects":
 			return _projects_header.text_color
 		"build":
-			return _build_header.text_color
+			return _stat_tiles["town"].text_color
 		"army":
 			return _army_header.text_color
 	return Color(0, 0, 0, 0)
@@ -298,7 +305,7 @@ func refresh() -> void:
 # --- Cifras clave -----------------------------------------------------------------------------------------
 
 func _make_stat(id: String, icon: String) -> Button:
-	var tile := _make_tile("chip", 68)
+	var tile := _make_tile("chip", STAT_HEIGHT)
 	tile.kind = icon
 	tile.pressed.connect(_select_detail.bind("stat:" + id))
 	_stat_tiles[id] = tile
@@ -314,7 +321,7 @@ func _update_stats(p) -> void:
 	work.caption = "%d/%d" % [p.assigned_labor(), p.labor_force()]
 	var town: Tile = _stat_tiles["town"]
 	town.caption = "%d/%d" % [p.buildings.size() + p.projects.size(), rules["max_buildings"]]
-	town.text_color = Tile.COLOR_WARN if p.buildings.size() + p.projects.size() >= rules["max_buildings"] else Tile.COLOR_TEXT
+	town.text_color = COLOR_DANGER if p.buildings.size() + p.projects.size() >= rules["max_buildings"] else Tile.COLOR_TEXT
 	var unrest: Tile = _stat_tiles["unrest"]
 	var unrest_max: int = rules["unrest_max"]
 	unrest.caption = "%d%%" % (p.unrest * 100 / maxi(1, unrest_max))
@@ -523,9 +530,6 @@ func _update_army(p) -> void:
 
 
 func _update_build_buttons(p) -> void:
-	_build_header.caption = "%d/%d" % [p.buildings.size() + p.projects.size(), _data.rules["max_buildings"]]
-	_build_header.text_color = COLOR_DANGER if p.buildings.size() + p.projects.size() >= _data.rules["max_buildings"] else Tile.COLOR_TEXT
-	_build_header.refresh()
 	var full: bool = p.projects.size() >= _data.rules["max_projects"]
 	var no_room: bool = p.buildings.size() + p.projects.size() >= _data.rules["max_buildings"]
 	for type_id in _build_buttons.keys():
@@ -559,6 +563,20 @@ func _select_detail(key: String) -> void:
 	_detail_signature = ""
 	if _province != null:
 		_update_detail(_province)
+	if _detail_key != "":
+		_reveal_detail.call_deferred()
+
+
+## Si la ficha de detalle queda fuera de la pantalla (las cifras están arriba y el detalle debajo de los botones de
+## construcción), desplaza lo mínimo para verla. Solo al abrirla: así los botones no se mueven mientras se construye.
+func _reveal_detail() -> void:
+	if _detail_box == null or not _detail_box.visible or not is_inside_tree():
+		return
+	var node: Node = get_parent()
+	while node != null and not (node is ScrollContainer):
+		node = node.get_parent()
+	if node != null:
+		(node as ScrollContainer).ensure_control_visible(_detail_box)
 
 
 ## Contenido de la zona de detalle: [título, [filas de datos]], donde cada fila es una lista de fichas
@@ -603,7 +621,7 @@ func _stat_detail(p, id: String) -> Dictionary:
 		"town":
 			return {"icon": "town", "title": "Edificios y obras: %d de %d posibles" % [p.buildings.size() + p.projects.size(), rules["max_buildings"]], "rows": []}
 		"unrest":
-			return {"icon": "face", "title": "Descontento %d de %d" % [p.unrest, rules["unrest_max"]], "rows": []}
+			return {"icon": "face", "title": Texts.unrest_explanation(p.unrest_causes(), p.unrest, rules), "rows": []}
 		"speed":
 			return {"icon": "bolt", "title": "Velocidad de trabajo %d %%" % p.productivity_percent(), "rows": []}
 		"food":
@@ -680,6 +698,8 @@ func _update_detail(p) -> void:
 	big.custom_minimum_size = Vector2(64, 64)
 	big.flat = true
 	big.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	big.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	big.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	head.add_child(big)
 	var label := Label.new()
 	label.text = d["title"]
