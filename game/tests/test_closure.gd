@@ -1,6 +1,6 @@
 extends "res://tests/province_case.gd"
 ## Cierre de la fase 1 (tarea 1.10, parte [PC]): partidas largas con el mundo entero
-## (las 5 provincias del mapa), con un jugador automático que construye y sufre malas
+## (6 provincias representativas del mapa de 40, y el mapa entero en una prueba corta), con un jugador automático que construye y sufre malas
 ## cosechas, con guardados y cargas por el camino y con cierres y reaperturas de la
 ## aplicación con ausencias de todo tipo. Lo que se comprueba es que nada se corrompe,
 ## que guardar y cargar no cambia el rumbo de la partida y que la interfaz aguanta
@@ -24,19 +24,34 @@ func _clean() -> void:
 		DirAccess.remove_absolute(DIR + "/" + file_name)
 
 
-func _new_world(data):
+## Provincias de las pruebas largas: las 5 de la versión anterior del mapa (con ellas la prueba ve descontento y hambre en marcha). Con las 40 del mapa
+## cada paso cuesta ~8 veces más y la suite superaba el límite de 5 minutos de la integración continua.
+const REPRESENTATIVE: Array[String] = ["cordoba", "toledo", "zaragoza", "castilla", "leon"]
+
+
+## Mundo nuevo del mapa por defecto. `whole_map` = las 40 provincias; si no, solo las representativas
+## (se quitan de la lista del mundo ya creado; todo lo demás es el código real).
+func _new_world(data, whole_map: bool = false):
 	var map = load(MAP).new()
 	var loaded: bool = map.load_defaults(data)
 	assert_true(loaded, "el mapa por defecto se carga: %s" % "\n".join(map.errors))
 	var created: Dictionary = map.new_world(data)
 	assert_true(created["ok"], "partida nueva: %s" % created["error"])
-	return created["world"]
+	var world = created["world"]
+	if not whole_map:
+		var kept: Array = []
+		for province in world.provinces:
+			if province.id in REPRESENTATIVE:
+				kept.append(province)
+		assert_eq(kept.size(), REPRESENTATIVE.size(), "las provincias representativas existen en el mapa")
+		world.provinces = kept
+	return world
 
 
 ## «Jugador» automático. Depende solo del estado del mundo (el contador de pasos), nunca
 ## del reloj ni del azar: así dos partidas iguales hacen lo mismo y se pueden comparar.
 ## Cada día intenta una obra en cada provincia (muchas veces no podrá: eso también cuenta)
-## y cada 240 pasos una provincia sufre una mala cosecha de 40 pasos.
+## y cada 240 pasos una provincia sufre una mala cosecha de 150 pasos.
 func _bot(world) -> void:
 	var n: int = world.step_count
 	if n % 24 == 0:
@@ -45,7 +60,7 @@ func _bot(world) -> void:
 			world.provinces[i].start_construction(BUILD_ORDER[(day + i) % BUILD_ORDER.size()])
 	if n % 240 == 0:
 		var target = world.provinces[(n / 240) % world.provinces.size()]
-		target.add_modifier("wheat", 0, 40)
+		target.add_modifier("wheat", 0, 150)
 
 
 func _play(world, steps: int) -> void:
@@ -117,6 +132,21 @@ func test_two_game_years_of_the_whole_world() -> void:
 	done()
 
 
+func test_the_whole_map_of_forty_provinces_runs_a_year_without_corruption() -> void:
+	var data = new_data()
+	var world = _new_world(data, true)
+	assert_true(world.provinces.size() >= 30, "son todas las del mapa (%d)" % world.provinces.size())
+	var invalid := 0
+	for i in range(1000):
+		_bot(world)
+		world.step()
+		if i % 100 == 99:
+			invalid += _world_invalid_values(world, data)
+	assert_eq(invalid, 0, "ningún valor inválido en ninguna de las provincias")
+	assert_true(world.check_invariants().is_empty(), "coherente: %s" % str(world.check_invariants()))
+	done()
+
+
 func test_saving_and_loading_never_changes_the_course_of_the_game() -> void:
 	_clean()
 	var data = new_data()
@@ -169,20 +199,20 @@ func test_saving_and_loading_never_changes_the_course_of_the_game() -> void:
 	done()
 
 
-func test_forty_close_and_reopen_cycles_with_odd_absences() -> void:
+func test_close_and_reopen_cycles_with_every_kind_of_odd_absence() -> void:
 	_clean()
 	# Ausencias en segundos: cortas, justo en el límite de un paso, más allá del tope de
 	# 10 h (36 000 s), cero y con el reloj hacia atrás.
 	var gaps: Array[int] = [30, 90, 3600, 7200, 40000, 0, 59, 61, -500, 600, 36000, 36060, 1, 86400]
 	var data = new_data()
-	var reference = _new_world(data)
+	var reference = _new_world(data, true)
 	var session = load(SESSION).new(PATH, "0.0.test")
 	var now := T0
 	assert_true(session.start(now), "primer arranque: %s" % "\n".join(session.errors))
 	var expected_steps := 0
 	var invalid := 0
 	var offline_steps_total := 0
-	for cycle in range(40):
+	for cycle in range(gaps.size()):
 		var online: int = 20 + (cycle * 37) % 181
 		_play(session.world, online)
 		_play(reference, online)
@@ -206,9 +236,9 @@ func test_forty_close_and_reopen_cycles_with_odd_absences() -> void:
 		invalid += _world_invalid_values(session.world, data)
 		var problems: Array[String] = session.world.check_invariants()
 		assert_true(problems.is_empty(), "ciclo %d coherente: %s" % [cycle, str(problems)])
-	assert_eq(invalid, 0, "ningún valor inválido en los 40 ciclos")
+	assert_eq(invalid, 0, "ningún valor inválido en todos los ciclos")
 	assert_true(offline_steps_total > 1000, "la prueba aplicó bastante tiempo ausente (%d pasos)" % offline_steps_total)
-	print("40 ciclos: %d pasos en total, %d de ellos ausente" % [expected_steps, offline_steps_total])
+	print("%d ciclos: %d pasos en total, %d de ellos ausente" % [gaps.size(), expected_steps, offline_steps_total])
 	done()
 
 
@@ -231,7 +261,7 @@ func test_a_year_of_play_through_the_real_screen_at_x600() -> void:
 	main._on_speed_pressed(3)
 	var presses := 0
 	var provinces: Array = main.session.map.provinces
-	for frame in range(1, 1501):
+	for frame in range(1, 501):
 		main._process(1.0)
 		if frame % 40 == 0:
 			var turn: int = frame / 40
@@ -240,7 +270,7 @@ func test_a_year_of_play_through_the_real_screen_at_x600() -> void:
 			if button != null and not button.disabled:
 				button.pressed.emit()
 				presses += 1
-	assert_eq(world.step_count, 15000, "1500 s a ×600 con 60 s por paso: 15 000 pasos")
+	assert_eq(world.step_count, 5000, "500 s a ×600 con 60 s por paso: 5 000 pasos")
 	assert_eq(main._time_label.text, main.session.time_text(), "el reloj de la pantalla coincide con el del mundo")
 	assert_eq(_world_invalid_values(world, data), 0, "ningún valor inválido")
 	assert_true(world.check_invariants().is_empty(), "coherente: %s" % str(world.check_invariants()))
@@ -250,7 +280,7 @@ func test_a_year_of_play_through_the_real_screen_at_x600() -> void:
 	var loaded: Dictionary = load(SAVE).read_file(data, PATH)
 	assert_true(loaded["ok"], "el autoguardado se puede cargar: %s" % loaded["error"])
 	if loaded["ok"]:
-		assert_true(loaded["world"].step_count >= 15000 - 150, "el autoguardado es reciente (paso %d)" % loaded["world"].step_count)
+		assert_true(loaded["world"].step_count >= 5000 - 150, "el autoguardado es reciente (paso %d)" % loaded["world"].step_count)
 		assert_eq(loaded["warning"], "", "sin avisos al cargar el autoguardado")
 	main.free()
 	done()

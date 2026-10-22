@@ -83,7 +83,11 @@ func _run_all() -> Variant:
 			total += 1
 			test_case.failures.clear()
 			test_case.finished = false
+			var started := Time.get_ticks_msec()
 			test_case.call(method_name)
+			var elapsed := Time.get_ticks_msec() - started
+			if elapsed >= 2000:
+				print("LENTA %s::%s: %.1f s" % [path.get_file(), method_name, elapsed / 1000.0])
 			if test_case.failures.is_empty() and test_case.finished:
 				print("OK    %s::%s" % [path.get_file(), method_name])
 			elif test_case.failures.is_empty():
