@@ -103,6 +103,7 @@ func test_tapping_a_stock_tile_shows_the_exact_amount_and_taps_again_hide_it() -
 	p.store.seed_initial("wheat", 1000)
 	panel.refresh()
 	assert_true("Trigo 3,75" in panel.detail_text(), "el detalle sigue a la provincia: %s" % panel.detail_text())
+	assert_true("Trigo 3,75" in panel.detail_label_text(), "y la etiqueta que se ve también: %s" % panel.detail_label_text())
 	panel.stock_tile("wheat").pressed.emit()
 	assert_eq(panel.detail_text(), "", "pulsar otra vez lo oculta")
 	panel.free()

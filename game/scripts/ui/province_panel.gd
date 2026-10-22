@@ -41,6 +41,7 @@ var _detail_content: VBoxContainer
 var _detail_key: String = ""
 var _detail_signature: String = ""
 var _detail_text: String = ""
+var _detail_label: Label = null
 var _buildings_grid: GridContainer
 var _building_tiles := {}
 var _projects_header: Button
@@ -183,6 +184,11 @@ func header_color(which: String) -> Color:
 		"army":
 			return _army_header.text_color
 	return Color(0, 0, 0, 0)
+
+
+## Texto de la etiqueta que de verdad se ve en el detalle (no el interno), para las pruebas.
+func detail_label_text() -> String:
+	return "" if _detail_label == null or not _detail_box.visible else _detail_label.text
 
 
 func stat_tile(id: String) -> Button:
@@ -576,6 +582,7 @@ func _update_detail(p) -> void:
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	head.add_child(label)
+	_detail_label = label
 	for row in d["rows"]:
 		var line := HFlowContainer.new()
 		line.add_theme_constant_override("h_separation", 8)
