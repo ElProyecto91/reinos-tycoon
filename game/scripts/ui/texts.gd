@@ -46,9 +46,48 @@ static func amount(milli: int) -> String:
 	return "%s%d,%s" % [sign_text, whole, digits]
 
 
+## Cantidad corta para fichas pequeñas, siempre **truncada hacia abajo** (nunca redondeada hacia arriba,
+## para no enseñar más de lo que hay): 123456 -> "123"; 33786 -> "33"; 2750 -> "2,7"; 20 -> "0,02"; 0 -> "0".
+## El valor exacto sale al pulsar la ficha (Texts.amount).
+static func compact(milli: int) -> String:
+	if milli < 0:
+		return "-" + compact(-milli)
+	if milli >= 10000:
+		return str(Fixed.div_floor(milli, 1000))
+	if milli >= 1000:
+		var tenths := Fixed.div_floor(milli, 100)
+		return _decimal(tenths, 10)
+	if milli >= 10:
+		return _decimal(Fixed.div_floor(milli, 10), 100)
+	if milli > 0:
+		return "<0,01"
+	return "0"
+
+
+static func _decimal(scaled: int, scale: int) -> String:
+	var whole := Fixed.div_floor(scaled, scale)
+	var rest := scaled % scale
+	if rest == 0:
+		return str(whole)
+	var digits := ("%d" % rest) if scale == 10 else ("%02d" % rest)
+	if digits.ends_with("0") and scale == 100:
+		digits = digits.substr(0, digits.length() - 1)
+	return "%d,%s" % [whole, digits]
+
+
 ## Con signo explícito para variaciones: "+3", "-1,5".
 static func signed_amount(milli: int) -> String:
 	return ("+" if milli > 0 else "") + amount(milli)
+
+
+## Clase de un estado de edificio para elegir color: "ok" (produce), "idle" (parado a propósito o sin
+## actividad) o "warn" (algo le impide trabajar).
+static func status_class(status: String) -> String:
+	if status == "running":
+		return "ok"
+	if status == "idle" or status == "disabled":
+		return "idle"
+	return "warn"
 
 
 static func status_text(status: String) -> String:

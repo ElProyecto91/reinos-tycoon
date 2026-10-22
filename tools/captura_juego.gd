@@ -23,6 +23,8 @@ func _init() -> void:
 	var mapa: bool = (args[4] == "1") if args.size() > 4 else false
 	var pasos: int = int(args[5]) if args.size() > 5 else 0
 	var soldados: int = int(args[6]) if args.size() > 6 else 0
+	var desplazar: int = int(args[7]) if args.size() > 7 else 0
+	var detalle: String = args[8] if args.size() > 8 else ""
 
 	DirAccess.make_dir_recursive_absolute(DIR)
 	for f in DirAccess.open(DIR).get_files():
@@ -54,7 +56,12 @@ func _init() -> void:
 	main._refresh_all()
 	if mapa:
 		main._show_map(true)
+	if detalle != "":
+		main._panel.select_detail(detalle)
 	for i in range(8):
+		await process_frame
+	main._scroll.scroll_vertical = desplazar
+	for i in range(4):
 		await process_frame
 	var img := root.get_texture().get_image()
 	img.save_png(out)
