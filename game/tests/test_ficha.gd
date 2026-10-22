@@ -197,3 +197,123 @@ func test_alert_tiles_appear_only_while_the_alert_is_active_and_explain_on_tap()
 	assert_eq(panel.detail_text(), "", "y su detalle también")
 	panel.free()
 	done()
+
+
+# --- Fase 2: mejoras, estaciones y frío en la ficha ----------------------------------------------------
+
+func _rich_province(data, day: int = 181):
+	data.rules["calendar_start_day"] = day
+	data.rules["food_per_person"] = 0
+	var p = new_province(data, 100)
+	p.store.seed_initial("coin", 60000)
+	p.store.seed_initial("wood", 7800)
+	return p
+
+
+func test_upgrade_button_shows_costs_and_starts_the_upgrade() -> void:
+	var data = new_data()
+	var p = _rich_province(data)
+	var farm: int = p.add_building("farm")
+	var panel = _panel(data, p)
+	assert_true(panel.upgrade_button() == null, "sin detalle abierto no hay botón de mejora")
+	panel.select_detail("building:farm")
+	var button = panel.upgrade_button()
+	assert_true(button != null, "al abrir la granja aparece «Mejorar»")
+	assert_true(not button.disabled, "con recursos está activo")
+	assert_eq(button.caption, "+50 %", "dice cuánto mejora (la regla upgrade_output_percent)")
+	button.pressed.emit()
+	assert_true(p.is_upgrading(farm), "pulsar inicia la mejora de la granja")
+	assert_eq(p.projects.size(), 1, "hay una obra")
+	assert_eq(panel.project_tile_count(), 1, "y se ve en las obras")
+	var tile = panel.get("_project_tiles")[0]
+	assert_eq(tile.badge, "★", "la obra de mejora lleva una estrella")
+	assert_true(String(tile.tooltip_text).begins_with("Mejora de"), "y su nota dice que es una mejora")
+	assert_true(panel.upgrade_button() == null or panel.upgrade_button().disabled, "con la única granja en obras ya no se puede mejorar otra")
+	panel.free()
+	done()
+
+
+func test_upgrade_button_is_disabled_without_resources_and_says_so() -> void:
+	var data = new_data()
+	var p = new_province(data, 100)
+	p.add_building("farm")
+	var panel = _panel(data, p)
+	panel.select_detail("building:farm")
+	var button = panel.upgrade_button()
+	assert_true(button != null and button.disabled, "sin recursos el botón está desactivado")
+	assert_true("faltan recursos" in String(button.tooltip_text), "y lo dice: %s" % button.tooltip_text)
+	panel.free()
+	done()
+
+
+func test_house_detail_has_no_upgrade_button() -> void:
+	var data = new_data()
+	var p = _rich_province(data)
+	p.add_building("house")
+	var panel = _panel(data, p)
+	panel.select_detail("building:house")
+	assert_true(panel.upgrade_button() == null, "una vivienda no se mejora: sin botón")
+	panel.free()
+	done()
+
+
+func test_building_tile_counts_upgraded_buildings_with_a_star() -> void:
+	var data = new_data()
+	var p = _rich_province(data)
+	var farm: int = p.add_building("farm")
+	p.add_building("farm")
+	var panel = _panel(data, p)
+	var has_star := func(tile) -> bool:
+		for entry in tile.footer:
+			if entry.get("icon", "") == "star":
+				return true
+		return false
+	assert_true(not has_star.call(panel.building_tile("farm")), "sin mejoras no hay estrella")
+	p.start_upgrade(farm)
+	run_steps(p, 8)
+	panel.refresh()
+	assert_true(has_star.call(panel.building_tile("farm")), "con una granja mejorada aparece la estrella")
+	var star_entry: Dictionary = {}
+	for entry in panel.building_tile("farm").footer:
+		if entry.get("icon", "") == "star":
+			star_entry = entry
+	assert_eq(star_entry["text"], "1", "y cuenta 1 mejorada de 2")
+	panel.free()
+	done()
+
+
+func test_wheat_detail_shows_the_season_percentage_with_the_season_icon() -> void:
+	var data = new_data_with_seasons()
+	var p = _rich_province(data, 181)
+	var panel = _panel(data, p)
+	panel.select_detail("stock:wheat")
+	var detail: Dictionary = panel._detail_for(p)
+	var found := ""
+	for entry in detail["rows"][0]:
+		if typeof(entry) == TYPE_DICTIONARY and entry["icon"] == "sun":
+			found = entry["text"]
+	assert_eq(found, "145 %", "en julio el trigo rinde 145 % y se enseña con el sol")
+	panel.select_detail("stock:wheat")
+	panel.select_detail("stock:wood")
+	var wood: Dictionary = panel._detail_for(p)
+	for entry in wood["rows"][0]:
+		assert_true(typeof(entry) != TYPE_DICTIONARY or entry["icon"] != "sun", "la madera no tiene estaciones")
+	panel.free()
+	done()
+
+
+func test_cold_alert_tile_appears_in_winter_without_firewood_only() -> void:
+	var data = new_data()
+	var p = _rich_province(data, 0)
+	var panel = _panel(data, p)
+	assert_true(not panel.alert_tile("cold").visible, "al empezar no hay aviso de frío")
+	p.step()
+	panel.refresh()
+	assert_true(panel.alert_tile("cold").visible, "en invierno sin leña aparece el aviso")
+	assert_eq(panel.alert_tile("cold").kind, "snow", "con el copo de nieve")
+	p.store.seed_initial("firewood", 7800)
+	p.step()
+	panel.refresh()
+	assert_true(not panel.alert_tile("cold").visible, "con leña desaparece")
+	panel.free()
+	done()

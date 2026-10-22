@@ -100,7 +100,7 @@ func _differing_provinces(a, b) -> Array[String]:
 
 
 func test_two_game_years_of_the_whole_world() -> void:
-	var data = new_data()
+	var data = new_data_with_seasons()
 	var world = _new_world(data)
 	var start_buildings := _building_total(world)
 	var invalid := 0
@@ -133,7 +133,7 @@ func test_two_game_years_of_the_whole_world() -> void:
 
 
 func test_the_whole_map_of_forty_provinces_runs_a_year_without_corruption() -> void:
-	var data = new_data()
+	var data = new_data_with_seasons()
 	var world = _new_world(data, true)
 	assert_true(world.provinces.size() >= 30, "son todas las del mapa (%d)" % world.provinces.size())
 	var invalid := 0
@@ -149,7 +149,7 @@ func test_the_whole_map_of_forty_provinces_runs_a_year_without_corruption() -> v
 
 func test_saving_and_loading_never_changes_the_course_of_the_game() -> void:
 	_clean()
-	var data = new_data()
+	var data = new_data_with_seasons()
 	var continuous = _new_world(data)
 	var reloaded = _new_world(data)
 	var save_script = load(SAVE)
@@ -204,7 +204,7 @@ func test_close_and_reopen_cycles_with_every_kind_of_odd_absence() -> void:
 	# Ausencias en segundos: cortas, justo en el límite de un paso, más allá del tope de
 	# 10 h (36 000 s), cero y con el reloj hacia atrás.
 	var gaps: Array[int] = [30, 90, 3600, 7200, 40000, 0, 59, 61, -500, 600, 36000, 36060, 1, 86400]
-	var data = new_data()
+	var data = new_data_with_seasons()
 	var reference = _new_world(data, true)
 	var session = load(SESSION).new(PATH, "0.0.test")
 	var now := T0

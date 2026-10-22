@@ -108,6 +108,20 @@ func test_every_game_building_type_has_a_slot_kind() -> void:
 	done()
 
 
+func test_an_upgrade_project_draws_no_new_cell_and_the_new_buildings_get_a_cell() -> void:
+	for aspecto in AMBAS:
+		var hechos := _edificios(["house", "granary", "farm", "mill", "bakery", "woodcutter"])
+		var sin_mejora: Dictionary = Layout.plan(aspecto, hechos, [], 100)
+		var con_mejora: Dictionary = Layout.plan(aspecto, hechos, [{"type": "farm", "upgrade_uid": 1}], 100)
+		assert_eq(con_mejora["cells"], sin_mejora["cells"], "%s: mejorar una granja no dibuja una obra nueva" % aspecto)
+		var con_obra: Dictionary = Layout.plan(aspecto, hechos, [{"type": "farm"}], 100)
+		assert_true(con_obra["cells"] != sin_mejora["cells"], "%s: una granja nueva en obra sí se dibuja" % aspecto)
+		var nuevos: Dictionary = Layout.plan(aspecto, _edificios(["charcoal_kiln", "toolsmith"]), [], 100)
+		assert_true(nuevos["cells"] != Layout.plan(aspecto, [], [], 100)["cells"], "%s: la carbonera y el herramentero se dibujan" % aspecto)
+		assert_eq(nuevos["ocultos"].size(), 0, "%s: caben en el paisaje" % aspecto)
+	done()
+
+
 func test_each_building_appears_in_its_first_free_slot_and_only_then() -> void:
 	for aspecto in AMBAS:
 		var t: Dictionary = Layout.plantilla(aspecto)

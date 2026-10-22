@@ -41,8 +41,8 @@ func test_real_files_load_without_errors() -> void:
 	var data = _new_data()
 	var ok: bool = data.load_files(GOODS_PATH, BUILDINGS_PATH, RULES_PATH)
 	assert_true(ok, "los archivos reales deben cargarse: %s" % _errors_text(data))
-	assert_eq(data.goods.size(), 12, "número de mercancías")
-	assert_eq(data.buildings.size(), 14, "número de edificios")
+	assert_eq(data.goods.size(), 14, "número de mercancías")
+	assert_eq(data.buildings.size(), 16, "número de edificios")
 	assert_eq(data.rules["currency"], "coin", "la moneda de las reglas")
 	done()
 

@@ -13,6 +13,7 @@ const BUILDING_CATEGORIES: Array[String] = ["residential", "agricultural", "stor
 const DEFAULT_GOODS_PATH := "res://data/goods.json"
 const DEFAULT_BUILDINGS_PATH := "res://data/buildings.json"
 const DEFAULT_RULES_PATH := "res://data/rules.json"
+const DEFAULT_SEASONS_PATH := "res://data/seasons.json"
 
 ## Reglas numéricas (entero obligatorio): nombre -> [mínimo, máximo]
 const RULE_INTS := {
@@ -41,6 +42,12 @@ const RULE_INTS := {
 
 ## Reglas opcionales (valen 0 si no están): nombre -> [mínimo, máximo].
 ## calendar_start_year: año de la partida nueva (0 = 1000); calendar_start_day: día del año (0 a 364) de la partida nueva.
+## heating_per_person: leña por persona y paso en invierno (0 = sin necesidad de calefacción);
+## cold_warning_steps, cold_unrest_rise y cold_unrest_limit: escasez de leña gradual (sube el descontento hasta un
+## tope, 0 = hasta el máximo; no hay muertes);
+## upgrade_cost_percent y upgrade_steps_percent: coste y duración de una mejora en % de los de construcción
+## (0 = no se puede mejorar); upgrade_output_percent y upgrade_upkeep_percent: aumento por nivel de la
+## producción y del mantenimiento en %.
 ## recruits_per_barracks: soldados que aloja cada cuartel (0 = no hace falta cuartel);
 ## recruit_weapons: armas (milésimas) que gasta cada recluta; recruit_upkeep: moneda por soldado y paso.
 const RULE_OPTIONAL_INTS := {
@@ -49,12 +56,22 @@ const RULE_OPTIONAL_INTS := {
 	"recruit_upkeep": [0, 1000000],
 	"calendar_start_year": [0, 9999],
 	"calendar_start_day": [0, 364],
+	"heating_per_person": [0, 100000],
+	"cold_warning_steps": [0, 1000000],
+	"cold_unrest_rise": [0, 1000000],
+	"cold_unrest_limit": [0, 1000000],
+	"upgrade_cost_percent": [0, 10000],
+	"upgrade_steps_percent": [0, 10000],
+	"upgrade_output_percent": [0, 1000],
+	"upgrade_upkeep_percent": [0, 1000],
 }
 
 ## Mercancías por id: id -> {id, name, category, unit, physical}
 var goods: Dictionary = {}
 ## Edificios por id: id -> campos normalizados (cantidades como enteros)
 var buildings: Dictionary = {}
+## Estacionalidad de cultivos: id de mercancía -> 12 porcentajes (enero a diciembre). Vacío = sin estaciones.
+var seasons: Dictionary = {}
 ## Reglas de juego normalizadas (enteros) más "currency" y "food_goods"
 var rules: Dictionary = {}
 ## Errores acumulados de la última carga o validación
@@ -69,21 +86,25 @@ func _init() -> void:
 
 ## Carga los archivos estándar del juego (mercancías, edificios y reglas).
 func load_defaults() -> bool:
-	return load_files(DEFAULT_GOODS_PATH, DEFAULT_BUILDINGS_PATH, DEFAULT_RULES_PATH)
+	return load_files(DEFAULT_GOODS_PATH, DEFAULT_BUILDINGS_PATH, DEFAULT_RULES_PATH, DEFAULT_SEASONS_PATH)
 
 
 ## Carga los archivos. Si `rules_path` está vacío no se cargan reglas.
 ## Devuelve true si todo es válido; si no, deja los motivos en `errors`.
-func load_files(goods_path: String, buildings_path: String, rules_path: String = "") -> bool:
+func load_files(goods_path: String, buildings_path: String, rules_path: String = "", seasons_path: String = "") -> bool:
 	goods = {}
 	buildings = {}
 	rules = {}
+	seasons = {}
 	errors = []
 	var goods_root = _read_json_file(goods_path)
 	var buildings_root = _read_json_file(buildings_path)
 	var rules_root = null
 	if rules_path != "":
 		rules_root = _read_json_file(rules_path)
+	var seasons_root = null
+	if seasons_path != "":
+		seasons_root = _read_json_file(seasons_path)
 	if not errors.is_empty():
 		return false
 	var goods_list: Array = extract_list(goods_root, "goods", goods_path)
@@ -97,8 +118,13 @@ func load_files(goods_path: String, buildings_path: String, rules_path: String =
 		return false
 	if not build_buildings(buildings_list):
 		return false
-	if rules_path != "":
-		return build_rules(rules_object)
+	if rules_path != "" and not build_rules(rules_object):
+		return false
+	if seasons_path != "":
+		var crops: Dictionary = extract_object(seasons_root, "crops", seasons_path)
+		if not errors.is_empty():
+			return false
+		return build_seasons(crops)
 	return true
 
 
@@ -207,6 +233,42 @@ func build_rules(raw: Dictionary) -> bool:
 	return errors.size() == before
 
 
+## Valida la estacionalidad (necesita `goods` ya cargado): cada cultivo es una mercancía física con
+## 12 porcentajes enteros entre 0 y 1000 (enero a diciembre).
+func build_seasons(raw: Dictionary) -> bool:
+	var before := errors.size()
+	var result := {}
+	for good_id in raw.keys():
+		var where := "estaciones \"%s\"" % str(good_id)
+		if not goods.has(good_id) or not goods[good_id]["physical"]:
+			errors.append("%s: debe ser una mercancía física existente" % where)
+			continue
+		var list = raw[good_id]
+		if typeof(list) != TYPE_ARRAY or list.size() != 12:
+			errors.append("%s: debe ser una lista de 12 porcentajes (enero a diciembre)" % where)
+			continue
+		var parsed: Array[int] = []
+		var good_ok := true
+		for value in list:
+			if not _is_integer_number(value) or int(value) < 0 or int(value) > 1000:
+				errors.append("%s: cada porcentaje debe ser un entero entre 0 y 1000" % where)
+				good_ok = false
+				break
+			parsed.append(int(value))
+		if good_ok:
+			result[good_id] = parsed
+	if errors.size() == before:
+		seasons = result
+	return errors.size() == before
+
+
+## Porcentaje de producción de una mercancía en un mes (0 a 11); 100 si no tiene estacionalidad.
+func season_percent(good_id: String, month: int) -> int:
+	if not seasons.has(good_id):
+		return 100
+	return seasons[good_id][clampi(month, 0, 11)]
+
+
 ## Valida la lista de mercancías y rellena `goods`. Devuelve true si no hubo errores nuevos.
 func build_goods(list: Array) -> bool:
 	var before := errors.size()
@@ -294,15 +356,24 @@ func build_buildings(list: Array) -> bool:
 		var cycle_steps = _int_field(entry, "cycle_steps", 1, where)
 		var storage_capacity = _int_field(entry, "storage_capacity", 0, where)
 		var housing = _int_field(entry, "housing", 0, where)
+		var max_level = 1
+		if entry.has("max_level"):
+			max_level = _int_field(entry, "max_level", 1, where)
+			if max_level != null and max_level > 3:
+				errors.append("%s: \"max_level\" no puede pasar de 3" % where)
+				max_level = null
 		var build_cost = _amount_map(entry, "build_cost", where, false)
 		var inputs = _amount_map(entry, "inputs", where, true)
 		var outputs = _amount_map(entry, "outputs", where, true)
 		var upkeep = _amount_map(entry, "upkeep", where, true)
-		var parsed := [workers, build_workers, build_steps, cycle_steps, storage_capacity, housing, build_cost, inputs, outputs, upkeep]
+		var parsed := [workers, build_workers, build_steps, cycle_steps, storage_capacity, housing, max_level, build_cost, inputs, outputs, upkeep]
 		if parsed.has(null):
 			ok = false
 		elif not inputs.is_empty() and outputs.is_empty():
 			errors.append("%s: consume insumos pero no produce nada" % where)
+			ok = false
+		elif max_level > 1 and outputs.is_empty():
+			errors.append("%s: no produce nada, así que no puede tener mejoras (max_level)" % where)
 			ok = false
 		if ok:
 			buildings[id] = {
@@ -319,6 +390,7 @@ func build_buildings(list: Array) -> bool:
 				"upkeep": upkeep,
 				"storage_capacity": storage_capacity,
 				"housing": housing,
+				"max_level": max_level,
 			}
 	return errors.size() == before
 

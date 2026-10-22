@@ -68,6 +68,7 @@ func test_default_map_loads_and_has_many_playable_provinces() -> void:
 	for id in map.realms.keys():
 		assert_true(used.has(id), "el reino %s tiene alguna provincia" % id)
 	assert_true(map.realms.size() >= 5, "varios reinos")
+	assert_eq(map.provinces.size(), 44, "el mapa de la versión 0.2.0 tiene 44 provincias")
 	for ring in map.land:
 		assert_true(not Geometry2D.triangulate_polygon(ring).is_empty(), "una orilla se puede dibujar")
 	done()
@@ -212,6 +213,31 @@ func test_new_world_fails_cleanly_when_the_start_stock_does_not_fit() -> void:
 	assert_true(not result["ok"], "no cabe: se rechaza")
 	assert_eq(result["world"], null, "sin mundo a medias")
 	assert_true("wheat" in result["error"], "el mensaje nombra la mercancía: %s" % result["error"])
+	done()
+
+
+func test_version_0_2_adds_tolosa_gascuna_and_the_two_sea_provinces_all_reachable() -> void:
+	var data = new_data()
+	var map = _new_map()
+	assert_true(map.load_defaults(data), "el mapa carga")
+	assert_eq(map.find("tolosa")["realm"], "tolosa", "Tolosa es un reino propio")
+	assert_eq(map.find("gascuna")["realm"], "gascuna", "Gascuña es un reino propio")
+	assert_true("barcelona" in map.find("baleares")["neighbors"], "Baleares se llega por mar desde Barcelona")
+	assert_true("baleares" in map.find("barcelona")["neighbors"], "y la vecindad es mutua")
+	assert_true("algeciras" in map.find("ceuta")["neighbors"], "Ceuta se llega por mar desde Algeciras")
+	assert_true("algeciras" in map.find("ceuta")["neighbors"] and "ceuta" in map.find("algeciras")["neighbors"], "mutua también")
+	# Todo el mapa es un solo grafo conectado: ninguna provincia queda aislada.
+	var vistas := {"toledo": true}
+	var cola: Array = ["toledo"]
+	while not cola.is_empty():
+		var id: String = cola.pop_back()
+		for n in map.find(id)["neighbors"]:
+			if not vistas.has(n):
+				vistas[n] = true
+				cola.append(n)
+	assert_eq(vistas.size(), map.provinces.size(), "las 44 provincias están conectadas entre sí")
+	for p in map.provinces:
+		assert_eq(int(p["start"]["stock"].get("tools", -1)), 1800, "%s empieza con herramientas" % p["id"])
 	done()
 
 

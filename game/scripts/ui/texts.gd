@@ -24,9 +24,10 @@ const ALERT_TEXT := {
 	"no_workers": "Hay edificios sin trabajadores",
 	"waste": "Se desperdicia producción por falta de espacio",
 	"soldiers_unpaid": "Los soldados no cobran: sube el descontento",
+	"cold": "Falta leña en invierno: pasan frío y sube el descontento",
 }
 const ALERT_SEVERITY := {
-	"hunger_warning": 1, "unrest": 1, "starvation": 2, "storage_full": 0, "no_workers": 1, "waste": 0, "soldiers_unpaid": 1,
+	"hunger_warning": 1, "unrest": 1, "starvation": 2, "storage_full": 0, "no_workers": 1, "waste": 0, "soldiers_unpaid": 1, "cold": 1,
 }
 
 

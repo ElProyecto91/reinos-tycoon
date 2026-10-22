@@ -49,6 +49,9 @@ const HUECO_DE := {
 	"mine": "mina",
 	"smithy": "herreria",
 	"barracks": "cuartel",
+	# Sin modelo propio todavía: comparten hueco (y aspecto) con el leñador y la herrería.
+	"charcoal_kiln": "lenador",
+	"toolsmith": "herreria",
 }
 
 ## Habitantes que representa cada manzana del caserío (parámetro de aspecto, no de simulación).
@@ -97,30 +100,38 @@ static func plan(aspecto: String, buildings: Array, projects: Array, population:
 		hechos[tipo] = int(hechos.get(tipo, 0)) + 1
 	var obras := {}
 	for p in projects:
+		if int(p.get("upgrade_uid", 0)) > 0:
+			continue    # una mejora no ocupa una casilla nueva
 		var tipo: String = p["type"]
 		obras[tipo] = int(obras.get(tipo, 0)) + 1
 
+	var usados := {}        # tipo de hueco -> casillas ya ocupadas (hay tipos que comparten hueco)
 	for tipo in HUECO_DE.keys():
-		var lista: Array = huecos[HUECO_DE[tipo]]
+		var hueco: String = HUECO_DE[tipo]
+		var lista: Array = huecos[hueco]
+		var inicio := int(usados.get(hueco, 0))
 		var terminados := int(hechos.get(tipo, 0))
 		var mostrados := terminados
 		if tipo == "house":
 			mostrados = manzanas(population, terminados, lista.size())
 		var en_obra := int(obras.get(tipo, 0))
 		var libres := lista.size()
+		var dibujados := 0
 		for i in range(mostrados):
-			if i < libres:
-				cells[lista[i][0]] = {"o": lista[i][1]}
-		if mostrados > libres:
-			ocultos[tipo] = mostrados - libres
-		visibles[HUECO_DE[tipo]] = mini(mostrados, libres)
+			if inicio + i < libres:
+				cells[lista[inicio + i][0]] = {"o": lista[inicio + i][1]}
+				dibujados += 1
+		if dibujados < mostrados:
+			ocultos[tipo] = mostrados - dibujados
+		visibles[hueco] = int(visibles.get(hueco, 0)) + dibujados
 		for k in range(en_obra):
-			var idx := mostrados + k
+			var idx := inicio + mostrados + k
 			if idx < libres:
 				cells[lista[idx][0]] = {"o": "S"}
 				celdas_obra.append(lista[idx][0])
 			else:
 				ocultos[tipo] = int(ocultos.get(tipo, 0)) + 1
+		usados[hueco] = inicio + mostrados + en_obra
 	var cuartel_cell = null
 	if int(visibles.get("cuartel", 0)) > 0:
 		cuartel_cell = huecos["cuartel"][0][0]

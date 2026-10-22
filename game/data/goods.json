@@ -3,16 +3,18 @@
 	"status": "Parámetros de juego provisionales. No son datos históricos. storage_share_percent: parte máxima de la capacidad del almacén que puede ocupar esa mercancía (la suma de las físicas no pasa de 100, así ninguna puede bloquear todo el almacén).",
 	"goods": [
 		{"id": "wheat", "name": "Trigo", "category": "food", "unit": "unidad abstracta", "storage_share_percent": 18, "physical": true},
-		{"id": "flour", "name": "Harina", "category": "manufactured", "unit": "unidad abstracta", "storage_share_percent": 6, "physical": true},
-		{"id": "bread", "name": "Pan", "category": "manufactured", "unit": "unidad abstracta", "storage_share_percent": 18, "physical": true},
-		{"id": "wood", "name": "Madera", "category": "forestry", "unit": "unidad abstracta", "storage_share_percent": 15, "physical": true},
-		{"id": "firewood", "name": "Leña", "category": "forestry", "unit": "unidad abstracta", "storage_share_percent": 15, "physical": true},
+		{"id": "flour", "name": "Harina", "category": "manufactured", "unit": "unidad abstracta", "storage_share_percent": 5, "physical": true},
+		{"id": "bread", "name": "Pan", "category": "manufactured", "unit": "unidad abstracta", "storage_share_percent": 17, "physical": true},
+		{"id": "wood", "name": "Madera", "category": "forestry", "unit": "unidad abstracta", "storage_share_percent": 13, "physical": true},
+		{"id": "firewood", "name": "Leña", "category": "forestry", "unit": "unidad abstracta", "storage_share_percent": 13, "physical": true},
 		{"id": "olives", "name": "Aceitunas", "category": "food", "unit": "unidad abstracta", "storage_share_percent": 5, "physical": true},
 		{"id": "oil", "name": "Aceite", "category": "manufactured", "unit": "unidad abstracta", "storage_share_percent": 5, "physical": true},
 		{"id": "wool", "name": "Lana", "category": "materials", "unit": "unidad abstracta", "storage_share_percent": 4, "physical": true},
 		{"id": "cloth", "name": "Paño", "category": "manufactured", "unit": "unidad abstracta", "storage_share_percent": 4, "physical": true},
 		{"id": "iron", "name": "Hierro", "category": "materials", "unit": "unidad abstracta", "storage_share_percent": 5, "physical": true},
 		{"id": "weapons", "name": "Armas", "category": "manufactured", "unit": "unidad abstracta", "storage_share_percent": 5, "physical": true},
+		{"id": "charcoal", "name": "Carbón vegetal", "category": "forestry", "unit": "unidad abstracta", "storage_share_percent": 3, "physical": true},
+		{"id": "tools", "name": "Herramientas", "category": "materials", "unit": "unidad abstracta", "storage_share_percent": 3, "physical": true},
 		{"id": "coin", "name": "Moneda", "category": "institutional", "unit": "moneda abstracta", "storage_share_percent": 0, "physical": false}
 	]
 }

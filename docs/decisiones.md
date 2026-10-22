@@ -274,6 +274,29 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Los nombres de mes y la longitud de los meses son los actuales; el año 1000 es la fecha de ambientación, no un dato de simulación histórica.
 - Estado: **provisional**.
 
+## D-032. Lote 2.2 a 2.6: estaciones, leña, cadena forestal, mantenimiento en herramientas y mejoras
+
+- **Estaciones del cultivo (2.2)**: `data/seasons.json` da, por mes, el porcentaje de producción del trigo y de la aceituna (12 valores, media exacta 100). Se aplica al terminar cada ciclo, junto a los efectos temporales y al nivel del edificio. Forma del trigo: cosecha de mayo a julio y siembra de septiembre a diciembre (H-10, calendario de Córdoba; fuera de Córdoba es extrapolación); el olivo, cosecha de otoño a invierno, **sin fuente propia**. **La amplitud (mínimo 75 %, máximo 170 %) se eligió por experimento y no es histórica**: con inviernos al 40-55 % las provincias pequeñas, sin comercio, llegaban a descontento 1000 y rachas de hambre de 23 de los 24 pasos que provocan muertes (experimento del 2026-10-22 con las 40 provincias, 2 años, sin jugador).
+- **Leña de invierno (2.3)**: en invierno cada persona gasta `heating_per_person` (1 milésima) de leña por paso, antes que las panaderías (como la comida). Si falta hay aviso «frío» y tras `cold_warning_steps` (6) el descontento sube hasta un tope `cold_unrest_limit` (450): frena el trabajo (≈90 %) y el crecimiento, pero **nadie muere de frío**. Sin tope, las 7 provincias iniciales sin leñador llegaban a 1000 (trabajo al 50 %). Se arregla construyendo un leñador (o, más adelante, con la red de comercio).
+- **Cadena forestal (2.4)**: mercancías nuevas `charcoal` (carbón vegetal) y `tools` (herramientas); edificios `charcoal_kiln` (madera → carbón) y `toolsmith` (hierro + carbón → herramientas). La minería sigue aplazada (D-023): la mina solo usa los datos de juego ya existentes. Las cuotas de almacén se reajustaron (suma 100): pan 17, harina 5, madera 13, leña 13, carbón 3, herramientas 3.
+- **Mantenimiento en mercancías (2.5)**: la mina gasta 30 y la herrería 20 de herramientas por ciclo (además de moneda); sin ellas se detienen con estado «sin mantenimiento» y lo dicen. **Granjas, leñadores, molinos y panaderías no lo necesitan** (para que un fallo de herramientas no provoque hambre ni frío). Todas las provincias empiezan con 1,8 de herramientas (el tope de su almacén) para que una mina nueva pueda arrancar.
+- **Mejoras (2.6)**: los edificios que producen tienen `max_level` 2. Mejorar cuesta el 200 % del coste de construir y el 150 % de sus pasos, no ocupa sitio de edificio pero sí un hueco de la cola de obras; al terminar, el edificio produce un 150 % y su mantenimiento sube un 150 %, una sola vez. Se guarda `level` por edificio y `upgrade_uid` por obra; un guardado anterior carga con nivel 1.
+- **Interfaz (parte de 2.7)**: icono de carbón, herramientas, carbonera, herramentero y estrella; aviso «frío» con copo de nieve; estrella con cuenta en el edificio mejorado, botón «Mejorar +50 %» con sus costes en el detalle, obra de mejora con estrella, y porcentaje estacional con el icono de la estación en el detalle del trigo y la aceituna.
+- **Límite visual conocido**: la carbonera y el herramentero **no tienen modelo 3D propio**: comparten hueco y aspecto con el leñador y la herrería.
+- Todas las cifras son **parámetros de juego provisionales**, no históricos.
+- Estado: **provisional**.
+
+## D-033. Mapa ampliado a 44 provincias (versión 0.2.0): sur de Francia y enclaves
+
+- Se añaden **Tolosa** y **Gascuña** (dos entidades nuevas), las **Islas Baleares** y **Ceuta** (enclaves del califato). El mapa llega hasta 45° N para que quepa Burdeos. Fuentes H-45 a H-49 (todas enciclopedia abierta, confianza media-baja).
+- **Baleares: estatus hacia el año 1000 sin confirmar** (H-47 solo da la taifa de 1018); se incluyen como parte del califato por suposición y así consta en `map.json`. **Ceuta**: plaza omeya bajo Córdoba hasta al menos 984 (H-48); hacia el 1000 es inferencia.
+- Toda la tierra francesa que no es el Rosellón se reparte solo entre Tolosa y Gascuña: es una **simplificación de juego** (faltan Narbona, Carcasona, Foix, Bigorre, Béarn…, sin investigar).
+- Los enclaves no tienen lindero con otra provincia: se unen por **enlaces marítimos** (`neighbors`): Baleares con Valencia, Tortosa y Barcelona; Ceuta con Algeciras.
+- Las formas siguen siendo aproximación de juego, no fronteras históricas.
+- El área de Ceuta se ensanchó (caja de 0,7° × 0,4°) solo para que se pueda tocar con el dedo con el mapa entero a la vista: no representa su territorio histórico.
+- Regla de trabajo nueva del usuario (2026-10-22): **cada versión amplía el mapa**. Candidatas anotadas para próximas versiones: Narbona y Carcasona, Foix, Béarn y Bigorre, Sicilia/Cerdeña no (fuera de la región), el Magreb occidental (si se localiza fuente), Álava/Vizcaya y la Rioja como divisiones del norte.
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

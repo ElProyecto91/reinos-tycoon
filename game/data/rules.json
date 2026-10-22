@@ -1,6 +1,6 @@
 {
 	"format_version": 1,
-	"status": "Parámetros de juego provisionales. No son datos históricos. Cantidades en milésimas; tiempos en pasos de simulación (un paso equivale a una hora de juego; el día tiene 24 pasos). calendar_start_day: día del año de la partida nueva (0 a 364; 181 = 1 de julio, la fecha de referencia de la región, D-021).",
+	"status": "Parámetros de juego provisionales. No son datos históricos. Cantidades en milésimas; tiempos en pasos de simulación (un paso equivale a una hora de juego; el día tiene 24 pasos). heating_per_person: leña por persona y paso en invierno (0 = sin necesidad); cold_warning_steps/cold_unrest_rise/cold_unrest_limit: escasez de leña gradual, sin muertes y con tope de descontento (con tope 1000 las provincias sin leñador llegaban a trabajar al 50 %, experimento del 2026-10-22); upgrade_*: coste y pasos de una mejora en porcentaje del coste de construcción, y aumento de producción y de mantenimiento por nivel. calendar_start_day: día del año de la partida nueva (0 a 364; 181 = 1 de julio, la fecha de referencia de la región, D-021).",
 	"rules": {
 		"currency": "coin",
 		"base_capacity": 60000,
@@ -29,6 +29,14 @@
 		"growth_interval": 12,
 		"growth_percent": 2,
 		"growth_unrest_limit": 200,
+		"heating_per_person": 1,
+		"cold_warning_steps": 6,
+		"cold_unrest_rise": 10,
+		"cold_unrest_limit": 450,
+		"upgrade_cost_percent": 200,
+		"upgrade_steps_percent": 150,
+		"upgrade_output_percent": 50,
+		"upgrade_upkeep_percent": 50,
 		"calendar_start_year": 1000,
 		"calendar_start_day": 181,
 		"step_seconds": 60,

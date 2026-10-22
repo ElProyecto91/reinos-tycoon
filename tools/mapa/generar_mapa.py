@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Genera game/data/map.json (formato 2) a partir de Natural Earth (dominio público) y tools/mapa/provincias.py.
 
-Uso:  python3 tools/mapa/generar_mapa.py RUTA_A_natural-earth-vector/geojson  [--preview salida.png]
+Uso:  python3 tools/mapa/generar_mapa.py RUTA_A_natural-earth-vector/geojson  [--preview salida.png] [--salida otro_map.json]
 
 No hace falta para jugar: el resultado (map.json) está guardado en el repositorio. Sirve para regenerarlo.
 Qué hace: dibuja la tierra en una rejilla, reparte la tierra jugable entre las provincias por cercanía a su capital
@@ -12,11 +12,11 @@ import json, math, sys, os
 import numpy as np
 import cv2
 sys.path.insert(0, os.path.dirname(__file__))
-from provincias import REALMS, P, FRONTERA, START_PROTOTIPO, START_POR_TAMANO, ROTULOS
+from provincias import REALMS, P, FRONTERA, START_PROTOTIPO, START_POR_TAMANO, ROTULOS, ENCLAVES
 
 # --- Proyección: equirrectangular con el coseno de la latitud media ------------------------------------
 LON0, LON1 = -10.0, 4.6
-LAT0, LAT1 = 35.6, 44.2          # LAT1 arriba
+LAT0, LAT1 = 35.6, 45.0          # LAT1 arriba (0.2.0: ampliado desde 44,2 para que quepa Burdeos)
 COS = math.cos(math.radians(39.8))
 ANCHO = 1400                      # unidades de mapa
 UNID_POR_GRADO_LON = ANCHO / (LON1 - LON0)
@@ -71,7 +71,7 @@ def contornos(mask, eps_px=1.2, min_area_px=60):
     return out
 
 
-def main(carpeta, preview=None):
+def main(carpeta, preview=None, salida_json=None):
     land = json.load(open(os.path.join(carpeta, "ne_50m_land.geojson")))["features"]
     paises = json.load(open(os.path.join(carpeta, "ne_50m_admin_0_countries.geojson")))["features"]
     tierra = dibujar(land)
@@ -80,14 +80,16 @@ def main(carpeta, preview=None):
     cuentas = np.bincount(lab.ravel())
     cuentas[0] = 0
     peninsula = lab == int(np.argmax(cuentas))
-    # Suelo jugable: España, Portugal y Andorra, más el Rosellón (la Francia de al sur de 42,85° N y al este de 1,8° E).
+    # Suelo jugable: España, Portugal, Andorra y la Francia que cae dentro del mapa (el Rosellón, Tolosa y Gascuña).
     codigos = {"ESP", "PRT", "AND"}
     jug = dibujar(paises, lambda f: f["properties"]["ADM0_A3"] in codigos)
     fra = dibujar(paises, lambda f: f["properties"]["ADM0_A3"] == "FRA")
     ys, xs = np.mgrid[0:H, 0:W]
     lon = LON0 + (xs / ESC) / UNID_POR_GRADO_LON
     lat = LAT1 - (ys / ESC) / UNID_POR_GRADO_LAT
-    jug = (jug > 0) | ((fra > 0) & (lat < 42.85) & (lon > 1.8))
+    # La Francia que no es el Rosellón solo la reparten Tolosa y Gascuña; ninguna otra provincia entra en ella.
+    francesa = (fra > 0) & ~((lat < 42.85) & (lon > 1.8))
+    jug = (jug > 0) | (fra > 0)
     jug &= peninsula
     del xs, ys
 
@@ -100,6 +102,8 @@ def main(carpeta, preview=None):
     # Reparto: cada píxel jugable va a la capital con menor (distancia − peso), solo entre las de su lado de la frontera.
     semillas = np.array([a_px(p[5], p[6]) for p in P])
     pesos = np.array([p[7] for p in P]) * UNID_POR_GRADO_LAT * ESC * 0.55   # peso en píxeles
+    enclave_idx = [i for i, p in enumerate(P) if p[0] in ENCLAVES]
+    de_francia = np.array([p[0] in ("tolosa", "gascuna") for p in P])
     yy, xx = np.nonzero(jug)
     etiqueta = np.full((H, W), -1, np.int16)
     for i in range(0, len(xx), 400000):
@@ -107,8 +111,17 @@ def main(carpeta, preview=None):
         d = np.hypot(sx[:, None] - semillas[None, :, 0], sy[:, None] - semillas[None, :, 1]) - pesos[None, :]
         lado = norte[sy, sx][:, None]
         d = np.where(lado == cristiana[None, :], d, 1e9)
+        d[:, enclave_idx] = 1e9        # los enclaves no entran en el reparto por cercanía
+        fr = francesa[sy, sx][:, None]
+        d = np.where(fr == de_francia[None, :], d, 1e9)
         etiqueta[sy, sx] = np.argmin(d, axis=1)
 
+    # Enclaves: la tierra (fuera de la península) que cae dentro de su caja.
+    for i, p in enumerate(P):
+        if p[0] in ENCLAVES:
+            lo0, lo1, la0, la1 = ENCLAVES[p[0]]["caja"]
+            caja = (lon >= lo0) & (lon <= lo1) & (lat >= la0) & (lat <= la1) & (tierra > 0) & (etiqueta < 0)
+            etiqueta[caja] = i
     prov = []
     for i, p in enumerate(P):
         m = (etiqueta == i)
@@ -137,6 +150,14 @@ def main(carpeta, preview=None):
         if c >= 8:
             vec[prov[u]["id"]].append(prov[v]["id"])
             vec[prov[v]["id"]].append(prov[u]["id"])
+    ids = {p["id"] for p in prov}
+    for pid, e in ENCLAVES.items():
+        for otro in e["enlaces"]:
+            assert otro in ids, otro
+            if otro not in vec[pid]:
+                vec[pid].append(otro)
+            if pid not in vec[otro]:
+                vec[otro].append(pid)
     for p in prov:
         p["neighbors"] = sorted(vec[p["id"]])
 
@@ -155,7 +176,7 @@ def main(carpeta, preview=None):
         }
 
     # Orillas y tierra ajena (todo lo que no es jugable pero es tierra: Francia, África, islas).
-    ajena = (tierra > 0) & ~jug
+    ajena = (tierra > 0) & ~jug & (etiqueta < 0)
     rios = []
     nombres = {"Duero", "Tajo", "Tejo", "Ebro", "Guadiana", "Guadalquivir", "Minho", "Segre"}
     for f in json.load(open(os.path.join(carpeta, "ne_10m_rivers_lake_centerlines.geojson")))["features"]:
@@ -172,7 +193,7 @@ def main(carpeta, preview=None):
     km_por_unidad = 111.19 / UNID_POR_GRADO_LAT
     salida = {
         "format_version": 2,
-        "status": "Mapa grande (M2/M3). Las ENTIDADES POLÍTICAS y las capitales son históricas y aproximadas, hacia julio del año 1000 "
+        "status": "Mapa grande (M2–M4, 44 provincias). Las ENTIDADES POLÍTICAS y las capitales son históricas y aproximadas, hacia julio del año 1000 "
                   "(docs/REGION_IBERIA_1000.md; fuentes H-39 a H-44). La FORMA de cada territorio es una aproximación de juego (reparto por "
                   "cercanía a la capital), NO son fronteras históricas. Costas y ríos: Natural Earth (dominio público). Las poblaciones, edificios y "
                   "existencias de partida son PARÁMETROS DE JUEGO provisionales, no datos históricos. Cantidades en milésimas de unidad.",
@@ -187,7 +208,7 @@ def main(carpeta, preview=None):
         "realms": reinos,
         "provinces": prov,
     }
-    json.dump(salida, open(os.path.join(os.path.dirname(__file__), "..", "..", "game", "data", "map.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+    json.dump(salida, open(salida_json or os.path.join(os.path.dirname(__file__), "..", "..", "game", "data", "map.json"), "w"), ensure_ascii=False, separators=(",", ":"))
     if preview:
         previa(salida, etiqueta, preview)
     print("provincias:", len(prov), "alto:", ALTO, "ríos:", len(rios))
@@ -212,6 +233,6 @@ def previa(s, etiqueta, ruta):
 if __name__ == "__main__":
     a = [x for x in sys.argv[1:] if not x.startswith("--")]
     pv = sys.argv[sys.argv.index("--preview") + 1] if "--preview" in sys.argv else None
-    if pv:
-        a = [x for x in a if x != pv]
-    main(a[0], pv)
+    sj = sys.argv[sys.argv.index("--salida") + 1] if "--salida" in sys.argv else None
+    a = [x for x in a if x != pv and x != sj]
+    main(a[0], pv, sj)

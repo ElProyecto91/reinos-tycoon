@@ -20,6 +20,10 @@ REALMS = {
                  "note": "H-07, H-08. Conde Sancho García; bajo León de forma nominal."},
     "pamplona": {"name": "Reino de Pamplona", "color": (206, 142, 70), "label": "REINO DE PAMPLONA",
                  "note": "H-08, H-43. El condado de Aragón estaba incorporado a la corona de Pamplona."},
+    "tolosa": {"name": "Condado de Tolosa", "color": (84, 150, 152), "label": "CONDADO DE TOLOSA",
+               "note": "H-45. Los condes habían perdido casi todo su poder efectivo hacia fines del siglo X; la ciudad la regía un vizconde. Nominalmente bajo el rey de Francia."},
+    "gascuna": {"name": "Ducado de Gascuña", "color": (190, 128, 148), "label": "DUCADO DE GASCUÑA",
+                "note": "H-46. Duque Bernat I Guilhem (996-1009), de la línea ducal vasca; en la práctica independiente de los reyes francos. Su madre, o su padre, enlazaba con Pamplona por matrimonio (Urraca Garcés)."},
     "catalanes": {"name": "Condados catalanes", "color": (218, 188, 84), "label": "CONDADOS CATALANES",
                   "note": "H-41. Condados independientes entre sí; desde 987 los condes no rinden homenaje a la nueva dinastía francesa."},
 }
@@ -73,7 +77,19 @@ P = [
     ("besalu", "Condado de Besalú", "Besalú", "catalanes", "norte", 2.70, 42.20, 0.0, 1, "H-41"),
     ("empuries", "Condado de Ampurias", "Ampurias", "catalanes", "norte", 3.10, 42.13, -0.1, 1, "H-41"),
     ("rosello", "Condado de Rosellón", "Rosellón", "catalanes", "norte", 2.97, 42.60, -0.1, 1, "H-41"),
+    # --- Ampliación M4 (versión 0.2.0): sur de Francia y enclaves ---------------------------------------
+    ("tolosa", "Condado de Tolosa", "Tolosa", "tolosa", "norte", 1.44, 43.60, 0.4, 3, "H-45"),
+    ("gascuna", "Ducado de Gascuña", "Gascuña", "gascuna", "norte", -0.58, 44.84, 0.5, 2, "H-46 capital Burdeos según el artículo (no confirmada para el año 1000)"),
+    ("baleares", "Islas Baleares", "Baleares", "califato", "cordoba", 2.65, 39.57, 0.0, 2, "H-47 SIN CONFIRMAR: no se encontró qué estatus tenían hacia el 1000; la taifa propia es de 1018"),
+    ("ceuta", "Ceuta", "Ceuta", "califato", "cordoba", -5.31, 35.89, 0.0, 1, "H-48 plaza omeya bajo Córdoba hasta al menos 984; hacia el 1000 sin confirmar"),
 ]
+
+# Enclaves: territorios que no son una parte continua de la península. Su suelo no sale del reparto por cercanía sino de la
+# tierra que cae dentro de una caja (lon0, lon1, lat0, lat1); `enlaces` son vecindades por mar (no comparten lindero).
+ENCLAVES = {
+    "baleares": {"caja": (1.1, 4.5, 38.5, 40.2), "enlaces": ["valencia", "tortosa", "barcelona"]},
+    "ceuta": {"caja": (-5.75, -5.05, 35.60, 35.98), "enlaces": ["algeciras"]},
+}
 
 # Línea de frontera APROXIMADA entre los reinos cristianos (al norte) y el califato (al sur), de oeste a este, en (lon, lat).
 # Sigue el Duero y luego el pie del Pirineo; está dibujada a mano a partir del dato de H-07 («el condado llega al Duero») y de lo
@@ -84,20 +100,21 @@ FRONTERA = [
     (0.8, 41.95), (1.3, 41.85), (1.8, 41.55), (2.0, 41.35), (2.3, 41.0), (3.5, 41.0),
 ]
 
-# Estado inicial (PARÁMETROS DE JUEGO, no históricos). Las cinco provincias del prototipo conservan sus cifras;
+# Estado inicial (PARÁMETROS DE JUEGO, no históricos). Todas las provincias empiezan con 1,8 de herramientas (el tope
+# del almacén): la mina y la herrería gastan herramientas de mantenimiento y sin reserva no podrían arrancar. Las cinco provincias del prototipo conservan sus cifras;
 # el resto las toma de su tamaño (`tier`).
 START_PROTOTIPO = {
-    "toledo": {"population": 100, "buildings": ["granary", "farm", "farm", "mill", "bakery", "woodcutter"], "stock": {"bread": 12000, "wheat": 6000, "firewood": 5000, "wood": 5000, "coin": 20000}},
-    "zaragoza": {"population": 80, "buildings": ["granary", "farm", "farm", "farm", "mill"], "stock": {"bread": 9000, "wheat": 4000, "wood": 2000, "coin": 15000}},
-    "castilla": {"population": 60, "buildings": ["granary", "woodcutter", "woodcutter", "farm"], "stock": {"bread": 9000, "wheat": 2000, "wood": 6000, "firewood": 4000, "coin": 12000}},
-    "cordoba": {"population": 140, "buildings": ["granary", "farm", "farm", "mill", "bakery", "woodcutter", "house", "house"], "stock": {"bread": 15000, "wheat": 6000, "firewood": 6000, "wood": 8000, "coin": 25000}},
-    "leon": {"population": 40, "buildings": ["farm", "woodcutter"], "stock": {"bread": 6000, "wood": 3000, "firewood": 2000, "coin": 8000}},
+    "toledo": {"population": 100, "buildings": ["granary", "farm", "farm", "mill", "bakery", "woodcutter"], "stock": {"bread": 12000, "wheat": 6000, "firewood": 5000, "wood": 5000, "coin": 20000, "tools": 1800}},
+    "zaragoza": {"population": 80, "buildings": ["granary", "farm", "farm", "farm", "mill"], "stock": {"bread": 9000, "wheat": 4000, "wood": 2000, "coin": 15000, "tools": 1800}},
+    "castilla": {"population": 60, "buildings": ["granary", "woodcutter", "woodcutter", "farm"], "stock": {"bread": 9000, "wheat": 2000, "wood": 6000, "firewood": 4000, "coin": 12000, "tools": 1800}},
+    "cordoba": {"population": 140, "buildings": ["granary", "farm", "farm", "mill", "bakery", "woodcutter", "house", "house"], "stock": {"bread": 15000, "wheat": 6000, "firewood": 6000, "wood": 8000, "coin": 25000, "tools": 1800}},
+    "leon": {"population": 40, "buildings": ["farm", "woodcutter"], "stock": {"bread": 6000, "wood": 3000, "firewood": 2000, "coin": 8000, "tools": 1800}},
 }
 START_POR_TAMANO = {
-    4: {"population": 100, "buildings": ["granary", "farm", "farm", "mill", "bakery", "woodcutter"], "stock": {"bread": 12000, "wheat": 5000, "firewood": 4000, "wood": 4000, "coin": 18000}},
-    3: {"population": 70, "buildings": ["granary", "farm", "farm", "mill"], "stock": {"bread": 9000, "wheat": 3000, "wood": 2500, "coin": 12000}},
-    2: {"population": 50, "buildings": ["granary", "farm", "woodcutter"], "stock": {"bread": 7000, "wheat": 1500, "wood": 3000, "firewood": 1500, "coin": 8000}},
-    1: {"population": 35, "buildings": ["farm", "woodcutter"], "stock": {"bread": 5000, "wood": 2000, "firewood": 1500, "coin": 5000}},
+    4: {"population": 100, "buildings": ["granary", "farm", "farm", "mill", "bakery", "woodcutter"], "stock": {"bread": 12000, "wheat": 5000, "firewood": 4000, "wood": 4000, "coin": 18000, "tools": 1800}},
+    3: {"population": 70, "buildings": ["granary", "farm", "farm", "mill"], "stock": {"bread": 9000, "wheat": 3000, "wood": 2500, "coin": 12000, "tools": 1800}},
+    2: {"population": 50, "buildings": ["granary", "farm", "woodcutter"], "stock": {"bread": 7000, "wheat": 1500, "wood": 3000, "firewood": 1500, "coin": 8000, "tools": 1800}},
+    1: {"population": 35, "buildings": ["farm", "woodcutter"], "stock": {"bread": 5000, "wood": 2000, "firewood": 1500, "coin": 5000, "tools": 1800}},
 }
 
 # Rótulos del mapa (texto, lon, lat, clase). Solo orientan: mares y tierras fuera de la partida.
@@ -105,6 +122,5 @@ ROTULOS = [
     ("OCÉANO ATLÁNTICO", -9.4, 36.3, "mar"),
     ("MAR CANTÁBRICO", -4.6, 44.0, "mar"),
     ("MAR MEDITERRÁNEO", -0.2, 37.0, "mar"),
-    ("FRANCIA", 2.6, 43.55, "ajena"),
     ("ÁFRICA", 0.5, 35.75, "ajena"),
 ]

@@ -15,69 +15,81 @@
 			"storage_capacity": 40000, "housing": 0
 		},
 		{
-			"id": "farm", "name": "Granja", "category": "agricultural",
+			"id": "farm", "name": "Granja", "category": "agricultural", "max_level": 2,
 			"workers": 4, "build_workers": 2, "build_cost": {"wood": 1000, "coin": 3000}, "build_steps": 5,
 			"inputs": {}, "outputs": {"wheat": 6000}, "cycle_steps": 6, "upkeep": {"coin": 600},
 			"storage_capacity": 0, "housing": 0
 		},
 		{
-			"id": "mill", "name": "Molino", "category": "industrial",
+			"id": "mill", "name": "Molino", "category": "industrial", "max_level": 2,
 			"workers": 2, "build_workers": 2, "build_cost": {"wood": 2500, "coin": 4000}, "build_steps": 8,
 			"inputs": {"wheat": 4000}, "outputs": {"flour": 3000}, "cycle_steps": 4, "upkeep": {"coin": 400},
 			"storage_capacity": 0, "housing": 0
 		},
 		{
-			"id": "bakery", "name": "Panadería", "category": "industrial",
+			"id": "bakery", "name": "Panadería", "category": "industrial", "max_level": 2,
 			"workers": 2, "build_workers": 2, "build_cost": {"wood": 2000, "coin": 4000}, "build_steps": 8,
 			"inputs": {"flour": 3000, "firewood": 500}, "outputs": {"bread": 4000}, "cycle_steps": 4, "upkeep": {"coin": 400},
 			"storage_capacity": 0, "housing": 0
 		},
 		{
-			"id": "woodcutter", "name": "Leñador", "category": "forestry",
+			"id": "woodcutter", "name": "Leñador", "category": "forestry", "max_level": 2,
 			"workers": 3, "build_workers": 2, "build_cost": {"wood": 800, "coin": 2000}, "build_steps": 4,
 			"inputs": {}, "outputs": {"wood": 3000, "firewood": 1500}, "cycle_steps": 6, "upkeep": {"coin": 600},
 			"storage_capacity": 0, "housing": 0
 		},
 		{
-			"id": "olive_grove", "name": "Olivar", "category": "agricultural",
+			"id": "olive_grove", "name": "Olivar", "category": "agricultural", "max_level": 2,
 			"workers": 3, "build_workers": 2, "build_cost": {"wood": 500, "coin": 2500}, "build_steps": 5,
 			"inputs": {}, "outputs": {"olives": 2000}, "cycle_steps": 8, "upkeep": {"coin": 400},
 			"storage_capacity": 0, "housing": 0
 		},
 		{
-			"id": "olive_press", "name": "Almazara", "category": "industrial",
+			"id": "olive_press", "name": "Almazara", "category": "industrial", "max_level": 2,
 			"workers": 2, "build_workers": 2, "build_cost": {"wood": 2500, "coin": 4500}, "build_steps": 8,
 			"inputs": {"olives": 2000}, "outputs": {"oil": 1200}, "cycle_steps": 6, "upkeep": {"coin": 400},
 			"storage_capacity": 0, "housing": 0
 		},
 		{
-			"id": "sheepfold", "name": "Aprisco", "category": "pastoral",
+			"id": "sheepfold", "name": "Aprisco", "category": "pastoral", "max_level": 2,
 			"workers": 2, "build_workers": 2, "build_cost": {"wood": 1200, "coin": 2500}, "build_steps": 4,
 			"inputs": {}, "outputs": {"wool": 1500}, "cycle_steps": 8, "upkeep": {"coin": 300},
 			"storage_capacity": 0, "housing": 0
 		},
 		{
-			"id": "loom", "name": "Telar", "category": "industrial",
+			"id": "loom", "name": "Telar", "category": "industrial", "max_level": 2,
 			"workers": 2, "build_workers": 2, "build_cost": {"wood": 2000, "coin": 3500}, "build_steps": 7,
 			"inputs": {"wool": 1500}, "outputs": {"cloth": 1000}, "cycle_steps": 6, "upkeep": {"coin": 400},
 			"storage_capacity": 0, "housing": 0
 		},
 		{
-			"id": "market", "name": "Mercado", "category": "commercial",
+			"id": "market", "name": "Mercado", "category": "commercial", "max_level": 2,
 			"workers": 3, "build_workers": 2, "build_cost": {"wood": 3000, "coin": 5000}, "build_steps": 10,
 			"inputs": {"oil": 600, "cloth": 500}, "outputs": {"coin": 4000}, "cycle_steps": 6, "upkeep": {"coin": 500},
 			"storage_capacity": 0, "housing": 0
 		},
 		{
-			"id": "mine", "name": "Mina", "category": "mining",
+			"id": "mine", "name": "Mina", "category": "mining", "max_level": 2,
 			"workers": 4, "build_workers": 3, "build_cost": {"wood": 3000, "coin": 4000}, "build_steps": 10,
-			"inputs": {}, "outputs": {"iron": 1500}, "cycle_steps": 8, "upkeep": {"coin": 600},
+			"inputs": {}, "outputs": {"iron": 1500}, "cycle_steps": 8, "upkeep": {"coin": 600, "tools": 30},
 			"storage_capacity": 0, "housing": 0
 		},
 		{
-			"id": "smithy", "name": "Herrería", "category": "industrial",
+			"id": "smithy", "name": "Herrería", "category": "industrial", "max_level": 2,
 			"workers": 2, "build_workers": 2, "build_cost": {"wood": 2000, "coin": 4000}, "build_steps": 8,
-			"inputs": {"iron": 1500, "firewood": 500}, "outputs": {"weapons": 1000}, "cycle_steps": 6, "upkeep": {"coin": 400},
+			"inputs": {"iron": 1500, "firewood": 500}, "outputs": {"weapons": 1000}, "cycle_steps": 6, "upkeep": {"coin": 400, "tools": 20},
+			"storage_capacity": 0, "housing": 0
+		},
+		{
+			"id": "charcoal_kiln", "name": "Carbonera", "category": "forestry", "max_level": 2,
+			"workers": 2, "build_workers": 2, "build_cost": {"wood": 2000, "coin": 3000}, "build_steps": 8,
+			"inputs": {"wood": 3000}, "outputs": {"charcoal": 1500}, "cycle_steps": 8, "upkeep": {"coin": 400},
+			"storage_capacity": 0, "housing": 0
+		},
+		{
+			"id": "toolsmith", "name": "Herramentero", "category": "industrial", "max_level": 2,
+			"workers": 2, "build_workers": 2, "build_cost": {"wood": 2000, "coin": 4000}, "build_steps": 8,
+			"inputs": {"iron": 1000, "charcoal": 300}, "outputs": {"tools": 600}, "cycle_steps": 8, "upkeep": {"coin": 400},
 			"storage_capacity": 0, "housing": 0
 		},
 		{

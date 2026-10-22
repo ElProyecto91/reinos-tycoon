@@ -16,6 +16,7 @@ extends RefCounted
 
 const Fixed := preload("res://scripts/sim/fixed.gd")
 const StoreScript := preload("res://scripts/sim/store.gd")
+const CalendarScript := preload("res://scripts/sim/calendar.gd")
 
 ## Estados de un edificio. Son códigos estables; la interfaz los traduce a texto.
 const STATUS_IDLE := "idle"
@@ -34,12 +35,15 @@ const ALERT_STORAGE_FULL := "storage_full"
 const ALERT_NO_WORKERS := "no_workers"
 const ALERT_WASTE := "waste"
 const ALERT_SOLDIERS_UNPAID := "soldiers_unpaid"
+const ALERT_COLD := "cold"
 
 const STATUSES: Array[String] = [STATUS_IDLE, STATUS_RUNNING, STATUS_DISABLED, STATUS_NO_WORKERS, STATUS_MISSING_INPUTS, STATUS_NO_UPKEEP, STATUS_STORAGE_FULL]
-const ALERTS: Array[String] = [ALERT_HUNGER_WARNING, ALERT_UNREST, ALERT_STARVATION, ALERT_STORAGE_FULL, ALERT_NO_WORKERS, ALERT_WASTE, ALERT_SOLDIERS_UNPAID]
+const ALERTS: Array[String] = [ALERT_HUNGER_WARNING, ALERT_UNREST, ALERT_STARVATION, ALERT_STORAGE_FULL, ALERT_NO_WORKERS, ALERT_WASTE, ALERT_SOLDIERS_UNPAID, ALERT_COLD]
 const BIG := 1000000000000
 ## Mercancía que gasta cada recluta (la cantidad está en rules.recruit_weapons).
 const RECRUIT_GOOD := "weapons"
+## Mercancía con la que se calientan las casas en invierno.
+const HEATING_GOOD := "firewood"
 
 var id: String = ""
 var display_name: String = ""
@@ -50,13 +54,17 @@ var recruits: int = 0
 var unrest: int = 0
 ## Pasos seguidos con falta de alimento
 var hunger_steps: int = 0
+## Pasos seguidos con falta de leña en invierno, y porcentaje de leña que faltó en el último paso
+var cold_steps: int = 0
+var cold_shortage_percent: int = 0
 var step_count: int = 0
 var next_uid: int = 1
 ## Si es true, el paso reparte los trabajadores libres entre obras y edificios
 var auto_staff: bool = true
-## Edificios: Array de Dictionary {uid, type, workers, enabled, active, progress, status, missing}
+## Edificios: Array de Dictionary {uid, type, level, workers, enabled, active, progress, status, missing}
 var buildings: Array = []
-## Obras en curso: Array de Dictionary {uid, type, remaining, workers}
+## Obras en curso: Array de Dictionary {uid, type, remaining, workers, upgrade_uid}
+## (upgrade_uid > 0: es la mejora de ese edificio, no un edificio nuevo)
 var projects: Array = []
 ## Efectos temporales sobre la producción: id de mercancía -> {percent, until_step}
 var modifiers: Dictionary = {}
@@ -76,6 +84,9 @@ var store = null
 var _data = null
 var _rules: Dictionary = {}
 var _waste_this_step: bool = false
+## Mes (0 a 11) y estación de este paso, derivados del contador de pasos (no se guardan).
+var _month: int = -1
+var _season: String = ""
 
 
 func _init(data, province_id: String, province_name: String, start_population: int) -> void:
@@ -125,6 +136,62 @@ func productivity_percent() -> int:
 	return clampi(100 - lost, min_percent, 100)
 
 
+## Mes del año (0 a 11) de este paso.
+func current_month() -> int:
+	_update_calendar()
+	return _month
+
+
+## Estación de este paso: "winter", "spring", "summer" o "autumn".
+func current_season() -> String:
+	_update_calendar()
+	return _season
+
+
+## Porcentaje de producción de una mercancía este mes (100 si no tiene estaciones).
+func season_percent(good_id: String) -> int:
+	_update_calendar()
+	return _data.season_percent(good_id, _month)
+
+
+## Porcentaje de producción de un edificio por su nivel (100 en el nivel 1).
+func level_output_percent(b: Dictionary) -> int:
+	return 100 + int(_rules.get("upgrade_output_percent", 0)) * (int(b.get("level", 1)) - 1)
+
+
+## Mantenimiento de un edificio con el recargo de su nivel.
+func upkeep_of(b: Dictionary) -> Dictionary:
+	var base: Dictionary = _data.buildings[b["type"]]["upkeep"]
+	var percent := 100 + int(_rules.get("upgrade_upkeep_percent", 0)) * (int(b.get("level", 1)) - 1)
+	if percent == 100:
+		return base
+	var scaled := {}
+	for good in base.keys():
+		scaled[good] = Fixed.div_ceil(base[good] * percent, 100)
+	return scaled
+
+
+## Coste de mejorar un edificio de este tipo (porcentaje del coste de construir).
+func upgrade_cost(type_id: String) -> Dictionary:
+	var percent: int = int(_rules.get("upgrade_cost_percent", 0))
+	var cost := {}
+	for good in _data.buildings[type_id]["build_cost"].keys():
+		cost[good] = Fixed.div_ceil(_data.buildings[type_id]["build_cost"][good] * percent, 100)
+	return cost
+
+
+func upgrade_steps(type_id: String) -> int:
+	return maxi(1, Fixed.div_ceil(_data.buildings[type_id]["build_steps"] * int(_rules.get("upgrade_steps_percent", 0)), 100))
+
+
+## ¿Hay ya una mejora en obras para este edificio?
+func is_upgrading(uid: int) -> bool:
+	for p in projects:
+		if p.get("upgrade_uid", 0) == uid:
+			return true
+	return false
+
+
 func find_building(uid: int) -> Dictionary:
 	for b in buildings:
 		if b["uid"] == uid:
@@ -150,7 +217,7 @@ func add_building(type_id: String) -> int:
 	var uid := next_uid
 	next_uid += 1
 	buildings.append({
-		"uid": uid, "type": type_id, "workers": 0, "enabled": true,
+		"uid": uid, "type": type_id, "level": 1, "workers": 0, "enabled": true,
 		"active": false, "progress": 0, "status": STATUS_IDLE, "missing": {},
 	})
 	_recompute_capacity()
@@ -254,7 +321,49 @@ func start_construction(type_id: String) -> bool:
 		_release_building_workers(needed - available_workers())
 	for good in t["build_cost"].keys():
 		store.remove(good, t["build_cost"][good], StoreScript.CONSUMED)
-	projects.append({"uid": next_uid, "type": type_id, "remaining": t["build_steps"], "workers": needed})
+	projects.append({"uid": next_uid, "type": type_id, "remaining": t["build_steps"], "workers": needed, "upgrade_uid": 0})
+	next_uid += 1
+	return true
+
+
+## Empieza la mejora de un edificio al nivel siguiente. Como una obra, pero no ocupa un sitio nuevo.
+## No cambia nada si no se cumple alguna condición (el edificio no mejora, ya está al máximo,
+## ya se está mejorando, faltan recursos, trabajadores u obras libres).
+func start_upgrade(uid: int) -> bool:
+	last_error = ""
+	var b := find_building(uid)
+	if b.is_empty():
+		last_error = "no existe el edificio %d" % uid
+		return false
+	var t: Dictionary = _data.buildings[b["type"]]
+	if int(_rules.get("upgrade_cost_percent", 0)) <= 0 or int(t.get("max_level", 1)) <= b["level"]:
+		last_error = "este edificio no se puede mejorar más"
+		return false
+	if is_upgrading(uid):
+		last_error = "ya se está mejorando"
+		return false
+	if projects.size() >= _rules["max_projects"]:
+		last_error = "ya hay %d obras en curso" % projects.size()
+		return false
+	var cost := upgrade_cost(b["type"])
+	if not store.can_afford(cost):
+		last_error = "faltan recursos para mejorar"
+		return false
+	var needed: int = t["build_workers"]
+	var reserved := 0
+	for p in projects:
+		reserved += p["workers"]
+	if labor_force() - reserved < needed:
+		last_error = "faltan trabajadores para la obra"
+		return false
+	if available_workers() < needed:
+		if not auto_staff:
+			last_error = "faltan trabajadores libres para la obra"
+			return false
+		_release_building_workers(needed - available_workers())
+	for good in cost.keys():
+		store.remove(good, cost[good], StoreScript.CONSUMED)
+	projects.append({"uid": next_uid, "type": b["type"], "remaining": upgrade_steps(b["type"]), "workers": needed, "upgrade_uid": uid})
 	next_uid += 1
 	return true
 
@@ -269,6 +378,7 @@ func add_modifier(good_id: String, percent: int, duration_steps: int) -> void:
 func step() -> void:
 	step_count += 1
 	_waste_this_step = false
+	_update_calendar()
 	_expire_modifiers()
 	_enforce_labor_limit()
 	if auto_staff:
@@ -276,6 +386,7 @@ func step() -> void:
 	_collect_taxes()
 	_pay_soldiers()
 	_consume_food()
+	_consume_heating()
 	_advance_projects()
 	for b in buildings:
 		_run_building(b)
@@ -284,6 +395,16 @@ func step() -> void:
 	# asignados que mano de obra, ni siquiera entre dos pasos (por ejemplo, al guardar).
 	_enforce_labor_limit()
 	_update_alerts()
+
+
+## Calcula mes y estación solo cuando cambia el día (o tras cargar); nunca se guardan.
+func _update_calendar() -> void:
+	if _month >= 0 and step_count % CalendarScript.STEPS_PER_DAY != 0:
+		return
+	var year: int = int(_rules.get("calendar_start_year", 0))
+	var date: Dictionary = CalendarScript.at(step_count, year if year > 0 else 1000, int(_rules.get("calendar_start_day", 0)))
+	_month = date["month"]
+	_season = date["season"]
 
 
 func _expire_modifiers() -> void:
@@ -383,8 +504,14 @@ func _advance_projects() -> void:
 		for i in range(projects.size()):
 			if projects[i]["uid"] == uid:
 				var type_id: String = projects[i]["type"]
+				var target: int = projects[i].get("upgrade_uid", 0)
 				projects.remove_at(i)
-				add_building(type_id)
+				if target > 0:
+					var upgraded := find_building(target)
+					if not upgraded.is_empty():
+						upgraded["level"] += 1
+				else:
+					add_building(type_id)
 				break
 
 
@@ -425,8 +552,9 @@ func _try_start_cycle(b: Dictionary, t: Dictionary) -> bool:
 		b["status"] = STATUS_MISSING_INPUTS
 		b["missing"] = missing
 		return false
-	for good in t["upkeep"].keys():
-		var short: int = t["upkeep"][good] - store.stock(good)
+	var upkeep := upkeep_of(b)
+	for good in upkeep.keys():
+		var short: int = upkeep[good] - store.stock(good)
 		if short > 0:
 			missing[good] = short
 	if not missing.is_empty():
@@ -442,8 +570,8 @@ func _try_start_cycle(b: Dictionary, t: Dictionary) -> bool:
 		return false
 	for good in t["inputs"].keys():
 		store.remove(good, t["inputs"][good], StoreScript.CONSUMED)
-	for good in t["upkeep"].keys():
-		store.remove(good, t["upkeep"][good], StoreScript.CONSUMED)
+	for good in upkeep.keys():
+		store.remove(good, upkeep[good], StoreScript.CONSUMED)
 	b["active"] = true
 	b["progress"] = 0
 	return true
@@ -456,7 +584,9 @@ func _try_start_cycle(b: Dictionary, t: Dictionary) -> bool:
 func _try_finish_cycle(b: Dictionary, t: Dictionary) -> void:
 	var produced := {}
 	for good in t["outputs"].keys():
-		produced[good] = Fixed.percent_of(t["outputs"][good], _modifier_percent(good))
+		var amount: int = Fixed.percent_of(t["outputs"][good], _modifier_percent(good))
+		amount = Fixed.percent_of(amount, _data.season_percent(good, _month))
+		produced[good] = Fixed.percent_of(amount, level_output_percent(b))
 	if not store.can_fit_any(produced):
 		b["status"] = STATUS_STORAGE_FULL
 		return
@@ -491,6 +621,23 @@ func _consume_food() -> void:
 		food_shortage_percent = 0
 
 
+## En invierno cada persona necesita leña para calentarse. Si falta, la escasez es gradual como la del
+## hambre (aviso, después descontento), pero nadie muere de frío en esta versión.
+func _consume_heating() -> void:
+	cold_shortage_percent = 0
+	var per_person: int = int(_rules.get("heating_per_person", 0))
+	if per_person <= 0 or _season != "winter":
+		cold_steps = 0
+		return
+	var required: int = population * per_person
+	var taken: int = store.remove(HEATING_GOOD, required, StoreScript.CONSUMED)
+	if required > 0 and taken < required:
+		cold_shortage_percent = Fixed.div_ceil((required - taken) * 100, required)
+		cold_steps += 1
+	else:
+		cold_steps = 0
+
+
 # --- Población y descontento -----------------------------------------------------
 
 func _update_population() -> void:
@@ -504,7 +651,19 @@ func _update_population() -> void:
 			population = maxi(population - loss, _rules["min_population"])
 	else:
 		hunger_steps = 0
-		unrest = maxi(unrest - _rules["unrest_fall"], 0)
+		if cold_shortage_percent > 0 and cold_steps > int(_rules.get("cold_warning_steps", 0)):
+			# El frío solo puede subir el descontento hasta un tope (cold_unrest_limit): frena el trabajo y el
+			# crecimiento, pero no hunde la provincia. Por encima del tope, el descontento baja con normalidad.
+			var limit: int = int(_rules.get("cold_unrest_limit", 0))
+			if limit <= 0 or limit > _rules["unrest_max"]:
+				limit = _rules["unrest_max"]
+			if unrest < limit:
+				var cold_rise := maxi(1, Fixed.percent_of(int(_rules.get("cold_unrest_rise", 0)), cold_shortage_percent))
+				unrest = mini(unrest + cold_rise, limit)
+			elif unrest > limit:
+				unrest = maxi(unrest - _rules["unrest_fall"], limit)
+		else:
+			unrest = maxi(unrest - _rules["unrest_fall"], 0)
 		if unrest <= _rules["growth_unrest_limit"] and step_count % _rules["growth_interval"] == 0:
 			var room := housing_capacity() - population
 			if room > 0:
@@ -523,6 +682,8 @@ func _update_alerts() -> void:
 			alerts.append(ALERT_HUNGER_WARNING)
 	if soldiers_unpaid:
 		alerts.append(ALERT_SOLDIERS_UNPAID)
+	if cold_shortage_percent > 0:
+		alerts.append(ALERT_COLD)
 	var full := false
 	var idle_workers := false
 	for b in buildings:
@@ -546,7 +707,7 @@ func check_invariants() -> Array[String]:
 	problems.append_array(store.check_conservation())
 	if population < _rules["min_population"]:
 		problems.append("población por debajo del mínimo: %d" % population)
-	if recruits < 0 or unrest < 0 or hunger_steps < 0:
+	if recruits < 0 or unrest < 0 or hunger_steps < 0 or cold_steps < 0 or cold_shortage_percent < 0 or cold_shortage_percent > 100:
 		problems.append("valor negativo en reclutas, descontento o hambre")
 	if unrest > _rules["unrest_max"]:
 		problems.append("descontento por encima del máximo: %d" % unrest)
@@ -559,9 +720,18 @@ func check_invariants() -> Array[String]:
 			problems.append("edificio %d: más trabajadores de los que admite" % b["uid"])
 		if b["progress"] < 0:
 			problems.append("edificio %d: progreso negativo" % b["uid"])
+		if b["level"] < 1 or b["level"] > _data.buildings[b["type"]]["max_level"]:
+			problems.append("edificio %d: nivel fuera de rango" % b["uid"])
 	for p in projects:
 		if p["remaining"] < 0 or p["workers"] < 0:
 			problems.append("obra %d: valores negativos" % p["uid"])
+		var target: int = p.get("upgrade_uid", 0)
+		if target > 0:
+			var upgraded := find_building(target)
+			if upgraded.is_empty():
+				problems.append("obra %d: mejora de un edificio que no existe" % p["uid"])
+			elif upgraded["level"] >= _data.buildings[upgraded["type"]]["max_level"]:
+				problems.append("obra %d: mejora de un edificio que ya está al máximo" % p["uid"])
 	return problems
 
 
@@ -573,6 +743,7 @@ func to_dict() -> Dictionary:
 	return {
 		"id": id, "name": display_name, "population": population, "recruits": recruits,
 		"unrest": unrest, "hunger_steps": hunger_steps, "step_count": step_count,
+		"cold_steps": cold_steps, "cold_shortage_percent": cold_shortage_percent,
 		"next_uid": next_uid, "auto_staff": auto_staff,
 		"food_shortage_percent": food_shortage_percent,
 		"buildings": buildings.duplicate(true), "projects": projects.duplicate(true),
@@ -596,7 +767,14 @@ func load_dict(raw: Variant) -> bool:
 		"hunger_steps": [0, BIG], "step_count": [0, BIG], "next_uid": [1, BIG],
 		"food_shortage_percent": [0, 100],
 	}
+	# Campos añadidos después (fase 2): un guardado anterior no los tiene y valen 0.
+	var optional_limits := {"cold_steps": [0, BIG], "cold_shortage_percent": [0, 100]}
 	var numbers := {}
+	for field in optional_limits.keys():
+		var optional_value = Fixed.exact_int(raw.get(field, 0))
+		if optional_value == null or optional_value < optional_limits[field][0] or optional_value > optional_limits[field][1]:
+			return _load_fail("%s: \"%s\" no válido" % [new_id, field])
+		numbers[field] = optional_value
 	for field in limits.keys():
 		var value = Fixed.exact_int(raw.get(field, null))
 		if value == null or value < limits[field][0] or value > limits[field][1]:
@@ -664,6 +842,9 @@ func load_dict(raw: Variant) -> bool:
 	step_count = numbers["step_count"]
 	next_uid = numbers["next_uid"]
 	food_shortage_percent = numbers["food_shortage_percent"]
+	cold_steps = numbers["cold_steps"]
+	cold_shortage_percent = numbers["cold_shortage_percent"]
+	_month = -1
 	auto_staff = raw["auto_staff"]
 	buildings = new_buildings
 	projects = new_projects
@@ -713,6 +894,10 @@ func _parse_saved_building(entry: Variant, seen_uids: Dictionary, next_free_uid:
 	if typeof(status) != TYPE_STRING or not STATUSES.has(status):
 		_load_fail("edificio %d: estado desconocido" % uid)
 		return null
+	var level = Fixed.exact_int(entry.get("level", 1))
+	if level == null or level < 1 or level > t["max_level"]:
+		_load_fail("edificio %d: nivel fuera de rango" % uid)
+		return null
 	var missing := {}
 	var missing_raw = entry.get("missing", null)
 	if typeof(missing_raw) != TYPE_DICTIONARY:
@@ -725,7 +910,7 @@ func _parse_saved_building(entry: Variant, seen_uids: Dictionary, next_free_uid:
 			return null
 		missing[good] = amount
 	return {
-		"uid": uid, "type": type_id, "workers": workers, "enabled": entry["enabled"],
+		"uid": uid, "type": type_id, "level": level, "workers": workers, "enabled": entry["enabled"],
 		"active": entry["active"], "progress": progress, "status": status, "missing": missing,
 	}
 
@@ -746,7 +931,12 @@ func _parse_saved_project(entry: Variant, seen_uids: Dictionary, next_free_uid: 
 	seen_uids[uid] = true
 	var remaining = Fixed.exact_int(entry.get("remaining", null))
 	var workers = Fixed.exact_int(entry.get("workers", null))
-	if remaining == null or remaining < 1 or remaining > t["build_steps"] or workers == null or workers < 0 or workers > t["build_workers"]:
+	var upgrade_uid = Fixed.exact_int(entry.get("upgrade_uid", 0))
+	if upgrade_uid == null or upgrade_uid < 0 or upgrade_uid >= next_free_uid:
+		_load_fail("obra %d: edificio a mejorar no válido" % uid)
+		return null
+	var longest: int = t["build_steps"] if upgrade_uid == 0 else upgrade_steps(type_id)
+	if remaining == null or remaining < 1 or remaining > longest or workers == null or workers < 0 or workers > t["build_workers"]:
 		_load_fail("obra %d: tiempo o trabajadores fuera de rango" % uid)
 		return null
-	return {"uid": uid, "type": type_id, "remaining": remaining, "workers": workers}
+	return {"uid": uid, "type": type_id, "remaining": remaining, "workers": workers, "upgrade_uid": upgrade_uid}

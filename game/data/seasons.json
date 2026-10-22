@@ -1,0 +1,8 @@
+{
+	"format_version": 1,
+	"status": "Parámetros de juego provisionales. No son datos históricos salvo la idea de que el trigo se cosecha en primavera-verano y se siembra en otoño (calendario de Córdoba de 961, H-10); los porcentajes por mes son una forma elegida para jugar y su amplitud se limitó a propósito: con inviernos al 40-55 % (experimento del 2026-10-22) las provincias pequeñas llegaban a descontento 1000 sin comercio. Cada lista tiene 12 valores (enero a diciembre) en porcentaje de la producción normal y su media es 100. El olivo (cosecha de otoño a invierno) es una extrapolación sin fuente propia.",
+	"crops": {
+		"wheat":  [80, 80, 85, 95, 140, 170, 145, 100, 75, 75, 75, 80],
+		"olives": [140, 110, 70, 60, 60, 60, 60, 60, 70, 120, 190, 200]
+	}
+}

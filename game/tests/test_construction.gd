@@ -5,7 +5,7 @@ extends "res://tests/province_case.gd"
 func _builder_province(data, population: int = 100):
 	var p = new_province(data, population)
 	p.store.seed_initial("bread", 18000)
-	p.store.seed_initial("wood", 9000)
+	p.store.seed_initial("wood", 7800)
 	p.store.seed_initial("coin", 20000)
 	return p
 
@@ -14,7 +14,7 @@ func test_construction_charges_the_cost_only_once() -> void:
 	var data = new_data()
 	var p = _builder_province(data)
 	assert_true(p.start_construction("farm"), "debe poder empezar: %s" % p.last_error)
-	assert_eq(p.store.stock("wood"), 8000, "se descuentan 1000 de madera")
+	assert_eq(p.store.stock("wood"), 6800, "se descuentan 1000 de madera")
 	assert_eq(p.store.stock("coin"), 17000, "se descuentan 3000 de moneda")
 	assert_eq(p.projects.size(), 1, "hay una obra")
 	assert_eq(p.projects[0]["remaining"], 5, "tiempo restante visible: 5 pasos")
@@ -71,10 +71,10 @@ func test_construction_is_rejected_without_materials() -> void:
 func test_construction_is_rejected_without_coin() -> void:
 	var data = new_data()
 	var p = new_province(data, 100)
-	p.store.seed_initial("wood", 9000)
+	p.store.seed_initial("wood", 7800)
 	p.store.seed_initial("coin", 2999)
 	assert_true(not p.start_construction("farm"), "faltan 1 de moneda")
-	assert_eq(p.store.stock("wood"), 9000, "la madera tampoco se cobra")
+	assert_eq(p.store.stock("wood"), 7800, "la madera tampoco se cobra")
 	done()
 
 
@@ -87,7 +87,7 @@ func test_construction_is_rejected_without_workers() -> void:
 	assert_eq(p.available_workers(), 0, "no queda nadie")
 	assert_true(not p.start_construction("house"), "sin mano de obra no se empieza")
 	assert_true(p.last_error.contains("trabajadores"), "el motivo habla de trabajadores")
-	assert_eq(p.store.stock("wood"), 9000, "no se cobró nada")
+	assert_eq(p.store.stock("wood"), 7800, "no se cobró nada")
 	assert_eq(p.projects.size(), 0, "no hay obra")
 	done()
 
@@ -120,7 +120,7 @@ func test_construction_does_not_take_workers_when_staffing_is_manual() -> void:
 	p.assign_workers(f2, 4)
 	p.assign_workers(f3, 2)
 	assert_true(not p.start_construction("house"), "en manual no se quitan trabajadores")
-	assert_eq(p.store.stock("wood"), 9000, "no se cobró nada")
+	assert_eq(p.store.stock("wood"), 7800, "no se cobró nada")
 	done()
 
 
@@ -155,7 +155,7 @@ func test_project_queue_has_a_limit() -> void:
 	assert_true(not p.start_construction("house"), "la cuarta no cabe en la cola")
 	assert_true(p.last_error.contains("obras"), "el motivo habla de obras")
 	assert_eq(p.projects.size(), 3, "tres obras")
-	assert_eq(p.store.stock("wood"), 4500, "solo se cobraron tres casas")
+	assert_eq(p.store.stock("wood"), 3300, "solo se cobraron tres casas")
 	done()
 
 

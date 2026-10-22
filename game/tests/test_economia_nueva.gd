@@ -8,7 +8,7 @@ func _provincia(data):
 	var p = new_province(data, 100)
 	p.store.seed_initial("bread", 18000)
 	p.store.seed_initial("coin", 50000)
-	p.store.seed_initial("wood", 9000)
+	p.store.seed_initial("wood", 7800)
 	return p
 
 
@@ -17,6 +17,7 @@ func _ciclo(id: String, entradas: Dictionary, salidas: Dictionary) -> void:
 	var p = _provincia(data)
 	for g in entradas.keys():
 		p.store.seed_initial(g, entradas[g])
+	p.store.seed_initial("tools", 1800)    # la mina y la herrería gastan herramientas de mantenimiento
 	var b: int = p.add_building(id)
 	assert_true(b >= 0, "%s se puede añadir" % id)
 	var pasos: int = int(data.buildings[id]["cycle_steps"])
@@ -72,8 +73,9 @@ func test_the_whole_new_chain_runs_for_a_month_without_creating_or_losing_goods(
 	var p = new_province(data, 200)
 	p.store.seed_initial("bread", 30000)
 	p.store.seed_initial("coin", 90000)
-	p.store.seed_initial("wood", 9000)
-	p.store.seed_initial("firewood", 9000)
+	p.store.seed_initial("wood", 7800)
+	p.store.seed_initial("firewood", 7800)
+	p.store.seed_initial("tools", 1800)
 	for id in ["granary", "farm", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy", "woodcutter"]:
 		p.add_building(id)
 	run_steps(p, 24 * 30)

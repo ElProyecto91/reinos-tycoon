@@ -4,9 +4,9 @@ extends RefCounted
 ## cuadrado de `rect`; los ids de mercancías y edificios del juego son también el nombre del icono.
 ## Los dibujos son simples a propósito: tienen que leerse a 40–60 píxeles.
 
-const GOODS: Array[String] = ["wheat", "flour", "bread", "wood", "firewood", "olives", "oil", "wool", "cloth", "iron", "weapons", "coin"]
-const BUILDINGS: Array[String] = ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy", "barracks"]
-const SYMBOLS: Array[String] = ["people", "hammer", "town", "face", "bolt", "clock", "warning", "danger", "storage", "helmet", "arrow", "calendar", "sun", "leaf", "snow", "sprout"]
+const GOODS: Array[String] = ["wheat", "flour", "bread", "wood", "firewood", "olives", "oil", "wool", "cloth", "iron", "weapons", "charcoal", "tools", "coin"]
+const BUILDINGS: Array[String] = ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy", "charcoal_kiln", "toolsmith", "barracks"]
+const SYMBOLS: Array[String] = ["people", "hammer", "town", "face", "bolt", "clock", "warning", "danger", "storage", "helmet", "arrow", "calendar", "sun", "leaf", "snow", "sprout", "star"]
 
 const GOLD := Color("#e6b84a")
 const GOLD_D := Color("#b8892a")
@@ -146,6 +146,18 @@ static func draw(c: CanvasItem, kind: String, rect: Rect2) -> void:
 			_line(c, r, [0.2, 0.52], [0.48, 0.8], BROWN, 0.08)
 			_line(c, r, [0.26, 0.74], [0.1, 0.9], DARK, 0.09)
 			_circle(c, r, 0.1, 0.9, 0.07, GOLD)
+		"charcoal":
+			_poly(c, r, [[0.08, 0.84], [0.16, 0.56], [0.4, 0.5], [0.52, 0.84]], Color("#2f2a28"))
+			_poly(c, r, [[0.4, 0.84], [0.46, 0.46], [0.7, 0.36], [0.92, 0.6], [0.9, 0.84]], Color("#403a37"))
+			_poly(c, r, [[0.26, 0.5], [0.34, 0.24], [0.56, 0.2], [0.66, 0.46], [0.46, 0.54]], Color("#524b47"))
+			_circle(c, r, 0.34, 0.7, 0.04, AMBER)
+			_circle(c, r, 0.7, 0.62, 0.035, AMBER)
+			_circle(c, r, 0.5, 0.36, 0.03, Color("#f7d24f"))
+		"tools":
+			_line(c, r, [0.18, 0.86], [0.66, 0.32], BROWN_L, 0.1)
+			_quad(c, r, 0.68, 0.26, 0.42, 0.2, 38.0, STONE_L)
+			_line(c, r, [0.84, 0.86], [0.34, 0.2], BROWN, 0.08)
+			_poly(c, r, [[0.14, 0.2], [0.34, 0.14], [0.5, 0.22], [0.36, 0.2], [0.2, 0.28]], STONE)
 		"coin":
 			_circle(c, r, 0.5, 0.5, 0.42, GOLD_D)
 			_circle(c, r, 0.5, 0.5, 0.35, GOLD)
@@ -257,12 +269,34 @@ static func draw(c: CanvasItem, kind: String, rect: Rect2) -> void:
 			_quad(c, r, 0.68, 0.1, 0.3, 0.16, 35.0, STONE_L)
 			for p in [[0.14, 0.2], [0.24, 0.1], [0.12, 0.34]]:
 				_circle(c, r, p[0], p[1], 0.035, AMBER)
+		"charcoal_kiln":
+			_poly(c, r, [[0.08, 0.88], [0.14, 0.58], [0.3, 0.36], [0.5, 0.28], [0.7, 0.36], [0.86, 0.58], [0.92, 0.88]], BROWN)
+			_poly(c, r, [[0.2, 0.88], [0.26, 0.64], [0.4, 0.46], [0.5, 0.4], [0.6, 0.46], [0.74, 0.64], [0.8, 0.88]], Color("#4a3a30"))
+			_rect(c, r, 0.42, 0.7, 0.16, 0.18, DARK)
+			_circle(c, r, 0.5, 0.78, 0.03, AMBER)
+			for p in [[0.5, 0.2, 0.06], [0.58, 0.1, 0.05], [0.66, 0.02, 0.04]]:
+				_circle(c, r, p[0], p[1], p[2], Color("#9a948c"))
+		"toolsmith":
+			_rect(c, r, 0.08, 0.5, 0.84, 0.1, BROWN_L)
+			_rect(c, r, 0.14, 0.6, 0.08, 0.3, BROWN)
+			_rect(c, r, 0.78, 0.6, 0.08, 0.3, BROWN)
+			_line(c, r, [0.2, 0.44], [0.46, 0.14], BROWN, 0.07)
+			_quad(c, r, 0.5, 0.12, 0.3, 0.14, 38.0, STONE_L)
+			_poly(c, r, [[0.6, 0.46], [0.64, 0.2], [0.7, 0.2], [0.74, 0.46]], STONE)
+			_poly(c, r, [[0.64, 0.2], [0.7, 0.2], [0.82, 0.12], [0.76, 0.3]], STONE_L)
 		"barracks":
 			_poly(c, r, [[0.16, 0.12], [0.84, 0.12], [0.84, 0.56], [0.5, 0.92], [0.16, 0.56]], RED_D)
 			_poly(c, r, [[0.22, 0.18], [0.78, 0.18], [0.78, 0.54], [0.5, 0.84], [0.22, 0.54]], RED)
 			_line(c, r, [0.32, 0.64], [0.68, 0.28], STONE_L, 0.08)
 			_line(c, r, [0.32, 0.28], [0.68, 0.64], STONE_L, 0.08)
 			_rect(c, r, 0.46, 0.0, 0.08, 0.16, GOLD)
+		"star":
+			var pts := []
+			for i in 10:
+				var ang := -PI / 2.0 + TAU * float(i) / 10.0
+				var rad := 0.46 if i % 2 == 0 else 0.2
+				pts.append([0.5 + cos(ang) * rad, 0.54 + sin(ang) * rad])
+			_poly(c, r, pts, GOLD)
 		"people":
 			_circle(c, r, 0.34, 0.3, 0.15, SKIN)
 			_poly(c, r, [[0.08, 0.9], [0.12, 0.58], [0.34, 0.5], [0.56, 0.58], [0.6, 0.9]], BLUE)

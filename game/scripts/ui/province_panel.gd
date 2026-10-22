@@ -8,6 +8,7 @@ extends VBoxContainer
 
 signal changed
 
+const CalendarScript := preload("res://scripts/sim/calendar.gd")
 const Texts := preload("res://scripts/ui/texts.gd")
 const Tile := preload("res://scripts/ui/tile.gd")
 const Icons := preload("res://scripts/ui/icons.gd")
@@ -23,7 +24,7 @@ const LOTE_SOLDADOS := 5
 ## Icono de cada aviso de provincia (ver Texts.ALERT_TEXT).
 const ALERT_ICON := {
 	"hunger_warning": "bread", "starvation": "bread", "unrest": "face", "storage_full": "storage",
-	"no_workers": "people", "waste": "storage", "soldiers_unpaid": "helmet",
+	"no_workers": "people", "waste": "storage", "soldiers_unpaid": "helmet", "cold": "snow",
 }
 
 var _data = null
@@ -55,6 +56,7 @@ var _release_button: Button
 var _build_header: Button
 var _build_buttons := {}
 var _army_info := {}
+var _upgrade_button: Button = null
 var _army_costs_key: String = ""
 
 
@@ -150,6 +152,13 @@ func current_province_id() -> String:
 ## Ficha de construcción de un tipo (es un botón; su `tooltip_text` dice el estado), para las pruebas.
 func build_button(type_id: String) -> Button:
 	return _build_buttons.get(type_id, null)
+
+
+## Botón «Mejorar» del detalle del edificio seleccionado (null si ese detalle no lo muestra), para las pruebas.
+func upgrade_button() -> Button:
+	if _upgrade_button != null and not is_instance_valid(_upgrade_button):
+		return null
+	return _upgrade_button
 
 
 func recruit_button() -> Button:
@@ -315,10 +324,14 @@ func _group_buildings(p) -> Dictionary:
 	for b in p.buildings:
 		var type_id: String = b["type"]
 		if not groups.has(type_id):
-			groups[type_id] = {"count": 0, "workers": 0, "statuses": {}, "missing": {}}
+			groups[type_id] = {"count": 0, "workers": 0, "statuses": {}, "missing": {}, "upgraded": 0, "upgradable": 0}
 		var g: Dictionary = groups[type_id]
 		g["count"] += 1
 		g["workers"] += b["workers"]
+		if int(b.get("level", 1)) > 1:
+			g["upgraded"] += 1
+		if int(b.get("level", 1)) < int(_data.buildings[type_id].get("max_level", 1)) and not p.is_upgrading(b["uid"]):
+			g["upgradable"] += 1
 		g["statuses"][b["status"]] = int(g["statuses"].get(b["status"], 0)) + 1
 		for good_id in b["missing"].keys():
 			g["missing"][good_id] = true
@@ -365,6 +378,8 @@ func _update_buildings(p) -> void:
 		if t["workers"] > 0:
 			var wanted: int = t["workers"] * g["count"]
 			tile.footer.append({"icon": "people", "text": "%d/%d" % [g["workers"], wanted], "bad": g["workers"] < wanted})
+		if g["upgraded"] > 0:
+			tile.footer.append({"icon": "star", "text": str(g["upgraded"]), "bad": false})
 		tile.refresh()
 
 
@@ -386,10 +401,13 @@ func _update_projects(p) -> void:
 			continue
 		var project: Dictionary = p.projects[i]
 		var t: Dictionary = _data.buildings[project["type"]]
+		var is_upgrade: bool = int(project.get("upgrade_uid", 0)) > 0
+		var total_steps: int = p.upgrade_steps(project["type"]) if is_upgrade else t["build_steps"]
 		tile.kind = project["type"]
-		tile.tooltip_text = "%s: faltan %d pasos" % [t["name"], project["remaining"]]
+		tile.badge = "★" if is_upgrade else ""
+		tile.tooltip_text = "%s%s: faltan %d pasos" % ["Mejora de " if is_upgrade else "", t["name"], project["remaining"]]
 		tile.footer = [{"icon": "clock", "text": str(project["remaining"]), "bad": false}]
-		tile.ratio = 1.0 - float(project["remaining"]) / float(maxi(1, t["build_steps"]))
+		tile.ratio = 1.0 - float(project["remaining"]) / float(maxi(1, total_steps))
 		tile.bar_color = COLOR_OK if project["workers"] > 0 else COLOR_WARNING
 		tile.dot = Color(0, 0, 0, 0) if project["workers"] > 0 else COLOR_WARNING
 		tile.refresh()
@@ -489,6 +507,9 @@ func _detail_for(p) -> Dictionary:
 			if _data.is_physical(id):
 				line += " (máx. %s)" % Texts.amount(p.store.limit(id))
 				row.append({"icon": "storage", "text": "%s/%s" % [Texts.compact(p.store.used_space()), Texts.compact(p.store.capacity)], "bad": false})
+			if _data.seasons.has(id):
+				var season_icon: String = CalendarScript.SEASON_ICONS[p.current_season()]
+				row.append({"icon": season_icon, "text": "%d %%" % p.season_percent(id), "bad": p.season_percent(id) < 100})
 			return {"icon": id, "title": line, "rows": [row] if not row.is_empty() else []}
 		"stat":
 			return _stat_detail(p, id)
@@ -549,7 +570,19 @@ func _building_detail(p, type_id: String) -> Dictionary:
 		row.append({"icon": "house", "text": "+%d" % t["housing"], "bad": false})
 	if t["workers"] > 0:
 		row.append({"icon": "people", "text": "%d/%d" % [g["workers"], t["workers"] * g["count"]], "bad": g["workers"] < t["workers"] * g["count"]})
-	return {"icon": type_id, "title": title, "rows": [row] if not row.is_empty() else []}
+	var detail := {"icon": type_id, "title": title, "rows": [row] if not row.is_empty() else []}
+	if int(t.get("max_level", 1)) > 1 and int(_data.rules.get("upgrade_cost_percent", 0)) > 0 and g["upgradable"] > 0:
+		var cost: Dictionary = p.upgrade_cost(type_id)
+		var entries: Array = []
+		var affordable := true
+		for good_id in cost.keys():
+			var short: bool = p.store.stock(good_id) < cost[good_id]
+			affordable = affordable and not short
+			entries.append({"icon": good_id, "text": Texts.compact(cost[good_id]), "bad": short})
+		entries.append({"icon": "clock", "text": str(p.upgrade_steps(type_id)), "bad": false})
+		var room: bool = p.projects.size() < _data.rules["max_projects"]
+		detail["upgrade"] = {"type": type_id, "costs": entries, "enabled": affordable and room, "full": not room, "level": int(t["max_level"])}
+	return detail
 
 
 func _update_detail(p) -> void:
@@ -558,6 +591,7 @@ func _update_detail(p) -> void:
 	if d.is_empty():
 		_detail_text = ""
 		_detail_signature = ""
+		_upgrade_button = null
 		return
 	var signature := JSON.stringify(d)
 	_detail_text = d["title"]
@@ -597,6 +631,24 @@ func _update_detail(p) -> void:
 				line.add_child(arrow)
 			else:
 				line.add_child(_info_chip(entry["icon"], entry["text"], entry.get("bad", false)))
+	_upgrade_button = null
+	if d.has("upgrade"):
+		var up: Dictionary = d["upgrade"]
+		var line := HFlowContainer.new()
+		line.add_theme_constant_override("h_separation", 8)
+		_detail_content.add_child(line)
+		var button := _make_tile("chip", 64)
+		button.kind = "star"
+		button.caption = "+%d %%" % int(_data.rules["upgrade_output_percent"])
+		button.custom_minimum_size = Vector2(130, 64)
+		button.disabled = not up["enabled"]
+		button.tooltip_text = "Mejorar %s%s" % [Texts.building_name(_data, up["type"]), " · obras al máximo" if up["full"] else (" · faltan recursos" if not up["enabled"] else "")]
+		button.pressed.connect(_on_upgrade_pressed.bind(up["type"]))
+		button.refresh()
+		line.add_child(button)
+		_upgrade_button = button
+		for entry in up["costs"]:
+			line.add_child(_info_chip(entry["icon"], entry["text"], entry.get("bad", false)))
 
 
 # --- Acciones --------------------------------------------------------------------------------------------------------
@@ -619,6 +671,20 @@ func _on_release_pressed() -> void:
 		_feedback.text = "Licenciados %d soldados." % LOTE_SOLDADOS
 	else:
 		_feedback.text = "No se pudo licenciar: %s." % _province.last_error
+	refresh()
+	changed.emit()
+
+
+func _on_upgrade_pressed(type_id: String) -> void:
+	if _province == null:
+		return
+	for b in _province.buildings:
+		if b["type"] == type_id and b["level"] < _data.buildings[type_id]["max_level"] and not _province.is_upgrading(b["uid"]):
+			if _province.start_upgrade(b["uid"]):
+				_feedback.text = "Mejora iniciada: %s." % Texts.building_name(_data, type_id)
+			else:
+				_feedback.text = "No se pudo mejorar: %s." % _province.last_error
+			break
 	refresh()
 	changed.emit()
 

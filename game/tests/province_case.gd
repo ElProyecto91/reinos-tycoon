@@ -12,6 +12,17 @@ func new_data():
 	var data = load(GAME_DATA).new()
 	var ok: bool = data.load_defaults()
 	assert_true(ok, "los datos por defecto deben cargarse: %s" % "\n".join(data.errors))
+	# Las pruebas de producción comprueban cifras exactas: sin estaciones la cosecha no varía con el mes.
+	# Las pruebas de estaciones usan `new_data_with_seasons()`.
+	data.seasons = {}
+	return data
+
+
+## Datos reales con la estacionalidad de cultivos activada (seasons.json).
+func new_data_with_seasons():
+	var data = load(GAME_DATA).new()
+	var ok: bool = data.load_defaults()
+	assert_true(ok, "los datos por defecto deben cargarse: %s" % "\n".join(data.errors))
 	return data
 
 
@@ -76,7 +87,7 @@ func snapshot(province) -> String:
 		ledgers[good_id] = province.store.ledger(good_id)
 	var states: Array = []
 	for b in province.buildings:
-		states.append([b["uid"], b["type"], b["workers"], b["enabled"], b["active"], b["progress"], b["status"], b["missing"]])
+		states.append([b["uid"], b["type"], b.get("level", 1), b["workers"], b["enabled"], b["active"], b["progress"], b["status"], b["missing"]])
 	var state := {
 		"id": province.id, "step": province.step_count, "population": province.population,
 		"unrest": province.unrest, "hunger": province.hunger_steps, "recruits": province.recruits,
@@ -84,5 +95,6 @@ func snapshot(province) -> String:
 		"shortage": province.food_shortage_percent, "capacity": province.store.capacity,
 		"stock": stock, "ledgers": ledgers, "buildings": states, "projects": province.projects,
 		"modifiers": province.modifiers, "wasted": province.wasted, "alerts": Array(province.alerts),
+		"cold": [province.cold_steps, province.cold_shortage_percent],
 	}
 	return JSON.stringify(state, "", true)
