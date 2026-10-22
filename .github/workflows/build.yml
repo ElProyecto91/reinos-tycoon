@@ -55,7 +55,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p logs
-          # "timeout 300" corta dentro del contenedor si algo se cuelga y deja el registro.
+          # "timeout 420" corta dentro del contenedor si algo se cuelga y deja el registro.
           docker run --rm -v "$PWD:/work" -w /work "$GODOT_IMAGE" \
             timeout 420 godot --headless --path game -s res://tests/run_tests.gd 2>&1 | tee logs/pruebas.txt
 
