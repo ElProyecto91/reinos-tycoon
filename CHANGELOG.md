@@ -2,6 +2,8 @@
 
 ## Sin versionar (2026-10-21, fase 1 en curso)
 
+- **Fase 2.1 (D-031)**: calendario derivado del contador de pasos (`calendar.gd`): fecha «1 jul 1000 · 07:00» y icono de estación en la barra superior; no se guarda, el formato de guardado no cambia. Reglas opcionales `calendar_start_year`/`calendar_start_day`. 318 pruebas en local.
+
 - **UI1 (0.1.0)**: la ficha de provincia pasa de texto a símbolos: `icons.gd` (38 iconos dibujados por código, sin recursos externos), `tile.gd` (ficha táctil), `province_panel.gd` rehecho (cifras clave, avisos, existencias con barra, edificios agrupados, obras con progreso, ejército y construcción en cuadrícula; texto solo en el detalle al pulsar). `Texts.compact` trunca sin redondear hacia arriba. 311 pruebas en local. Diseño (solo documento) de las redes de comercio dentro de cada reino en `docs/DISENO_COMERCIO.md`.
 
 - **Versión 0.1.0 (M1 a M3, D-030)**: mapa de pergamino como pantalla principal con 40 provincias en 6 entidades (`map.json` formato 2, `tools/mapa/`, `map_view.gd` nuevo, flujo mapa → tarjeta → entrar). Fuente Lora. Zoom inicial 1,25. Presupuesto de 12 ms de simulación por fotograma. 301 pruebas en local (las largas de cierre se acotaron para caber en el tiempo de CI; ver TEST_PLAN); falta confirmar en GitHub Actions. Referencias H-39..H-44 sin registrar (ver fuentes).

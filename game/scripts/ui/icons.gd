@@ -6,7 +6,7 @@ extends RefCounted
 
 const GOODS: Array[String] = ["wheat", "flour", "bread", "wood", "firewood", "olives", "oil", "wool", "cloth", "iron", "weapons", "coin"]
 const BUILDINGS: Array[String] = ["house", "granary", "farm", "mill", "bakery", "woodcutter", "olive_grove", "olive_press", "sheepfold", "loom", "market", "mine", "smithy", "barracks"]
-const SYMBOLS: Array[String] = ["people", "hammer", "town", "face", "bolt", "clock", "warning", "danger", "storage", "helmet", "arrow", "calendar"]
+const SYMBOLS: Array[String] = ["people", "hammer", "town", "face", "bolt", "clock", "warning", "danger", "storage", "helmet", "arrow", "calendar", "sun", "leaf", "snow", "sprout"]
 
 const GOLD := Color("#e6b84a")
 const GOLD_D := Color("#b8892a")
@@ -323,6 +323,31 @@ static func draw(c: CanvasItem, kind: String, rect: Rect2) -> void:
 			_poly(c, r, [[0.5, 0.14], [0.44, 0.0], [0.62, 0.04], [0.56, 0.16]], RED)
 		"arrow":
 			_poly(c, r, [[0.1, 0.4], [0.58, 0.4], [0.58, 0.22], [0.92, 0.5], [0.58, 0.78], [0.58, 0.6], [0.1, 0.6]], STONE_L)
+		"sun":
+			for i in 8:
+				var a := TAU * float(i) / 8.0
+				_line(c, r, [0.5 + cos(a) * 0.30, 0.5 + sin(a) * 0.30], [0.5 + cos(a) * 0.46, 0.5 + sin(a) * 0.46], GOLD, 0.07)
+			_circle(c, r, 0.5, 0.5, 0.25, GOLD)
+			_circle(c, r, 0.5, 0.5, 0.18, Color("#f7d56a"))
+		"leaf":
+			_poly(c, r, [[0.5, 0.06], [0.84, 0.36], [0.74, 0.74], [0.5, 0.86], [0.26, 0.74], [0.16, 0.36]], Color("#d9722d"))
+			_poly(c, r, [[0.5, 0.06], [0.84, 0.36], [0.74, 0.74], [0.5, 0.86]], Color("#c4522a"))
+			_line(c, r, [0.5, 0.2], [0.5, 0.96], BROWN, 0.05)
+			_line(c, r, [0.5, 0.5], [0.7, 0.36], BROWN, 0.03)
+			_line(c, r, [0.5, 0.6], [0.3, 0.46], BROWN, 0.03)
+		"snow":
+			for a in [0.0, 60.0, 120.0]:
+				var d := Vector2(cos(deg_to_rad(a)), sin(deg_to_rad(a)))
+				_line(c, r, [0.5 - d.x * 0.42, 0.5 - d.y * 0.42], [0.5 + d.x * 0.42, 0.5 + d.y * 0.42], Color("#cfe6f5"), 0.07)
+			for a in [0.0, 60.0, 120.0, 180.0, 240.0, 300.0]:
+				var d := Vector2(cos(deg_to_rad(a)), sin(deg_to_rad(a)))
+				var tip := Vector2(0.5, 0.5) + d * 0.32
+				_circle(c, r, tip.x, tip.y, 0.06, WHITE)
+		"sprout":
+			_line(c, r, [0.5, 0.92], [0.5, 0.4], GREEN_D, 0.07)
+			_poly(c, r, [[0.5, 0.5], [0.12, 0.32], [0.2, 0.12], [0.46, 0.22]], GREEN)
+			_poly(c, r, [[0.5, 0.42], [0.88, 0.2], [0.9, 0.42], [0.6, 0.56]], Color("#8bc86f"))
+			_rect(c, r, 0.3, 0.9, 0.4, 0.06, BROWN)
 		"calendar":
 			_rect(c, r, 0.12, 0.2, 0.76, 0.7, WHITE)
 			_rect(c, r, 0.12, 0.2, 0.76, 0.2, RED)

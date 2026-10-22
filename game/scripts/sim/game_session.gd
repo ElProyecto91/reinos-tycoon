@@ -11,6 +11,7 @@ const GameDataScript := preload("res://scripts/sim/game_data.gd")
 const GameMapScript := preload("res://scripts/sim/game_map.gd")
 const SaveGameScript := preload("res://scripts/sim/save_game.gd")
 const OfflineScript := preload("res://scripts/sim/offline.gd")
+const CalendarScript := preload("res://scripts/sim/calendar.gd")
 
 var data = null
 var map = null
@@ -106,10 +107,15 @@ func measure_speed(steps: int) -> Dictionary:
 	return {"steps": steps, "provinces": scratch.provinces.size(), "microseconds": Time.get_ticks_usec() - started}
 
 
-## "Día 3, 14:00" a partir del contador de pasos (un paso = una hora de juego).
+## Fecha actual del juego (ver calendar.gd), derivada del contador de pasos.
+func date() -> Dictionary:
+	var year: int = int(data.rules.get("calendar_start_year", 0))
+	return CalendarScript.at(world.step_count, year if year > 0 else 1000, int(data.rules.get("calendar_start_day", 0)))
+
+
+## "15 jul 1000 · 07:00" a partir del contador de pasos (un paso = una hora de juego).
 func time_text() -> String:
-	var steps: int = world.step_count
-	return "Día %d, %02d:00" % [steps / 24 + 1, steps % 24]
+	return CalendarScript.text(date())
 
 
 ## Texto vacío si las provincias del guardado son exactamente las del mapa; si no, cuáles difieren.

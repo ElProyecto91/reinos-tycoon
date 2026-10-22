@@ -40,12 +40,15 @@ const RULE_INTS := {
 }
 
 ## Reglas opcionales (valen 0 si no están): nombre -> [mínimo, máximo].
+## calendar_start_year: año de la partida nueva (0 = 1000); calendar_start_day: día del año (0 a 364) de la partida nueva.
 ## recruits_per_barracks: soldados que aloja cada cuartel (0 = no hace falta cuartel);
 ## recruit_weapons: armas (milésimas) que gasta cada recluta; recruit_upkeep: moneda por soldado y paso.
 const RULE_OPTIONAL_INTS := {
 	"recruits_per_barracks": [0, 100000],
 	"recruit_weapons": [0, 100000000],
 	"recruit_upkeep": [0, 1000000],
+	"calendar_start_year": [0, 9999],
+	"calendar_start_day": [0, 364],
 }
 
 ## Mercancías por id: id -> {id, name, category, unit, physical}

@@ -265,6 +265,15 @@ Formato según la regla 15 del documento maestro: problema, propuesta más senci
 - Las poblaciones y edificios iniciales son parámetros de juego, no históricos. Mallorca y las Baleares no son jugables.
 - Estado: **provisional**.
 
+## D-031. Calendario derivado del contador de pasos (fase 2.1)
+
+- `scripts/sim/calendar.gd`: un paso = una hora, un día = 24 pasos, un año = 365 días (8760 pasos, sin bisiestos). Fecha, mes y estación se **calculan** del contador de pasos; **no se guardan**, así que los guardados antiguos siguen valiendo y cargar una partida da la misma fecha.
+- Reglas opcionales nuevas `calendar_start_year` (0 = 1000) y `calendar_start_day` (0 a 364). La partida nueva empieza el **1 de julio de 1000** (día 181), coherente con la cosecha de trigo de mayo a julio (H-10).
+- Estaciones por mes (convención de juego, D-022): invierno dic–feb, primavera mar–mayo, verano jun–ago, otoño sep–nov. La fuente del calendario de Córdoba (H-10) da labores, **no** fechas de estación.
+- La barra superior muestra un icono de estación (hoja, brote, sol, copo) y «1 jul 1000 · 07:00» en vez de «Día N, hora». `icon_rect.gd` dibuja un icono suelto.
+- Los nombres de mes y la longitud de los meses son los actuales; el año 1000 es la fecha de ambientación, no un dato de simulación histórica.
+- Estado: **provisional**.
+
 ## Orden de entregas
 
 La sección 40 pedía empezar por las entregas A, B y C. Este repositorio nació con la D (archivos iniciales) porque el primer texto llegó cortado. Los archivos de la D son mínimos y reversibles; no condicionan el plan.

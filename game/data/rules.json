@@ -1,6 +1,6 @@
 {
 	"format_version": 1,
-	"status": "Parámetros de juego provisionales. No son datos históricos. Cantidades en milésimas; tiempos en pasos de simulación (un paso equivale a una hora de juego; el día tiene 24 pasos).",
+	"status": "Parámetros de juego provisionales. No son datos históricos. Cantidades en milésimas; tiempos en pasos de simulación (un paso equivale a una hora de juego; el día tiene 24 pasos). calendar_start_day: día del año de la partida nueva (0 a 364; 181 = 1 de julio, la fecha de referencia de la región, D-021).",
 	"rules": {
 		"currency": "coin",
 		"base_capacity": 60000,
@@ -29,6 +29,8 @@
 		"growth_interval": 12,
 		"growth_percent": 2,
 		"growth_unrest_limit": 200,
+		"calendar_start_year": 1000,
+		"calendar_start_day": 181,
 		"step_seconds": 60,
 		"offline_limit_seconds": 36000
 	}

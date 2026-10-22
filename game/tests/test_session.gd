@@ -217,9 +217,9 @@ func test_time_text() -> void:
 	_clean()
 	var s = _session()
 	s.start(T0)
-	assert_eq(s.time_text(), "Día 1, 00:00", "inicio")
+	assert_eq(s.time_text(), "1 jul 1000 · 00:00", "inicio")
 	s.world.run_steps(24 + 5)
-	assert_eq(s.time_text(), "Día 2, 05:00", "día 2, hora 5")
+	assert_eq(s.time_text(), "2 jul 1000 · 05:00", "día 2, hora 5")
 	done()
 
 

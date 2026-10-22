@@ -80,7 +80,7 @@ Según la sección 28 del documento maestro: estacionalidad, cadenas agrícola/f
 
 | ID | Tarea | Prueba | Listo cuando |
 |---|---|---|---|
-| 2.1 | Calendario derivado del contador de pasos: día, mes, estación y año (un paso = una hora; año de 365 días = 8760 pasos y estaciones por mes, D-022) | [PC] | la estación se calcula solo desde el paso (no se guarda) y se muestra en la barra superior |
+| 2.1 ✔ (local, falta CI) | Calendario derivado del contador de pasos: día, mes, estación y año (un paso = una hora; año de 365 días = 8760 pasos y estaciones por mes, D-022) | [PC] | la estación se calcula solo desde el paso (no se guarda) y se muestra en la barra superior |
 | 2.2 | Estacionalidad agrícola por mes y por cultivo (trigo: siembra de septiembre a diciembre, cosecha de mayo a julio según el calendario de Córdoba, D-022), en datos validados | [PC] | A1 (conservación) y A10 siguen en verde; la cosecha varía con la estación; la crisis A7 sigue recuperándose |
 | 2.3 | Necesidad estacional de leña (calefacción) con escasez gradual como la del hambre | [PC] | sin leña hay aviso y después descontento gradual; se recupera |
 | 2.4 | Cadena forestal ampliada (la minera queda aplazada hasta tener fuentes, D-023) | [PC] | no producen sin insumos y muestran por qué |
@@ -103,5 +103,7 @@ Las tres decisiones previas (año, estaciones por cultivo y minería) se tomaron
 | 7 Ampliación histórica | 1 completa | medir rendimiento y memoria con 20, 100 y más provincias también en el móvil |
 | 8 Automatización y progresión | 4 | solo la interfaz |
 | 9 Pulido | todas | rendimiento, batería, accesibilidad, tutorial y distribución |
+
+Petición del usuario (2026-10-22): conquistar territorios colindantes de otros reinos; diseño en `docs/DISENO_CONQUISTA.md` (piezas CQ1 a CQ6, dentro de la fase 6).
 
 Las fases 3 a 8 se detallarán en tareas pequeñas al terminar la anterior, no antes. Cada fase termina con pruebas ejecutadas, documentación actualizada y versión identificable (sección 37).

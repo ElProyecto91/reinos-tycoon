@@ -9,6 +9,8 @@ extends Control
 const SessionScript := preload("res://scripts/sim/game_session.gd")
 const MapViewScript := preload("res://scripts/ui/map_view.gd")
 const ProvincePanelScript := preload("res://scripts/ui/province_panel.gd")
+const IconRectScript := preload("res://scripts/ui/icon_rect.gd")
+const CalendarScript := preload("res://scripts/sim/calendar.gd")
 const ProvinceViewScript := preload("res://scripts/ui/province_view.gd")
 const Texts := preload("res://scripts/ui/texts.gd")
 const UpdateCheck := preload("res://scripts/update/update_check.gd")
@@ -68,6 +70,7 @@ var _map_card: PanelContainer
 var _card_title: Label
 var _card_text: Label
 var _enter_button: Button
+var _season_icon: Control
 var _in_province := false
 ## Presupuesto de simulación por fotograma (µs); las pruebas lo ponen enorme para ser deterministas.
 var frame_budget_usec: int = FRAME_BUDGET_USEC
@@ -134,9 +137,15 @@ func _build_ui() -> void:
 	title.text = "Reinos Tycoon"
 	title.add_theme_font_size_override("font_size", 32)
 	title_box.add_child(title)
+	var date_row := HBoxContainer.new()
+	date_row.add_theme_constant_override("separation", 8)
+	title_box.add_child(date_row)
+	_season_icon = IconRectScript.new()
+	_season_icon.custom_minimum_size = Vector2(34, 34)
+	date_row.add_child(_season_icon)
 	_time_label = Label.new()
 	_time_label.add_theme_color_override("font_color", COLOR_ACCENT)
-	title_box.add_child(_time_label)
+	date_row.add_child(_time_label)
 	_map_button = Button.new()
 	_map_button.text = "Mapa"
 	_map_button.custom_minimum_size = Vector2(150, BUTTON_HEIGHT)
@@ -399,6 +408,8 @@ func _save_now(show_result: bool) -> void:
 
 func _refresh_all() -> void:
 	_time_label.text = session.time_text()
+	_season_icon.kind = CalendarScript.SEASON_ICONS[session.date()["season"]]
+	_season_icon.tooltip_text = CalendarScript.SEASON_NAMES[session.date()["season"]]
 	_map_view.queue_redraw()
 	_refresh_card()
 	_panel.refresh()
