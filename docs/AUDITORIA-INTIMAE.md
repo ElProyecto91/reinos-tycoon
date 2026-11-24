@@ -70,31 +70,40 @@ Páginas: aviso legal, privacidad, cookies, condiciones de compra, envíos y dev
 
 ---
 
-## 3. Competidores
+## 3. Competidores (revisión directa, 24-11-2026)
 
-**Límite de esta auditoría:** el entorno desde el que trabajo bloquea por red los dominios de los seis competidores (fallo DNS). **No he abierto ninguna de sus webs.** Lo que sigue procede de buscadores y terceros, es parcial y puede estar desactualizado.
+Método: abrí las portadas y páginas públicas de preguntas frecuentes y condiciones con peticiones HTTP normales. **No accedí a zonas con registro, no eludí protecciones y no valoré el contenido explícito**, solo el modelo de negocio. Lo que cada web dice de sí misma es **afirmación comercial**, no hecho comprobado (p. ej. cifras de miembros).
 
-| Competidor | Lo poco que he encontrado | Fiabilidad |
-|---|---|---|
-| Snifffr | Suscripción desde ≥10 $/mes; 3,5/5 en Trustpilot con 33 opiniones | [Fuente] terceros |
-| PantyDeal | "Sin comisión" según un blog; "460.000 vendedoras" según Vice; 3,3 en Trustpilot | [Fuente] terceros; cifra de usuarios es afirmación comercial |
-| Sofia Gray | Retirada mínima de 50 $ según MoneyMagpie | [Fuente] un solo tercero |
-| All Things Worn | Nada útil encontrado | [No verificado] |
-| underprivé | Nada útil encontrado | [No verificado] |
-| The Panty Bank | Nada útil encontrado | [No verificado] |
+| Competidor | Acceso | Modelo (lo que dice la propia web) | Dinero | Verificación | Protección al comprador |
+|---|---|---|---|---|---|
+| **Snifffr** | OK | Mercado global; "2M+ miembros", "desde 2018"; registro gratis sin DNI; mensajería solo con cuenta Premium | Moneda interna (tokens, no reembolsables ni canjeables por el comprador). Cobro del vendedor vía Wise, con mínimo de 10 tokens y exigiendo Premium + verificación. Cobros hechos por empresas del grupo como comerciante de registro (EE. UU./Reino Unido). Permite también pagar directamente con el vendedor | Edad por proveedor externo de verificación de edad; "verificado" = foto con nota manuscrita; el vendedor debe conservar documentos de identidad y consentimiento de las personas que aparezcan; prohíbe imágenes generadas por IA | Dice que hay protección tipo "escrow" con tokens; reseñas y denuncias; recomienda envío con seguimiento |
+| **PantyDeal** | OK | Anuncios + tienda propia + chat; "más de 2.000.000 miembros", "sin comisión" | Suscripciones. **Pagos entre comprador y vendedor fuera de la plataforma** (PayPal, tarjetas regalo, Cash App, Venmo) | Insignias por teléfono, foto y vídeo | Ninguna garantía propia: "no participamos en las transacciones" |
+| **The Panty Bank** | OK | Tienda curada: sin registro abierto, las modelos las aprueba el equipo; cada pedido incluye vídeo de verificación y carta | Cobro con Authorize.net; **sin devoluciones ni reembolsos** de prendas usadas | Equipo aprueba a cada modelo; páginas de política contra trata, retirada de contenido y 18 U.S.C. 2257 | Vídeo de verificación por pedido; embalaje discreto |
+| **underprivé** | OK, pero la web carga con JavaScript y solo vi metadatos | Se presenta como "marketplace líder en España", "vendedoras verificadas, pagos seguros y envío discreto" | No pude ver comisiones ni condiciones | No visible | No visible |
+| **Sofia Gray** | **Bloqueado** (desafío de Cloudflare) | No analizada | - | - | - |
+| **All Things Worn** | **Bloqueado** (desafío de Cloudflare) | No analizada | - | - | - |
 
-**No voy a rellenar la tabla comparativa de funciones con datos que no tengo.** Dos vías: (a) abres tú las seis webs desde el móvil y me pasas capturas/notas; (b) autorizas en el entorno el acceso a esos seis dominios y repito el análisis con las páginas reales (requiere tu aprobación explícita).
+Para Sofia Gray y All Things Worn no intenté saltar la protección. Sigo sin datos propios de ellas; solo valen las cifras de terceros de la primera pasada (retirada mínima de 50 $ para Sofia Gray, según un tercero).
 
 Referencias de comisión de otros mercados [Fuente, mixta]: OnlyFans/Fansly 20 %, Passes 10 %, Fanvue 15–20 %, Poshmark 20 %, Vestiaire Collective 12 % (oficial), Mercari 10 %, Vinted 0 % al vendedor con tarifa al comprador.
 
 ---
 
-## 4. Comparativa con Intimae (parcial)
+## 4. Comparativa con Intimae
 
-Con lo verificado, lo único honesto es esto:
-- **Ventaja actual de Intimae:** cumplimiento fiscal europeo visible por vendedor y destino, multilingüe, separación de zonas, consentimiento explícito de datos sensibles. [Verificado en Intimae]
-- **Déficit frente a cualquier mercado real:** todo lo del apartado 1.3. Un competidor con 1 solo usuario real ya supera a Intimae en funcionalidad porque Intimae no tiene usuarios ni transacciones.
-- La comparación punto a punto con los seis competidores queda **pendiente** de la vía (a) o (b) del apartado 3.
+**Lo que descubren los competidores [Verificado en sus webs]**
+1. **Ninguno de los tres que pude leer cobra comisión sobre la venta**: ganan con suscripciones/membresías (PantyDeal, Snifffr Premium), con venta de moneda interna (Snifffr) o con tienda propia (The Panty Bank). Esto contradice la hipótesis del documento maestro (comisión del 8-12 %) como práctica del sector, y da una alternativa: ingresos por suscripción o por tarifa de anuncio en lugar de comisión.
+2. **Dos de los tres evitan ser parte del pago** (PantyDeal deja pagar fuera; Snifffr usa tokens con comerciante de registro propio en EE. UU./Reino Unido). Eso apunta a que reparto de fondos a terceros con procesador convencional es justo lo difícil, y que operan en jurisdicciones distintas a la UE. [Probable]
+3. **Verificación**: lo habitual es edad por proveedor externo + verificación manual con foto/nota. Ninguno pide DNI en el registro.
+4. **El estándar del sector incluye** chat, reseñas, denuncias, envío discreto, perfiles/tienda del vendedor y pagos dentro o fuera de la plataforma.
+5. **Los tres son anglófonos y con perspectiva EE. UU.**: ninguno muestra tratamiento de IVA por país ni DAC7. Esa es la única ventaja diferencial real y verificable de Intimae (ya implementada en el motor fiscal).
+
+**Intimae frente a ellos**
+- Ventaja: fiscalidad europea por vendedor y destino, multilingüe, zonas separadas, consentimiento explícito de datos sensibles.
+- Déficit: todo lo del apartado 1.3 (cuentas, mensajería, reseñas, verificación, pagos...). Hoy no hay ni un solo usuario real.
+- Dato que no tengo: su tráfico real, sus ingresos y sus tasas de fraude. Las cifras de miembros son declaraciones propias.
+
+**Consecuencia para la decisión de comisión**: el 8-12 % del documento maestro no está respaldado por lo que hacen estos competidores; la alternativa a evaluar es **tarifa fija por anuncio o suscripción** (más fácil de cobrar y de justificar fiscalmente), con comisión opcional si hay pago integrado. Decisión pendiente tuya.
 
 ---
 
@@ -175,6 +184,6 @@ La verdad incómoda: el cuello de botella no es el código, es **conseguir cobra
 
 ## 10. Límites de esta auditoría
 - No he accedido a cuentas de Vercel, Supabase ni Stripe del usuario más allá de desplegar; no existe un proyecto Supabase vinculado a este repositorio que yo haya podido inspeccionar.
-- No he abierto las webs de los seis competidores (bloqueo de red).
+- Competidores: leí cuatro de seis (Snifffr, PantyDeal, The Panty Bank, y solo metadatos de underprivé). Sofia Gray y All Things Worn estaban tras un desafío de Cloudflare y no los analicé. Solo páginas públicas, sin registro.
 - No he consultado BOE, AEAT, ATC ni la Comisión Europea directamente en esta pasada; las cifras fiscales y regulatorias son de fuentes secundarias o de mi conocimiento y deben contrastarse con fuente oficial antes de actuar.
 - Las tarifas de envío, comisión e impuestos del sitio son de demostración.
