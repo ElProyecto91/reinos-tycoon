@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Intimae · Lencería usada, con historia</title>
+  <meta name="description" content="Marketplace para adultos de lencería usada. Vendedores mayores de edad verificados, envío discreto y trato privado.">
+  <meta name="rating" content="adult">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- Verificación de edad -->
+<div id="agegate" class="agegate" role="dialog" aria-modal="true" aria-labelledby="ag-title" hidden>
+  <div class="agegate__box">
+    <div class="brand brand--lg">Intimae</div>
+    <h1 id="ag-title">Contenido para adultos</h1>
+    <p>Este sitio contiene material de carácter erótico y está dirigido exclusivamente a personas <strong>mayores de 18 años</strong> (o la mayoría de edad legal en tu país).</p>
+    <div class="agegate__actions">
+      <button class="btn btn--primary" id="ag-yes">Soy mayor de edad · Entrar</button>
+      <a class="btn btn--ghost" href="https://www.google.com">Salir</a>
+    </div>
+    <small>Al entrar aceptas los <a href="legal.html#terminos">términos</a> y el uso de almacenamiento local para el carrito.</small>
+  </div>
+</div>
+
+<header class="header">
+  <div class="wrap header__in">
+    <a href="#" class="brand">Intimae</a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#catalogo">Catálogo</a>
+      <a href="#como">Cómo funciona</a>
+      <a href="#vender">Vender</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <button class="cartbtn" id="open-cart" aria-label="Abrir carrito">
+      Carrito <span id="cart-count" class="cartbtn__n">0</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap hero__in">
+      <p class="eyebrow">Solo adultos · Trato discreto</p>
+      <h2>Lo íntimo, <em>con nombre propio</em>.</h2>
+      <p class="lead">Lencería usada de vendedores y vendedoras mayores de edad y verificados. Elige la prenda, los días de uso y quién la lleva. Te llega en una caja sin marcas.</p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#catalogo">Ver catálogo</a>
+        <a class="btn btn--ghost" href="#vender">Quiero vender</a>
+      </div>
+      <ul class="trust">
+        <li>Verificación de identidad y edad</li>
+        <li>Embalaje neutro</li>
+        <li>Sin datos en el paquete</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="catalogo" class="section">
+    <div class="wrap">
+      <div class="section__head">
+        <h3>Catálogo</h3>
+        <p>Cada anuncio indica prenda, talla, días de uso y estado de lavado.</p>
+      </div>
+      <div class="filters" role="group" aria-label="Filtros">
+        <label>Prenda
+          <select id="f-type">
+            <option value="">Todas</option>
+            <option value="braga">Braga</option>
+            <option value="tanga">Tanga</option>
+            <option value="sujetador">Sujetador</option>
+            <option value="culotte">Culotte</option>
+          </select>
+        </label>
+        <label>Talla
+          <select id="f-size">
+            <option value="">Todas</option>
+            <option>S</option><option>M</option><option>L</option><option>XL</option>
+          </select>
+        </label>
+        <label>Uso mínimo
+          <select id="f-days">
+            <option value="0">Cualquiera</option>
+            <option value="1">1+ días</option>
+            <option value="3">3+ días</option>
+            <option value="7">7+ días</option>
+          </select>
+        </label>
+        <label>Ordenar
+          <select id="f-sort">
+            <option value="new">Novedades</option>
+            <option value="asc">Precio ↑</option>
+            <option value="desc">Precio ↓</option>
+            <option value="days">Más uso</option>
+          </select>
+        </label>
+      </div>
+      <div id="grid" class="grid" aria-live="polite"></div>
+      <p id="empty" class="empty" hidden>Nada con esos filtros. Prueba a ampliarlos.</p>
+    </div>
+  </section>
+
+  <section id="como" class="section section--alt">
+    <div class="wrap">
+      <div class="section__head"><h3>Cómo funciona</h3></div>
+      <ol class="steps">
+        <li><b>1 · Eliges</b><span>Navega por el catálogo y añade al carrito. Puedes dejar una petición (días de uso, color…) que el vendedor aceptará o no.</span></li>
+        <li><b>2 · Confirmas</b><span>Envías el pedido y te respondemos con el pago y el plazo. El pago es manual: transferencia, Bizum o cripto.</span></li>
+        <li><b>3 · Recibes</b><span>La prenda sale en bolsa sellada dentro de una caja neutra. Sin logo, sin nombre del sitio, sin remitente identificable.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="vender" class="section">
+    <div class="wrap two">
+      <div>
+        <div class="section__head"><h3>Vende con nosotros</h3></div>
+        <p>Tú decides qué vendes, a qué precio y qué compartes de ti. Usamos alias; tu identidad real solo la ve el equipo de verificación.</p>
+        <ul class="ticks">
+          <li>Comisión del 15 % solo si vendes</li>
+          <li>Pagos en un máximo de 72 h tras la entrega</li>
+          <li>Puedes rechazar cualquier petición</li>
+          <li>Obligatorio: ser mayor de 18 años y verificar el DNI</li>
+        </ul>
+      </div>
+      <form id="seller-form" class="card form" novalidate>
+        <h4>Solicitud de vendedor</h4>
+        <label>Alias público<input name="alias" required maxlength="30" placeholder="Ej. Lunaroja"></label>
+        <label>Email<input name="email" type="email" required placeholder="tu@email.com"></label>
+        <label>Edad<input name="age" type="number" min="18" max="99" required placeholder="18+"></label>
+        <label>Qué quieres vender<textarea name="about" rows="3" maxlength="400" placeholder="Tipo de prendas, tallas, días de uso…"></textarea></label>
+        <label class="check"><input type="checkbox" name="ok" required> Confirmo que soy mayor de 18 años, que las prendas son mías y que acepto la verificación de identidad.</label>
+        <button class="btn btn--primary" type="submit">Enviar solicitud</button>
+        <p class="form__msg" id="seller-msg" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <section id="faq" class="section section--alt">
+    <div class="wrap faq">
+      <div class="section__head"><h3>Preguntas frecuentes</h3></div>
+      <details><summary>¿Cómo es el envío?</summary><p>Siempre en caja neutra, sin referencias al sitio. En el extracto bancario no aparece nada identificable cuando el pago es por transferencia o Bizum.</p></details>
+      <details><summary>¿Qué garantías hay de que la prenda sea real?</summary><p>Los vendedores están verificados y las fotos de cada anuncio se revisan. Si el pedido no coincide con lo anunciado, reembolsamos.</p></details>
+      <details><summary>¿Y la higiene?</summary><p>Las prendas se envían en bolsa hermética. Son artículos usados: se venden como tal y no son aptos para uso sin lavar. Lávalas antes de volver a ponértelas.</p></details>
+      <details><summary>¿Menores de edad?</summary><p>Prohibido. Cualquier cuenta o anuncio sospechoso de pertenecer a un menor se bloquea y se reporta a las autoridades.</p></details>
+      <details><summary>¿Qué datos guardáis?</summary><p>Lo mínimo para tramitar el pedido. El carrito vive solo en tu navegador. Más detalle en la <a href="legal.html#privacidad">política de privacidad</a>.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__in">
+    <span class="brand">Intimae</span>
+    <nav>
+      <a href="legal.html#terminos">Términos</a>
+      <a href="legal.html#privacidad">Privacidad</a>
+      <a href="legal.html#normas">Normas de vendedores</a>
+    </nav>
+    <small>Sitio para mayores de 18 años. Todas las personas que aparecen o venden son adultas y han dado su consentimiento.</small>
+  </div>
+</footer>
+
+<!-- Carrito -->
+<aside id="cart" class="cart" aria-hidden="true" aria-label="Carrito">
+  <div class="cart__head">
+    <h4>Tu pedido</h4>
+    <button id="close-cart" class="iconbtn" aria-label="Cerrar">✕</button>
+  </div>
+  <ul id="cart-items" class="cart__items"></ul>
+  <div class="cart__foot">
+    <div class="cart__total"><span>Total</span><b id="cart-total">0,00 €</b></div>
+    <form id="order-form" class="form" novalidate>
+      <label>Nombre o alias<input name="name" required></label>
+      <label>Email<input name="email" type="email" required></label>
+      <label>Dirección de envío<textarea name="addr" rows="2" required></textarea></label>
+      <label>Pago preferido
+        <select name="pay"><option>Transferencia</option><option>Bizum</option><option>Cripto</option></select>
+      </label>
+      <label>Petición al vendedor<textarea name="note" rows="2" maxlength="300" placeholder="Opcional"></textarea></label>
+      <label class="check"><input type="checkbox" name="ok" required> Soy mayor de 18 años y acepto los <a href="legal.html#terminos">términos</a>.</label>
+      <button class="btn btn--primary" type="submit">Enviar pedido</button>
+      <p class="form__msg" id="order-msg" role="status"></p>
+    </form>
+  </div>
+</aside>
+<div id="scrim" class="scrim" hidden></div>
+
+<script src="js/products.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
