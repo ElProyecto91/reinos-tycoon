@@ -92,7 +92,7 @@ Referencias de comisión de otros mercados [Fuente, mixta]: OnlyFans/Fansly 20 %
 ## 4. Comparativa con Intimae
 
 **Lo que descubren los competidores [Verificado en sus webs]**
-1. **Ninguno de los tres que pude leer cobra comisión sobre la venta**: ganan con suscripciones/membresías (PantyDeal, Snifffr Premium), con venta de moneda interna (Snifffr) o con tienda propia (The Panty Bank). Esto contradice la hipótesis del documento maestro (comisión del 8-12 %) como práctica del sector, y da una alternativa: ingresos por suscripción o por tarifa de anuncio en lugar de comisión.
+1. **Ninguno de los tres publica un porcentaje de comisión**: PantyDeal dice expresamente que no cobra comisión (suscripciones); Snifffr gana con membresía Premium y con la venta de tokens, y se reserva cambiar "la cantidad pagadera al vendedor en el cash-out" (es decir, puede haber un margen implícito no publicado); The Panty Bank es una tienda curada, no un mercado abierto. Esto contradice la hipótesis del documento maestro (comisión del 8-12 %) como práctica del sector, y da una alternativa: ingresos por suscripción o por tarifa de anuncio en lugar de comisión.
 2. **Dos de los tres evitan ser parte del pago** (PantyDeal deja pagar fuera; Snifffr usa tokens con comerciante de registro propio en EE. UU./Reino Unido). Eso apunta a que reparto de fondos a terceros con procesador convencional es justo lo difícil, y que operan en jurisdicciones distintas a la UE. [Probable]
 3. **Verificación**: lo habitual es edad por proveedor externo + verificación manual con foto/nota. Ninguno pide DNI en el registro.
 4. **El estándar del sector incluye** chat, reseñas, denuncias, envío discreto, perfiles/tienda del vendedor y pagos dentro o fuera de la plataforma.
