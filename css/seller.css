@@ -1,0 +1,23 @@
+/* Intimae · área de vendedores: cabecera oscura propia para no confundirla con la tienda */
+.sv-header{background:var(--ink);color:var(--paper);position:sticky;top:0;z-index:50;border-bottom:1px solid #3d3435}
+.sv-header__in{display:flex;align-items:center;justify-content:space-between;gap:24px;height:72px}
+.sv-brand{display:flex;align-items:center;gap:14px}
+.sv-header .wordmark{color:var(--paper);font-size:24px;padding-left:0}
+.sv-tag{font:500 10px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--gold-soft);border:1px solid var(--gold);padding:6px 8px}
+.sv-nav{display:flex;gap:28px}
+.sv-nav a{font:500 11.5px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:#d9cfc0;padding:6px 0;border-bottom:1px solid transparent}
+.sv-nav a:hover{color:#fff;border-color:var(--gold)}
+.sv-tools{display:flex;align-items:center;gap:24px}
+.sv-header .lang{color:var(--paper);border-bottom-color:var(--gold-soft);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23f6f1e9' stroke-width='1.2'/%3E%3C/svg%3E")}
+.sv-header .lang option{color:var(--ink);background:var(--paper)}
+.sv-shop{font:500 11px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--gold-soft);white-space:nowrap}
+.sv-shop:hover{color:#fff}
+.sv-hero .hero__grid{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:start}
+.calc{max-width:460px;justify-self:end;width:100%}
+.calc h2{font-size:1.9rem;margin-bottom:6px}
+.calc .sum{margin-top:4px}
+.steps--4{grid-template-columns:repeat(4,1fr)}
+.tax-grid--3{grid-template-columns:repeat(3,1fr)}
+.sv-links{display:flex;flex-wrap:wrap;gap:8px 22px}
+@media (max-width:1020px){.sv-hero .hero__grid{grid-template-columns:1fr}.calc{justify-self:start}.steps--4{grid-template-columns:1fr 1fr}.tax-grid--3{grid-template-columns:1fr}.tax-grid--3 .tax-card,.tax-grid--3 .tax-card+.tax-card{padding:26px 0;border-left:0;border-top:1px solid #4a4041}}
+@media (max-width:760px){.sv-nav{display:none}.sv-tools{gap:14px}.sv-header .wordmark{font-size:18px}.sv-tag{display:none}.steps--4{grid-template-columns:1fr}.sv-shop{font-size:10px;white-space:normal;max-width:104px;text-align:right;line-height:1.35}.sv-tools{min-width:0}.sv-header__in{gap:12px}}

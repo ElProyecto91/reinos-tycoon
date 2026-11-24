@@ -6,11 +6,16 @@ Mercado europeo de prendas íntimas de segunda mano entre adultos. Web estática
 
 | Ruta | Contenido |
 |---|---|
-| `index.html` | Tienda: catálogo, ficha, pedido, alta de vendedores, FAQ |
+| `index.html` | Tienda (solo compradores): catálogo, ficha, pedido, FAQ |
+| `vendedores/` | Área de vendedores, separada: portada, solicitud, condiciones, guía de impuestos |
 | `css/` | `fonts.css` (tipografías propias), `styles.css` (sistema de diseño), `legal.css` |
 | `js/products.js` | Catálogo y vendedores de demostración |
 | `js/tax.js` | Motor de IVA orientativo: tipos por país, regímenes, destinos |
-| `js/app.js` | Interfaz |
+| `js/app.js` | Interfaz de la tienda |
+| `js/seller.js` | Interfaz del área de vendedores |
+| `js/i18n.js`, `i18n/` | Idiomas: detección por navegador y país, diccionarios (es, en, fr, de, it, pt, nl) |
+| `tools/i18n/` | Fuentes de traducción y generador/validador (`python3 tools/i18n/build.py`) |
+| `tools/legal/` | Generador de las páginas legales (`python3 tools/legal/generate.py`) |
 | `fonts/` | Cormorant Garamond e Inter (licencia SIL OFL), alojadas en el propio sitio |
 | `*.html` | Páginas legales (borrador, pendientes de titularidad) y guía de IVA |
 | `docs/ESTUDIO-LEGAL-Y-MERCADO.md` | Estudio legal, IVA, competencia y hoja de ruta |

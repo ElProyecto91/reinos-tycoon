@@ -31,7 +31,9 @@ Cada afirmación lleva una etiqueta de confianza:
 | Carrito (en el navegador) | Hecho | |
 | Pedido | Parcial | Abre un email a `pedidos@example.com`. Sin backend |
 | Alta de vendedor | Parcial | Abre un email. No verifica nada |
-| Páginas legales (8 + índice, incluida la guía de IVA) | Borrador | Falta la titularidad. Revisión legal pendiente |
+| Páginas legales (compradores: 7 + índice; vendedores: 2) | Borrador | Falta la titularidad. Revisión legal pendiente. Solo en español |
+| 7 idiomas con detección por navegador y por país | Hecho | Sin revisión de nativos |
+| Zona de vendedores separada (`/vendedores/`) con calculadora de comisión | Hecho | Comisión del 20 % como propuesta |
 | Motor de IVA por vendedor y destino (`js/tax.js`) | Hecho (orientativo) | Particular, bienes usados, régimen general, exportación. Tipos de los 27 países |
 | Destino de envío con selector y bloqueo de vendedores no UE | Hecho | Reino Unido, Suiza y Noruega: visibles, pedido bloqueado («próximamente») |
 | Alta de vendedor con país, particular/profesional, número de IVA y régimen | Hecho | Solo valida formato; falta consulta VIES |
@@ -187,6 +189,62 @@ Ya redactado en `condiciones-vendedores.html`. Pendiente de implementar:
 4. ¿Qué verificación del número de IVA (VIES) debo conservar para no responder solidariamente?
 5. ¿Cuándo debo registrarme en el Reino Unido y en Noruega, y cuánto cuesta mantenerlo?
 6. ¿Qué pasa con Suiza?
+
+### I. Comisión de la plataforma
+
+**Recomendación: 20 % sobre el precio de venta (sin envío) al vendedor, con mínimo de 2 € por venta y sin recargo al comprador.** Lanzamiento con 15 % durante los primeros 12 meses para los vendedores fundadores, y escalones a la baja cuando negocies mejor el procesador de pagos.
+
+**Qué cobran otros** (todo de páginas de comparación, no de las condiciones oficiales de cada uno, salvo Vinted y Vestiaire):
+
+| Plataforma | Comisión | Confianza |
+|---|---|---|
+| OnlyFans y Fansly | 20 % al creador ([Sirency](https://www.sirency.com/blog/fansly-vs-onlyfans-platform-comparison-2026)) | **[Probable]** |
+| Passes / Fanvue | 10 % / 15 % el primer año y luego 20 % ([TechBullion](https://techbullion.com/onlyfans-vs-passes-vs-fansly-vs-fanvue-which-creator-platform-actually-pays-the-most-in-2026/)) | **[Probable]** |
+| Poshmark | 20 % desde 15 $ ([Listperfectly](https://listperfectly.com/selling/reselling-fees-explained-2026/)) | **[Probable]** |
+| Vestiaire Collective | 12 % según su ayuda; otras fuentes dan 12-25 % por tramos ([ayuda oficial](https://faq.vestiairecollective.com/hc/en-gb/articles/24659638721425-Seller-Selling-Fees)) | **[Certeza]** el 12 %, **[Suposición]** el resto |
+| Vinted | 0 % al vendedor; el comprador paga una tarifa de protección, en EE. UU. «normalmente 5 % + 0,70 $» ([Vinted](https://www.vinted.com/help/342)) | **[Certeza]** |
+| Mercari | 10 % ([Finder, vía Listperfectly](https://listperfectly.com/selling/reselling-fees-explained-2026/)) | **[Probable]** |
+
+**Por qué no copiar el modelo de Vinted:** su comisión la paga el comprador. Con un ticket medio de unos 35 € y un procesador de alto riesgo, esa tarifa no cubre costes. Además, **[Probable]** mostrar al comprador un recargo que no estaba en el precio anunciado es una práctica problemática en la UE (obligación de precio total desde el principio).
+
+**Cuentas por pedido de 35 €** (todo **[Suposición]**, para que cambies los números):
+
+| Concepto | Hipótesis | € por pedido |
+|---|---|---|
+| Procesador de pagos | 6 % (las fuentes dan 4-8 %, y hasta 10 % en algunos casos: [Startups.co.uk](https://startups.co.uk/payment-processing/high-risk-merchant-accounts/)) | 2,10 |
+| Fraude y contracargos | 1,5 % del volumen (umbral «excesivo» de Visa de 1,5 % según un proveedor: [Chargeflow](https://www.chargeflow.io/blog/high-risk-merchant-account-6f2cf); en el sector adulto se citan 2-5 %) | 0,53 |
+| Verificación, moderación y soporte | 1,50 € por pedido (sin cotizar) | 1,50 |
+| **Coste total** | | **4,13 (11,8 %)** |
+
+| Modelo | Ingreso | Margen | % del volumen |
+|---|---|---|---|
+| Vendedor 20 % | 7,00 | 2,88 | 8,2 % |
+| Vendedor 10 % + comprador 5 % + 0,50 € | 5,75 | 1,63 | 4,6 % |
+| Estilo Vinted (comprador 5 % + 0,70 €, vendedor 0 %) | 2,45 | **−1,68** | pierde dinero |
+
+- **Suelo:** con un procesador al 6 %, el **punto de equilibrio está en torno al 12 %** de comisión total. No bajes del 13-15 % hasta renegociar.
+- **Sensibilidad:** con procesador al 10 % y 2 € de operación, el coste sube al 17 %, y un 20 % deja un 3 % de margen. Con procesador al 4 %, el coste baja al 9,8 %.
+- **IVA sobre la comisión:** **[Suposición]** puede ser un servicio sujeto a IVA. Si el 20 % incluye IVA (por ejemplo 21 % en España), tu ingreso neto baja a un 16,5 % (5,79 € por pedido). Decide entre «20 % + IVA» y «20 % IVA incluido» con el asesor fiscal. La web lo muestra como «comisión orientativa, pendiente de confirmar».
+- **Caja:** **[Probable]** los procesadores de alto riesgo suelen retener un 5-10 % durante 90-180 días. Es dinero que no puedes usar: calcula el capital de trabajo.
+- **Por qué 20 % y no menos:** es el nivel al que ya están acostumbrados los vendedores del sector adulto (OnlyFans, Fansly) y deja margen para absorber costes que aún no sabemos. Bajar después es fácil; subir una comisión es lo que ahuyenta vendedores.
+- **Riesgo:** **[Suposición]** si el vendedor es el factor escaso del mercado, un 20 % puede frenar la captación. Por eso el 15 % de lanzamiento.
+
+### J. Idiomas y traducción
+
+**Implementado:** 7 idiomas (español, inglés, francés, alemán, italiano, portugués, neerlandés). El idioma se elige así: **lo que la persona haya elegido a mano > idioma del navegador > país de entrega o de residencia > inglés**. El selector está en la primera pantalla (verificación de edad), en la cabecera y en el área de vendedores. Al cambiar el país de entrega (comprador) o de residencia (vendedor), la web sugiere el idioma de ese país salvo que se haya elegido uno a mano. Los precios, los países y los números salen con el formato de cada idioma.
+
+- **Cobertura real:** **[Certeza]** estos 7 idiomas cubren los países más grandes, pero no los 24 idiomas oficiales de la UE. Los países sin traducción (por ejemplo Polonia, Suecia o Rumanía) no cambian el idioma: se mantiene el del navegador o el último elegido, y si no hay ninguno, inglés. Siguientes por tamaño de mercado: polaco, sueco, checo, rumano, griego, húngaro.
+- **Cómo añadir uno:** copiar `tools/i18n/src/en.py` a `<código>.py`, traducir, añadir el código a `js/i18n.js` y ejecutar `python3 tools/i18n/build.py`. El script comprueba que no falte ni sobre ninguna clave y que se conserven los marcadores y enlaces.
+- **Calidad:** **[Suposición]** las traducciones las he hecho yo, sin revisión de nativos. Antes de lanzar, que las revise una persona de cada idioma, sobre todo los textos fiscales.
+- **Los documentos legales siguen solo en español.** **[Probable]** Es un riesgo real: varios países exigen que las condiciones de un contrato de consumo estén en su idioma (en Francia, la ley Toubon). Hace falta traducción jurídica profesional de, al menos, las condiciones de compra, la privacidad y el aviso legal por cada país donde vendas. Mientras tanto, la web avisa en el idioma del usuario de que el documento solo está en español.
+- **Anuncios de los vendedores:** hoy los textos de las 9 piezas de demostración están traducidos a mano. Con vendedores reales, cada anuncio vendrá en el idioma del vendedor: hará falta traducción automática (por ejemplo, un servicio de traducción por API) y marcar el texto como «traducido automáticamente» con acceso al original.
+- **Los correos de pedidos y de solicitudes llegan siempre en español** al equipo, con el idioma de la persona indicado.
+
+### K. Separación entre zona de compradores y de vendedores
+
+**Implementado:** la tienda (`/`) es solo para compradores: sin formulario de vendedor, sin sección de vendedores y sin documentos de vendedores. El área de vendedores (`/vendedores/`) tiene su propia cabecera oscura, su portada con calculadora de comisión, su solicitud, sus condiciones y su guía de impuestos. La única conexión desde la tienda es un enlace discreto en el pie. Los documentos compartidos (aviso legal, privacidad, cookies, normas) viven en la raíz.
+
+- **Pendiente:** cuentas separadas con roles (un usuario que compra y vende), panel del vendedor, y separar también el subdominio (`vender.` en lugar de `/vendedores/`) si quieres que las zonas tengan políticas de cookies y de seguridad distintas.
 
 ## 4. Hoja de ruta propuesta
 

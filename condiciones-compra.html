@@ -11,15 +11,18 @@
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/legal.css">
+  
+  <script>(function(){var d=document.documentElement;d.classList.add("js");try{var l=localStorage.getItem("intimae_lang_manual")==="1"?localStorage.getItem("intimae_lang"):(navigator.language||"es").slice(0,2);if(l&&l!=="es")d.classList.add("i18n-pending")}catch(e){}setTimeout(function(){d.classList.remove("i18n-pending")},1800)})()</script>
 </head>
 <body>
 <a class="skip" href="#main">Saltar al contenido</a>
 <header class="site-header"><div class="wrap site-header__in">
-  <nav class="menu" aria-label="Legal"><a href="legal.html">Información legal</a></nav>
+  <nav class="menu" aria-label="Legal"><a href="legal.html" data-i18n="legal.hdr">Información legal</a></nav>
   <a class="wordmark" href="index.html" aria-label="Intimae, inicio">Intimae</a>
-  <div class="tools"><a class="link" href="index.html">← Volver a la tienda</a></div>
+  <div class="tools"><select class="lang" id="lang" data-i18n-attr="aria-label:aria.lang" aria-label="Idioma"></select><a class="link" href="index.html" data-i18n="legal.back">← Volver a la tienda</a></div>
 </div></header>
 <main id="main" class="legal">
+  <div class="notice" id="es-only" hidden></div>
   <div class="draft"><strong>Borrador.</strong> Texto redactado sin asesoría legal y pendiente de revisión por un abogado. Los campos <mark class="todo">resaltados</mark> están pendientes de la titularidad del negocio. Última actualización: <mark class="todo">[FECHA]</mark>.</div>
   <h1>Condiciones de compra</h1>
 
@@ -59,8 +62,11 @@
   <h2>10. Ley aplicable</h2>
   <p>Ley española, sin perjuicio de las normas imperativas de protección de consumidores del país de residencia habitual del comprador.</p>
 
-  <nav class="legal__nav" aria-label="Otros documentos legales"><a href="legal.html">Índice</a><a href="aviso-legal.html">Aviso legal</a><a href="privacidad.html">Privacidad</a><a href="cookies.html">Cookies</a><a href="condiciones-compra.html">Condiciones de compra</a><a href="envios.html">Envíos y devoluciones</a><a href="iva.html">IVA e impuestos</a><a href="condiciones-vendedores.html">Condiciones de vendedores</a><a href="normas.html">Normas y denuncias</a></nav>
+  <nav class="legal__nav" aria-label="Otros documentos legales"><a href="legal.html">Índice</a><a href="aviso-legal.html">Aviso legal</a><a href="privacidad.html">Privacidad</a><a href="cookies.html">Cookies</a><a href="condiciones-compra.html">Condiciones de compra</a><a href="envios.html">Envíos y devoluciones</a><a href="iva.html">IVA e impuestos</a><a href="normas.html">Normas y denuncias</a></nav>
 </main>
 <footer class="footer"><div class="wrap footer__legal"><span>© 2026 Intimae. Sitio para mayores de 18 años.</span><a href="index.html">Volver a la tienda</a></div></footer>
+<script src="js/i18n.js"></script>
+<script src="i18n/es.js"></script>
+<script>(function(){var b=document.getElementById("es-only");I18N.mountSelect(document.getElementById("lang"));I18N.onChange(function(l){b.hidden=(l==="es");b.textContent=I18N.t("legal.es_only")});I18N.start()})()</script>
 </body>
 </html>

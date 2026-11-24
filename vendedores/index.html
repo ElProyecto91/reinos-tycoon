@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="sv.meta.title">Intimae Vendedores · Vende prendas íntimas de segunda mano</title>
+  <meta name="description" content="Área de vendedores de Intimae: alias público, envío con remitente neutro, comisión clara y reglas fiscales desde el primer día." data-i18n-attr="content:sv.meta.desc">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#171213">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../fonts/cormorant-garamond-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/seller.css">
+  <script>(function(){var d=document.documentElement;d.classList.add("js");try{var l=localStorage.getItem("intimae_lang_manual")==="1"?localStorage.getItem("intimae_lang"):(navigator.language||"es").slice(0,2);if(l&&l!=="es")d.classList.add("i18n-pending")}catch(e){}setTimeout(function(){d.classList.remove("i18n-pending")},1800)})()</script>
+</head>
+<body class="seller">
+
+<a class="skip" href="#solicitud" data-i18n="sv.skip">Saltar a la solicitud</a>
+
+<header class="sv-header">
+  <div class="wrap sv-header__in">
+    <div class="sv-brand"><a class="wordmark" href="./" data-i18n-attr="aria-label:aria.home" aria-label="Intimae, inicio">Intimae</a><span class="sv-tag" data-i18n="sv.hdr.label">Vendedores</span></div>
+    <nav class="sv-nav" data-i18n-attr="aria-label:aria.main" aria-label="Principal">
+      <a href="#como" data-i18n="sv.nav.how">Cómo funciona</a>
+      <a href="#comision" data-i18n="sv.nav.fees">Comisión</a>
+      <a href="#impuestos" data-i18n="sv.nav.tax">Impuestos</a>
+      <a href="#solicitud" data-i18n="sv.nav.apply">Solicitar acceso</a>
+    </nav>
+    <div class="sv-tools">
+      <select class="lang" id="lang" data-i18n-attr="aria-label:aria.lang" aria-label="Idioma"></select>
+      <a class="sv-shop" href="../" data-i18n="sv.hdr.shop">Ir a la tienda →</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero sv-hero" id="comision">
+    <div class="wrap hero__grid">
+      <div>
+        <p class="eyebrow" data-i18n="sv.hero.eyebrow">Área de vendedores · Solo mayores de 18 años</p>
+        <h1 data-i18n="sv.hero.h1">Vende con <em>criterio.</em></h1>
+        <p class="hero__lead" data-i18n="sv.hero.lead">Un mercado privado y europeo para vender prendas íntimas de segunda mano. Alias público, envío con remitente neutro y reglas fiscales claras desde el primer día.</p>
+        <div class="hero__cta">
+          <a class="btn" href="#solicitud" data-i18n="sv.hero.cta">Solicitar acceso</a>
+          <a class="link" href="#como" data-i18n="sv.hero.more">Cómo funciona</a>
+        </div>
+      </div>
+      <aside class="panel calc form" data-i18n-attr="aria-label:sv.calc.title" aria-label="Cuánto cobrarías">
+        <h2 data-i18n="sv.calc.title">Cuánto cobrarías</h2>
+        <label class="f"><span class="label" data-i18n="sv.calc.price">Precio de venta (€)</span>
+          <input id="calc-price" type="number" min="5" max="500" step="1" value="40" inputmode="decimal">
+        </label>
+        <div class="sum" aria-live="polite">
+          <div><span data-i18n="sv.calc.sale">Precio de venta</span><span class="num" id="calc-sale"></span></div>
+          <div class="muted"><span id="calc-fee-label"></span><span class="num" id="calc-fee"></span></div>
+          <div class="tot"><span data-i18n="sv.calc.net">Recibes</span><span class="num" id="calc-net"></span></div>
+        </div>
+        <p class="hint" data-i18n="sv.calc.note">Comisión orientativa, pendiente de confirmar. No incluye el envío ni el IVA que pudiera aplicarse a la comisión.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section--tint" id="como">
+    <div class="wrap">
+      <div class="sec-head reveal"><div><p class="eyebrow" data-i18n="sv.how.eyebrow">01 · Cómo funciona</p><h2 data-i18n="sv.how.h2">Cuatro pasos para <em>empezar</em></h2></div></div>
+      <ol class="steps steps--4">
+        <li class="step reveal"><span class="step__n num">01</span><h3 data-i18n="sv.how.1.t">Solicita</h3><p data-i18n="sv.how.1.p">Rellena el formulario con tu alias, tu país y si vendes como particular o como profesional.</p></li>
+        <li class="step reveal"><span class="step__n num">02</span><h3 data-i18n="sv.how.2.t">Verifica</h3><p data-i18n="sv.how.2.p">Comprobamos tu identidad y tu edad con un documento oficial. Es obligatorio antes de publicar.</p></li>
+        <li class="step reveal"><span class="step__n num">03</span><h3 data-i18n="sv.how.3.t">Publica</h3><p data-i18n="sv.how.3.p">Sube tus anuncios con fotos propias. Revisamos que cumplan las normas.</p></li>
+        <li class="step reveal"><span class="step__n num">04</span><h3 data-i18n="sv.how.4.t">Cobra</h3><p data-i18n="sv.how.4.p">Cuando el comprador recibe el pedido, te pagamos descontando la comisión.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap sell">
+      <div class="reveal">
+        <p class="eyebrow" data-i18n="sv.req.eyebrow">02 · Requisitos</p>
+        <h2 data-i18n="sv.req.h2">Lo que <em>necesitas</em></h2>
+      </div>
+      <ul class="facts reveal">
+        <li><b data-i18n="sv.req.1.b">Edad</b><span data-i18n="sv.req.1.s">Ser mayor de 18 años.</span></li>
+        <li><b data-i18n="sv.req.2.b">Identidad</b><span data-i18n="sv.req.2.s">Documento oficial en vigor. Solo lo ve el equipo de verificación.</span></li>
+        <li><b data-i18n="sv.req.3.b">Impuestos</b><span data-i18n="sv.req.3.s">Saber si vendes como particular o profesional. Si eres profesional, tu número de IVA.</span></li>
+        <li><b data-i18n="sv.req.4.b">Privacidad</b><span data-i18n="sv.req.4.s">Alias público y envío con remitente neutro. Nunca tu dirección.</span></li>
+        <li><b data-i18n="sv.req.5.b">Envío</b><span data-i18n="sv.req.5.s">Desde cualquier país de la UE. Desde fuera de la UE, solo dentro de tu país por ahora.</span></li>
+        <li><b data-i18n="sv.req.6.b">Control</b><span data-i18n="sv.req.6.s">Puedes rechazar cualquier petición sin dar explicaciones.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section dark" id="impuestos">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><p class="eyebrow" data-i18n="sv.tax.eyebrow">03 · Impuestos</p><h2 data-i18n="sv.tax.h2">Tu situación <em>fiscal</em></h2></div>
+        <p data-i18n="sv.tax.lead">Lo que cobras y lo que declaras depende de si vendes como particular o como profesional y de dónde vives.</p>
+      </div>
+      <div class="tax-grid tax-grid--3 reveal">
+        <div class="tax-card"><span class="eyebrow" data-i18n="sv.tax.1.e">Particular</span><h3 data-i18n="sv.tax.1.t">Sin IVA</h3><p data-i18n="sv.tax.1.p">Vendes artículos propios de forma ocasional. No cobras IVA. Declaras tus ingresos según la normativa de tu país.</p></div>
+        <div class="tax-card"><span class="eyebrow" data-i18n="sv.tax.2.e">Profesional · bienes usados</span><h3 data-i18n="sv.tax.2.t">IVA sobre el margen</h3><p data-i18n="sv.tax.2.p">Si revendes bienes usados comprados a particulares, puedes acogerte al régimen especial. El IVA va incluido y no se desglosa.</p></div>
+        <div class="tax-card"><span class="eyebrow" data-i18n="sv.tax.3.e">Profesional · régimen general</span><h3 data-i18n="sv.tax.3.t">IVA desglosado</h3><p data-i18n="sv.tax.3.p">Aplicas el IVA de tu país. Por encima de 10.000 € al año en ventas a consumidores de otros países de la UE, el del país del comprador.</p></div>
+      </div>
+      <div class="tax-foot"><span data-i18n="sv.tax.foot">Información orientativa. Consulta a tu administración tributaria.</span><a class="link" href="impuestos.html" data-i18n="sv.tax.guide">Guía de impuestos para vendedores</a></div>
+    </div>
+  </section>
+
+  <section class="section" id="solicitud">
+    <div class="wrap sell">
+      <div class="reveal">
+        <p class="eyebrow" data-i18n="sv.form.eyebrow">04 · Solicitud</p>
+        <h2 data-i18n="sv.form.h2">Empieza <em>hoy</em></h2>
+        <p style="color:var(--ink-soft);max-width:46ch;margin-top:18px" data-i18n="sv.form.lead">Tu idioma de comunicación se elige según tu país de residencia. Puedes cambiarlo cuando quieras.</p>
+      </div>
+      <form id="seller-form" class="panel form reveal" novalidate>
+        <div><h3 data-i18n="sv.form.h3">Solicitud de vendedor</h3><p data-i18n="sv.form.sub">Rellena lo básico. Te pediremos la verificación de identidad en el siguiente paso.</p></div>
+        <div class="row">
+          <label class="f"><span class="label" data-i18n="sv.f.alias">Alias público</span><input name="alias" required maxlength="30" autocomplete="off" placeholder="Cómo aparecerás" data-i18n-attr="placeholder:sv.f.alias.ph"></label>
+          <label class="f"><span class="label" data-i18n="sv.f.email">Correo</span><input name="email" type="email" required autocomplete="email" placeholder="nombre@correo.com"></label>
+        </div>
+        <div class="row">
+          <label class="f"><span class="label" data-i18n="sv.f.country">País de residencia</span><select name="country" id="s-country" required></select></label>
+          <label class="f"><span class="label" data-i18n="sv.f.lang">Idioma de comunicación</span><select name="comm" id="s-comm"></select></label>
+        </div>
+        <label class="f" style="max-width:200px"><span class="label" data-i18n="sv.f.age">Edad</span><input name="age" type="number" min="18" max="99" required inputmode="numeric" placeholder="18 o más" data-i18n-attr="placeholder:sv.f.age.ph"></label>
+        <fieldset style="border:0;padding:0;margin:0">
+          <legend class="label" style="margin-bottom:10px" data-i18n="sv.f.kind">Vendes como</legend>
+          <div class="seg">
+            <label><input type="radio" name="kind" value="particular" checked><span data-i18n="sv.f.part">Particular</span></label>
+            <label><input type="radio" name="kind" value="profesional"><span data-i18n="sv.f.pro">Profesional</span></label>
+          </div>
+          <p class="hint" style="margin-top:10px" id="kind-hint"></p>
+        </fieldset>
+        <div class="row" id="pro-fields" hidden>
+          <label class="f"><span class="label" data-i18n="sv.f.vat">Número de IVA</span><input name="vatid" autocomplete="off" placeholder="Ej. ESB12345678" data-i18n-attr="placeholder:sv.f.vat.ph"></label>
+          <label class="f"><span class="label" data-i18n="sv.f.regime">Régimen de IVA</span>
+            <select name="regime"><option value="" data-i18n="sv.f.regime.0">No lo sé todavía</option><option value="general" data-i18n="sv.f.regime.1">Régimen general</option><option value="margin" data-i18n="sv.f.regime.2">Bienes usados (margen)</option></select>
+          </label>
+        </div>
+        <label class="f"><span class="label" data-i18n="sv.f.about">Qué quieres vender</span><textarea name="about" maxlength="400" placeholder="Tipo de prendas, tallas, días de uso…" data-i18n-attr="placeholder:sv.f.about.ph"></textarea></label>
+        <label class="check"><input type="checkbox" name="ok" required><span data-i18n="sv.f.ok">Confirmo que soy mayor de 18 años, que las prendas son mías y que acepto la verificación de identidad y las <a href="condiciones.html">condiciones para vendedores</a>.</span></label>
+        <button class="btn btn--block" type="submit" data-i18n="sv.f.submit">Enviar solicitud</button>
+        <p class="msg" id="seller-msg" role="status"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__legal">
+      <span data-i18n="sv.ft.copy">© 2026 Intimae · Área de vendedores. Sitio para mayores de 18 años.</span>
+      <span class="sv-links">
+        <a href="condiciones.html" data-i18n="sv.ft.cond">Condiciones para vendedores</a>
+        <a href="impuestos.html" data-i18n="sv.ft.tax">Impuestos para vendedores</a>
+        <a href="../normas.html" data-i18n="ft.normas">Normas y denuncias</a>
+        <a href="../privacidad.html" data-i18n="ft.priv">Privacidad</a>
+        <a href="../" data-i18n="sv.ft.shop">Ir a la tienda</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/i18n.js"></script>
+<script src="../i18n/es.js"></script>
+<script src="../js/tax.js"></script>
+<script src="../js/seller.js"></script>
+</body>
+</html>

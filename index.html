@@ -3,21 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Intimae · Lencería de segunda mano entre adultos</title>
-  <meta name="description" content="Mercado europeo de prendas íntimas de segunda mano entre adultos. Vendedores identificados, envío discreto a 27 países de la UE y precios con impuestos claros.">
+  <title data-i18n="meta.title">Intimae · Lencería de segunda mano entre adultos</title>
+  <meta name="description" content="Mercado europeo de prendas íntimas de segunda mano entre adultos. Vendedores identificados, envío discreto a 27 países de la UE y precios con impuestos claros." data-i18n-attr="content:meta.desc">
   <meta name="rating" content="adult">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#171213">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Intimae · Lencería de segunda mano entre adultos">
-  <meta property="og:description" content="Vendedores identificados, envío discreto a 27 países de la UE y precios con impuestos claros.">
-  <meta property="og:locale" content="es_ES">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preload" href="fonts/cormorant-garamond-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/styles.css">
-  <script>document.documentElement.classList.add("js")</script>
+  <script>(function(){var d=document.documentElement;d.classList.add("js");try{var l=localStorage.getItem("intimae_lang_manual")==="1"?localStorage.getItem("intimae_lang"):(navigator.language||"es").slice(0,2);if(l&&l!=="es")d.classList.add("i18n-pending")}catch(e){}setTimeout(function(){d.classList.remove("i18n-pending")},1800)})()</script>
 </head>
 <body>
 
@@ -32,41 +28,46 @@
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
 </svg>
 
-<a class="skip" href="#catalogo">Saltar al catálogo</a>
+<a class="skip" href="#catalogo" data-i18n="skip">Saltar al catálogo</a>
 
-<!-- Confirmación de edad -->
+<!-- Confirmación de edad (primera pantalla: aquí también se elige el idioma) -->
 <dialog class="agegate" id="agegate" aria-labelledby="ag-title">
   <div class="agegate__box">
+    <select class="lang lang--gate" id="lang-gate" data-i18n-attr="aria-label:aria.lang" aria-label="Idioma"></select>
     <span class="wordmark">Intimae</span>
-    <h1 id="ag-title">Contenido para adultos</h1>
-    <p>Este sitio contiene material de carácter erótico y es solo para personas mayores de 18 años, o de la mayoría de edad legal de tu país.</p>
+    <h1 id="ag-title" data-i18n="ag.title">Contenido para adultos</h1>
+    <p data-i18n="ag.text">Este sitio contiene material de carácter erótico y es solo para personas mayores de 18 años, o de la mayoría de edad legal de tu país.</p>
     <div class="agegate__actions">
-      <button class="btn" id="ag-yes" type="button">Tengo 18 años o más</button>
-      <a class="btn btn--line" href="https://www.google.com">Salir</a>
+      <button class="btn" id="ag-yes" type="button" autofocus data-i18n="ag.yes">Tengo 18 años o más</button>
+      <a class="btn btn--line" href="https://www.google.com" data-i18n="ag.exit">Salir</a>
     </div>
-    <small>Al entrar aceptas las <a href="condiciones-compra.html">condiciones de compra</a> y el uso de almacenamiento local para recordar tu edad y tu pedido. Más información en la <a href="cookies.html">política de cookies</a>.</small>
+    <small data-i18n="ag.small">Al entrar aceptas las <a href="condiciones-compra.html">condiciones de compra</a> y el uso de almacenamiento local para recordar tu edad, tu idioma y tu pedido. Más información en la <a href="cookies.html">política de cookies</a>.</small>
   </div>
 </dialog>
 
 <div class="announce" role="note">
-  <span>Envío discreto a 27 países de la UE</span><span>Embalaje neutro</span><span>Vendedores identificados</span>
+  <span data-i18n="an.1">Envío discreto a 27 países de la UE</span><span data-i18n="an.2">Embalaje neutro</span><span data-i18n="an.3">Vendedores identificados</span>
 </div>
 
 <header class="site-header">
   <div class="wrap site-header__in">
-    <nav class="menu" id="menu" aria-label="Principal">
-      <a href="#catalogo">Catálogo</a>
-      <a href="#como">Cómo funciona</a>
-      <a href="#impuestos">Impuestos</a>
-      <a href="#vender">Vender</a>
+    <nav class="menu" id="menu" data-i18n-attr="aria-label:aria.main" aria-label="Principal">
+      <a href="#catalogo" data-i18n="nav.catalog">Catálogo</a>
+      <a href="#como" data-i18n="nav.how">Cómo funciona</a>
+      <a href="#impuestos" data-i18n="nav.taxes">Impuestos</a>
+      <div class="menu__prefs">
+        <select class="lang" id="lang-menu" data-i18n-attr="aria-label:aria.lang" aria-label="Idioma"></select>
+        <select class="destsel" id="dest-menu" data-i18n-attr="aria-label:aria.dest" aria-label="País de envío"></select>
+      </div>
     </nav>
-    <button class="burger" id="burger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><svg class="icon"><use href="#i-menu"/></svg></button>
-    <a class="wordmark" href="#top" aria-label="Intimae, inicio">Intimae</a>
+    <button class="burger" id="burger" type="button" data-i18n-attr="aria-label:aria.menu" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"><svg class="icon"><use href="#i-menu"/></svg></button>
+    <a class="wordmark" href="#top" data-i18n-attr="aria-label:aria.home" aria-label="Intimae, inicio">Intimae</a>
     <div class="tools">
-      <label class="dest"><span>Enviar a</span>
-        <select id="dest" aria-label="País de envío"></select>
+      <select class="lang desk" id="lang" data-i18n-attr="aria-label:aria.lang" aria-label="Idioma"></select>
+      <label class="dest desk"><span data-i18n="dest.label">Enviar a</span>
+        <select id="dest" data-i18n-attr="aria-label:aria.dest" aria-label="País de envío"></select>
       </label>
-      <button class="cart-btn" id="open-cart" type="button" aria-label="Abrir pedido">
+      <button class="cart-btn" id="open-cart" type="button" data-i18n-attr="aria-label:aria.cart" aria-label="Abrir pedido">
         <svg class="icon"><use href="#i-bag"/></svg><span class="cart-btn__n num" id="cart-count">0</span>
       </button>
     </div>
@@ -78,32 +79,31 @@
   <section class="hero">
     <div class="wrap hero__grid">
       <div>
-        <p class="eyebrow">Mercado privado · Solo mayores de 18 años</p>
-        <h1>Lencería<br>con <em>historia.</em></h1>
-        <p class="hero__lead">Un mercado europeo de prendas íntimas de segunda mano entre adultos. Vendedores identificados, envío discreto a los 27 países de la UE y precios con los impuestos a la vista.</p>
+        <p class="eyebrow" data-i18n="hero.eyebrow">Mercado privado · Solo mayores de 18 años</p>
+        <h1 data-i18n="hero.h1">Lencería<br>con <em>historia.</em></h1>
+        <p class="hero__lead" data-i18n="hero.lead">Un mercado europeo de prendas íntimas de segunda mano entre adultos. Vendedores identificados, envío discreto a los 27 países de la UE y precios con los impuestos a la vista.</p>
         <div class="hero__cta">
-          <a class="btn" href="#catalogo">Ver el catálogo</a>
-          <a class="link" href="#vender">Quiero vender</a>
+          <a class="btn" href="#catalogo" data-i18n="hero.cta">Ver el catálogo</a>
         </div>
         <ul class="hero__facts">
-          <li>Identidad y edad verificadas</li>
-          <li>Embalaje neutro</li>
-          <li>IVA transparente</li>
+          <li data-i18n="hero.f1">Identidad y edad verificadas</li>
+          <li data-i18n="hero.f2">Embalaje neutro</li>
+          <li data-i18n="hero.f3">IVA transparente</li>
         </ul>
       </div>
       <figure class="hero__media" style="margin:0">
-        <img src="https://images.unsplash.com/photo-1572109754335-3807540beef2?ixlib=rb-4.1.0&auto=format&fit=crop&crop=entropy&w=1000&h=1250&q=75" width="1000" height="1250" alt="Bralette burdeos de encaje junto a una pluma de pavo real">
-        <figcaption class="hero__cap"><span>Bralette burdeos · N.º 0004</span><span>Foto: <a href="https://unsplash.com/@ivanabatalovic?utm_source=intimae&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Ivana Batalović</a> / Unsplash</span></figcaption>
+        <img src="https://images.unsplash.com/photo-1572109754335-3807540beef2?ixlib=rb-4.1.0&auto=format&fit=crop&crop=entropy&w=1000&h=1250&q=75" width="1000" height="1250" alt="Bralette burdeos de encaje junto a una pluma de pavo real" data-i18n-attr="alt:hero.alt">
+        <figcaption class="hero__cap"><span data-i18n="hero.cap">Bralette burdeos · N.º 0004</span><span><span data-i18n="photo">Foto:</span> <a href="https://unsplash.com/@ivanabatalovic?utm_source=intimae&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Ivana Batalović</a> / Unsplash</span></figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="values" aria-label="Garantías">
+  <section class="values" data-i18n-attr="aria-label:aria.values" aria-label="Garantías">
     <div class="wrap values__grid">
-      <div class="value"><svg class="icon"><use href="#i-shield"/></svg><div><h3>Vendedores identificados</h3><p>Verificamos identidad y edad de cada vendedor antes de que publique.</p></div></div>
-      <div class="value"><svg class="icon"><use href="#i-box"/></svg><div><h3>Envío neutro</h3><p>Bolsa sellada, caja sin logotipos y remitente genérico.</p></div></div>
-      <div class="value"><svg class="icon"><use href="#i-globe"/></svg><div><h3>27 países de la UE</h3><p>Reino Unido, Suiza y Noruega, próximamente. Tú eliges el destino.</p></div></div>
-      <div class="value"><svg class="icon"><use href="#i-receipt"/></svg><div><h3>Impuestos claros</h3><p>Ves el IVA y los costes de importación antes de pedir.</p></div></div>
+      <div class="value"><svg class="icon"><use href="#i-shield"/></svg><div><h3 data-i18n="val.1.t">Vendedores identificados</h3><p data-i18n="val.1.p">Verificamos identidad y edad de cada vendedor antes de que publique.</p></div></div>
+      <div class="value"><svg class="icon"><use href="#i-box"/></svg><div><h3 data-i18n="val.2.t">Envío neutro</h3><p data-i18n="val.2.p">Bolsa sellada, caja sin logotipos y remitente genérico.</p></div></div>
+      <div class="value"><svg class="icon"><use href="#i-globe"/></svg><div><h3 data-i18n="val.3.t">27 países de la UE</h3><p data-i18n="val.3.p">Reino Unido, Suiza y Noruega, próximamente. Tú eliges el destino.</p></div></div>
+      <div class="value"><svg class="icon"><use href="#i-receipt"/></svg><div><h3 data-i18n="val.4.t">Impuestos claros</h3><p data-i18n="val.4.p">Ves el IVA y los costes de importación antes de pedir.</p></div></div>
     </div>
   </section>
 
@@ -111,42 +111,42 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <div>
-          <p class="eyebrow">01 · Catálogo</p>
-          <h2>Piezas <em>disponibles</em></h2>
+          <p class="eyebrow" data-i18n="cat.eyebrow">01 · Catálogo</p>
+          <h2 data-i18n="cat.h2">Piezas <em>disponibles</em></h2>
         </div>
-        <p>Cada ficha indica prenda, talla, días de uso, quién vende, desde qué país y qué impuestos se aplican a tu destino. Fotos de muestra de <a href="https://unsplash.com/?utm_source=intimae&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>.</p>
+        <p data-i18n="cat.lead">Cada ficha indica prenda, talla, días de uso, quién vende, desde qué país y qué impuestos se aplican a tu destino. Fotos de muestra de <a href="https://unsplash.com/?utm_source=intimae&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>.</p>
       </div>
 
-      <div class="toolbar" role="group" aria-label="Filtros del catálogo">
-        <label class="field"><span>Prenda</span>
-          <select id="f-type"><option value="">Todas</option><option value="braga">Braga</option><option value="tanga">Tanga</option><option value="sujetador">Sujetador</option><option value="camison">Camisón</option><option value="conjunto">Lote</option></select>
+      <div class="toolbar" role="group" data-i18n-attr="aria-label:aria.filters" aria-label="Filtros del catálogo">
+        <label class="field"><span data-i18n="f.type">Prenda</span>
+          <select id="f-type"><option value="" data-i18n="opt.all">Todas</option><option value="braga" data-i18n="type.braga">Braga</option><option value="tanga" data-i18n="type.tanga">Tanga</option><option value="sujetador" data-i18n="type.sujetador">Sujetador</option><option value="camison" data-i18n="type.camison">Camisón</option><option value="conjunto" data-i18n="type.conjunto">Lote</option></select>
         </label>
-        <label class="field"><span>Talla</span>
-          <select id="f-size"><option value="">Todas</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
+        <label class="field"><span data-i18n="f.size">Talla</span>
+          <select id="f-size"><option value="" data-i18n="opt.all">Todas</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
         </label>
-        <label class="field"><span>Uso mínimo</span>
-          <select id="f-days"><option value="0">Cualquiera</option><option value="1">1 día o más</option><option value="3">3 días o más</option><option value="7">7 días o más</option></select>
+        <label class="field"><span data-i18n="f.days">Uso mínimo</span>
+          <select id="f-days"><option value="0" data-i18n="opt.any">Cualquiera</option><option value="1" data-i18n="days.1">1 día o más</option><option value="3" data-i18n="days.3">3 días o más</option><option value="7" data-i18n="days.7">7 días o más</option></select>
         </label>
-        <label class="field"><span>Ordenar por</span>
-          <select id="f-sort"><option value="new">Novedades</option><option value="asc">Precio, de menor a mayor</option><option value="desc">Precio, de mayor a menor</option><option value="days">Más uso</option></select>
+        <label class="field"><span data-i18n="f.sort">Ordenar por</span>
+          <select id="f-sort"><option value="new" data-i18n="sort.new">Novedades</option><option value="asc" data-i18n="sort.asc">Precio, de menor a mayor</option><option value="desc" data-i18n="sort.desc">Precio, de mayor a menor</option><option value="days" data-i18n="sort.days">Más uso</option></select>
         </label>
         <p class="toolbar__count num" id="count" aria-live="polite"></p>
       </div>
 
       <div id="grid" class="grid"></div>
-      <p id="empty" class="empty" hidden>No hay piezas con esos filtros. Prueba a ampliarlos.</p>
+      <p id="empty" class="empty" hidden data-i18n="cat.empty">No hay piezas con esos filtros. Prueba a ampliarlos.</p>
     </div>
   </section>
 
   <section class="section section--tint" id="como">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div><p class="eyebrow">02 · Cómo funciona</p><h2>Tres pasos, <em>sin ruido</em></h2></div>
+        <div><p class="eyebrow" data-i18n="how.eyebrow">02 · Cómo funciona</p><h2 data-i18n="how.h2">Tres pasos, <em>sin ruido</em></h2></div>
       </div>
       <ol class="steps">
-        <li class="step reveal"><span class="step__n num">01</span><h3>Elige</h3><p>Filtra por prenda, talla y días de uso. En cada ficha ves quién vende, desde dónde envía y qué impuestos se aplican a tu destino.</p></li>
-        <li class="step reveal"><span class="step__n num">02</span><h3>Confirma</h3><p>Indica tu país y envía el pedido. Te respondemos con las instrucciones de pago y el plazo; por ahora el pago es manual.</p></li>
-        <li class="step reveal"><span class="step__n num">03</span><h3>Recibe</h3><p>La prenda sale en bolsa sellada dentro de un embalaje neutro, sin logotipos ni datos personales del vendedor.</p></li>
+        <li class="step reveal"><span class="step__n num">01</span><h3 data-i18n="how.1.t">Elige</h3><p data-i18n="how.1.p">Filtra por prenda, talla y días de uso. En cada ficha ves quién vende, desde dónde envía y qué impuestos se aplican a tu destino.</p></li>
+        <li class="step reveal"><span class="step__n num">02</span><h3 data-i18n="how.2.t">Confirma</h3><p data-i18n="how.2.p">Indica tu país y envía el pedido. Te respondemos con las instrucciones de pago y el plazo; por ahora el pago es manual.</p></li>
+        <li class="step reveal"><span class="step__n num">03</span><h3 data-i18n="how.3.t">Recibe</h3><p data-i18n="how.3.p">La prenda sale en bolsa sellada dentro de un embalaje neutro, sin logotipos ni datos personales del vendedor.</p></li>
       </ol>
     </div>
   </section>
@@ -154,76 +154,29 @@
   <section class="section dark" id="impuestos">
     <div class="wrap">
       <div class="sec-head reveal">
-        <div><p class="eyebrow">03 · IVA e impuestos</p><h2>Impuestos <em>sin letra pequeña</em></h2></div>
-        <p>El tratamiento fiscal depende de quién vende y de adónde se envía. Lo calculamos por ti y te lo mostramos antes de pedir.</p>
+        <div><p class="eyebrow" data-i18n="tax.eyebrow">03 · IVA e impuestos</p><h2 data-i18n="tax.h2">Impuestos <em>sin letra pequeña</em></h2></div>
+        <p data-i18n="tax.lead">El tratamiento fiscal depende de quién vende y de adónde se envía. Lo calculamos por ti y te lo mostramos antes de pedir.</p>
       </div>
       <div class="tax-grid reveal">
-        <div class="tax-card"><span class="eyebrow">Particular</span><h3>Sin IVA</h3><p>El precio que ves es el final. Al no ser una venta profesional, no se aplican las normas de consumo de la UE.</p></div>
-        <div class="tax-card"><span class="eyebrow">Profesional · bienes usados</span><h3>IVA incluido</h3><p>Régimen especial de bienes usados: el IVA va dentro del precio y, por ley, no se desglosa. Se aplican las normas de consumo.</p></div>
-        <div class="tax-card"><span class="eyebrow">Profesional · régimen general</span><h3>IVA desglosado</h3><p>IVA del país del vendedor, visible en la ficha. Pasados 10.000 € de ventas a otros países de la UE, se aplica el del destino.</p></div>
-        <div class="tax-card"><span class="eyebrow">Fuera de la UE</span><h3>Próximamente</h3><p>Reino Unido y Noruega exigen que el mercado cobre el IVA local en el pago. Activaremos esos destinos cuando estemos registrados.</p></div>
+        <div class="tax-card"><span class="eyebrow" data-i18n="taxc.1.e">Particular</span><h3 data-i18n="taxc.1.t">Sin IVA</h3><p data-i18n="taxc.1.p">El precio que ves es el final. Al no ser una venta profesional, no se aplican las normas de consumo de la UE.</p></div>
+        <div class="tax-card"><span class="eyebrow" data-i18n="taxc.2.e">Profesional · bienes usados</span><h3 data-i18n="taxc.2.t">IVA incluido</h3><p data-i18n="taxc.2.p">Régimen especial de bienes usados: el IVA va dentro del precio y, por ley, no se desglosa. Se aplican las normas de consumo.</p></div>
+        <div class="tax-card"><span class="eyebrow" data-i18n="taxc.3.e">Profesional · régimen general</span><h3 data-i18n="taxc.3.t">IVA desglosado</h3><p data-i18n="taxc.3.p">IVA del país del vendedor, visible en la ficha. Pasados 10.000 € de ventas a otros países de la UE, se aplica el del destino.</p></div>
+        <div class="tax-card"><span class="eyebrow" data-i18n="taxc.4.e">Fuera de la UE</span><h3 data-i18n="taxc.4.t">Próximamente</h3><p data-i18n="taxc.4.p">Reino Unido y Noruega exigen que el mercado cobre el IVA local en el pago. Activaremos esos destinos cuando estemos registrados.</p></div>
       </div>
-      <div class="tax-foot"><span>Información orientativa. No es asesoría fiscal.</span><a class="link" href="iva.html">Guía completa de IVA e impuestos</a></div>
-    </div>
-  </section>
-
-  <section class="section" id="vender">
-    <div class="wrap sell">
-      <div class="reveal">
-        <p class="eyebrow">04 · Vender</p>
-        <h2>Vende con <em>criterio</em></h2>
-        <p style="color:var(--ink-soft);max-width:46ch;margin-bottom:34px">Tú decides qué vendes, a qué precio y qué compartes. Trabajamos con alias: tu identidad real solo la ve el equipo de verificación.</p>
-        <ul class="facts">
-          <li><b>Verificación</b><span>Identidad y edad con documento oficial, antes de publicar.</span></li>
-          <li><b>Impuestos</b><span>Te guiamos según tu país y si vendes como particular o como profesional.</span></li>
-          <li><b>Privacidad</b><span>Alias público y envío con remitente neutro. Nunca tu dirección.</span></li>
-          <li><b>Control</b><span>Puedes rechazar cualquier petición sin dar explicaciones.</span></li>
-          <li><b>Envío</b><span>Desde cualquier país de la UE. Desde fuera de la UE, solo dentro de tu país por ahora.</span></li>
-        </ul>
-      </div>
-      <form id="seller-form" class="panel form reveal" novalidate>
-        <div><h3>Solicitud de vendedor</h3><p>Rellena lo básico. Te pediremos la verificación de identidad en el siguiente paso.</p></div>
-        <div class="row">
-          <label class="f"><span class="label">Alias público</span><input name="alias" required maxlength="30" autocomplete="off" placeholder="Cómo aparecerás"></label>
-          <label class="f"><span class="label">Correo</span><input name="email" type="email" required autocomplete="email" placeholder="nombre@correo.com"></label>
-        </div>
-        <div class="row">
-          <label class="f"><span class="label">País de residencia</span><select name="country" id="s-country" required></select></label>
-          <label class="f"><span class="label">Edad</span><input name="age" type="number" min="18" max="99" required inputmode="numeric" placeholder="18 o más"></label>
-        </div>
-        <fieldset style="border:0;padding:0;margin:0">
-          <legend class="label" style="margin-bottom:10px">Vendes como</legend>
-          <div class="seg">
-            <label><input type="radio" name="kind" value="particular" checked><span>Particular</span></label>
-            <label><input type="radio" name="kind" value="profesional"><span>Profesional</span></label>
-          </div>
-          <p class="hint" style="margin-top:10px" id="kind-hint">Vendes artículos propios de forma ocasional. No cobras IVA y no se aplican las normas de consumo.</p>
-        </fieldset>
-        <div class="row" id="pro-fields" hidden>
-          <label class="f"><span class="label">Número de IVA</span><input name="vatid" autocomplete="off" placeholder="Ej. ESB12345678"></label>
-          <label class="f"><span class="label">Régimen de IVA</span>
-            <select name="regime"><option value="">No lo sé todavía</option><option value="general">Régimen general</option><option value="margin">Bienes usados (margen)</option></select>
-          </label>
-        </div>
-        <label class="f"><span class="label">Qué quieres vender</span><textarea name="about" maxlength="400" placeholder="Tipo de prendas, tallas, días de uso…"></textarea></label>
-        <label class="check"><input type="checkbox" name="ok" required><span>Confirmo que soy mayor de 18 años, que las prendas son mías y que acepto la <a href="condiciones-vendedores.html">verificación de identidad y las condiciones para vendedores</a>.</span></label>
-        <button class="btn btn--block" type="submit">Enviar solicitud</button>
-        <p class="msg" id="seller-msg" role="status"></p>
-      </form>
+      <div class="tax-foot"><span data-i18n="tax.foot">Información orientativa. No es asesoría fiscal.</span><a class="link" href="iva.html" data-i18n="tax.guide">Guía completa de IVA e impuestos</a></div>
     </div>
   </section>
 
   <section class="section section--tint" id="faq">
     <div class="wrap">
-      <div class="sec-head reveal"><div><p class="eyebrow">05 · Preguntas</p><h2>Lo que <em>suelen preguntar</em></h2></div></div>
+      <div class="sec-head reveal"><div><p class="eyebrow" data-i18n="faq.eyebrow">04 · Preguntas</p><h2 data-i18n="faq.h2">Lo que <em>suelen preguntar</em></h2></div></div>
       <div class="faq reveal">
-        <details><summary>¿Cómo es el envío y qué verá quien reciba el paquete?</summary><p>Siempre en bolsa sellada dentro de una caja o sobre neutro, sin logotipos ni mención al sitio. El remitente es genérico: nunca figura la dirección personal del vendedor.</p></details>
-        <details><summary>¿Tendré que pagar aduanas o impuestos de importación?</summary><p>Dentro de la UE no hay aduanas ni impuestos de importación. Los envíos a Reino Unido, Suiza y Noruega estarán disponibles próximamente, cuando el mercado pueda cobrar el IVA local en el pago. Los vendedores de fuera de la UE solo venden dentro de su país.</p></details>
-        <details><summary>¿Puedo comprar a un vendedor de otro país?</summary><p>Sí, si el vendedor está en la UE. Elige tu país de envío arriba y verás en cada ficha el coste de envío y el tratamiento de IVA.</p></details>
-        <details><summary>¿Cómo sé si el vendedor es particular o profesional?</summary><p>Cada ficha lo indica. Los vendedores particulares no cobran IVA y, al no ser una venta profesional, no se aplican las normas de consumo de la UE. Con vendedores profesionales sí tienes desistimiento y garantía legal.</p></details>
-        <details><summary>¿Y la higiene?</summary><p>Son artículos usados y se venden como tales. Se envían en bolsa hermética. Lávalos antes de volver a usarlos.</p></details>
-        <details><summary>¿Qué ocurre con los menores de edad?</summary><p>Está prohibido. Verificamos la edad de los vendedores y cualquier cuenta o anuncio sospechoso se bloquea y se comunica a las autoridades. Puedes denunciar cualquier anuncio desde su ficha.</p></details>
-        <details><summary>¿Qué datos guardáis?</summary><p>Lo mínimo para tramitar el pedido, con tu consentimiento explícito para los datos que puedan revelar tu vida sexual. El carrito vive solo en tu navegador. Más detalle en la <a href="privacidad.html" style="text-decoration:underline">política de privacidad</a>.</p></details>
+        <details><summary data-i18n="faq.1.q">¿Cómo es el envío y qué verá quien reciba el paquete?</summary><p data-i18n="faq.1.a">Siempre en bolsa sellada dentro de una caja o sobre neutro, sin logotipos ni mención al sitio. El remitente es genérico: nunca figura la dirección personal del vendedor.</p></details>
+        <details><summary data-i18n="faq.2.q">¿Tendré que pagar aduanas o impuestos de importación?</summary><p data-i18n="faq.2.a">Dentro de la UE no hay aduanas ni impuestos de importación. Los envíos a Reino Unido, Suiza y Noruega estarán disponibles próximamente, cuando el mercado pueda cobrar el IVA local en el pago.</p></details>
+        <details><summary data-i18n="faq.3.q">¿Puedo comprar a un vendedor de otro país?</summary><p data-i18n="faq.3.a">Sí, si el vendedor está en la UE. Elige tu país de envío arriba y verás en cada ficha el coste de envío y el tratamiento de IVA.</p></details>
+        <details><summary data-i18n="faq.4.q">¿Cómo sé si el vendedor es particular o profesional?</summary><p data-i18n="faq.4.a">Cada ficha lo indica. Los particulares no cobran IVA y, al no ser una venta profesional, no se aplican las normas de consumo de la UE. Con vendedores profesionales sí tienes desistimiento y garantía legal.</p></details>
+        <details><summary data-i18n="faq.5.q">¿Y la higiene?</summary><p data-i18n="faq.5.a">Son artículos usados y se venden como tales. Se envían en bolsa hermética. Lávalos antes de volver a usarlos.</p></details>
+        <details><summary data-i18n="faq.6.q">¿Qué datos guardáis?</summary><p data-i18n="faq.6.a">Lo mínimo para tramitar el pedido, con tu consentimiento explícito para los datos que puedan revelar tu vida sexual. El carrito vive solo en tu navegador. Más detalle en la <a href="privacidad.html" style="text-decoration:underline">política de privacidad</a>.</p></details>
       </div>
     </div>
   </section>
@@ -232,21 +185,21 @@
 <footer class="footer">
   <div class="wrap">
     <div class="footer__grid">
-      <div><a class="wordmark" href="#top">Intimae</a><p>Mercado europeo de prendas íntimas de segunda mano entre adultos. Sitio para mayores de 18 años.</p></div>
-      <div><h4>Tienda</h4><ul><li><a href="#catalogo">Catálogo</a></li><li><a href="#como">Cómo funciona</a></li><li><a href="envios.html">Envíos y devoluciones</a></li><li><a href="iva.html">IVA e impuestos</a></li></ul></div>
-      <div><h4>Vendedores</h4><ul><li><a href="#vender">Solicitar acceso</a></li><li><a href="condiciones-vendedores.html">Condiciones</a></li><li><a href="normas.html">Normas y denuncias</a></li></ul></div>
-      <div><h4>Legal</h4><ul><li><a href="aviso-legal.html">Aviso legal</a></li><li><a href="privacidad.html">Privacidad</a></li><li><a href="cookies.html">Cookies</a></li><li><a href="condiciones-compra.html">Condiciones de compra</a></li></ul></div>
+      <div><a class="wordmark" href="#top">Intimae</a><p data-i18n="ft.about">Mercado europeo de prendas íntimas de segunda mano entre adultos. Sitio para mayores de 18 años.</p></div>
+      <div><h4 data-i18n="ft.h.shop">Tienda</h4><ul><li><a href="#catalogo" data-i18n="ft.catalog">Catálogo</a></li><li><a href="#como" data-i18n="ft.how">Cómo funciona</a></li><li><a href="envios.html" data-i18n="ft.ship">Envíos y devoluciones</a></li><li><a href="iva.html" data-i18n="ft.vat">IVA e impuestos</a></li></ul></div>
+      <div><h4 data-i18n="ft.h.legal">Legal</h4><ul><li><a href="aviso-legal.html" data-i18n="ft.aviso">Aviso legal</a></li><li><a href="privacidad.html" data-i18n="ft.priv">Privacidad</a></li><li><a href="cookies.html" data-i18n="ft.cook">Cookies</a></li><li><a href="condiciones-compra.html" data-i18n="ft.compra">Condiciones de compra</a></li><li><a href="normas.html" data-i18n="ft.normas">Normas y denuncias</a></li></ul></div>
+      <div><h4 data-i18n="ft.h.sell">¿Quieres vender?</h4><ul><li><a href="vendedores/" data-i18n="ft.sell">Vender en Intimae</a></li></ul></div>
     </div>
     <div class="footer__legal">
-      <span>© 2026 Intimae. Todas las personas que aparecen o venden son adultas y han dado su consentimiento.</span>
-      <span>Fotos de muestra de <a href="https://unsplash.com/?utm_source=intimae&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> y sus autores.</span>
+      <span data-i18n="ft.copy">© 2026 Intimae. Todas las personas que aparecen o venden son adultas y han dado su consentimiento.</span>
+      <span data-i18n="ft.photos">Fotos de muestra de <a href="https://unsplash.com/?utm_source=intimae&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a> y sus autores.</span>
     </div>
   </div>
 </footer>
 
 <!-- Ficha de producto -->
 <dialog class="pdp" id="pdp" aria-labelledby="pdp-title">
-  <button class="close" type="button" data-close aria-label="Cerrar"><svg class="icon"><use href="#i-close"/></svg></button>
+  <button class="close" type="button" data-close data-i18n-attr="aria-label:aria.close" aria-label="Cerrar"><svg class="icon"><use href="#i-close"/></svg></button>
   <div class="pdp__media"><img id="pdp-img" alt="" width="800" height="1000"><a class="credit" id="pdp-credit" target="_blank" rel="noopener noreferrer"></a></div>
   <div class="pdp__body">
     <div><p class="eyebrow" id="pdp-ref"></p><h2 id="pdp-title" style="margin-top:12px"></h2></div>
@@ -255,36 +208,38 @@
     <div class="taxbox" id="pdp-tax" aria-live="polite"></div>
     <dl class="specs" id="pdp-specs"></dl>
     <div class="pdp__actions">
-      <button class="btn" type="button" id="pdp-add">Añadir al pedido</button>
-      <a class="link" id="pdp-report" href="normas.html">Denunciar este anuncio</a>
+      <button class="btn" type="button" id="pdp-add" data-i18n="pdp.add">Añadir al pedido</button>
+      <a class="link" id="pdp-report" href="normas.html" data-i18n="pdp.report">Denunciar este anuncio</a>
     </div>
   </div>
 </dialog>
 
 <!-- Pedido -->
 <dialog class="cart" id="cart" aria-labelledby="cart-title">
-  <div class="cart__head"><h2 id="cart-title">Tu pedido</h2><button class="close" type="button" data-close aria-label="Cerrar"><svg class="icon"><use href="#i-close"/></svg></button></div>
+  <div class="cart__head"><h2 id="cart-title" data-i18n="cart.title">Tu pedido</h2><button class="close" type="button" data-close data-i18n-attr="aria-label:aria.close" aria-label="Cerrar"><svg class="icon"><use href="#i-close"/></svg></button></div>
   <div class="lines" id="lines"></div>
   <div class="cart__foot" id="cart-foot">
     <div class="sum" id="sum"></div>
     <p class="cart-note" id="cart-note" hidden></p>
     <form id="order-form" class="form" novalidate>
-      <label class="f"><span class="label">Nombre o alias</span><input name="name" required autocomplete="name"></label>
-      <label class="f"><span class="label">Correo</span><input name="email" type="email" required autocomplete="email"></label>
-      <label class="f"><span class="label">Dirección de entrega</span><textarea name="addr" required autocomplete="street-address" style="min-height:72px"></textarea></label>
+      <label class="f"><span class="label" data-i18n="o.name">Nombre o alias</span><input name="name" required autocomplete="name"></label>
+      <label class="f"><span class="label" data-i18n="o.email">Correo</span><input name="email" type="email" required autocomplete="email"></label>
+      <label class="f"><span class="label" data-i18n="o.addr">Dirección de entrega</span><textarea name="addr" required autocomplete="street-address" style="min-height:72px"></textarea></label>
       <div class="row">
-        <label class="f"><span class="label">País de entrega</span><input name="country" id="o-country" readonly></label>
-        <label class="f"><span class="label">Pago preferido</span><select name="pay"><option>Transferencia</option><option>Bizum</option><option>Cripto</option></select></label>
+        <label class="f"><span class="label" data-i18n="o.country">País de entrega</span><input name="country" id="o-country" readonly></label>
+        <label class="f"><span class="label" data-i18n="o.pay">Pago preferido</span><select name="pay"><option value="Transferencia" data-i18n="o.pay.1">Transferencia</option><option value="Bizum" data-i18n="o.pay.2">Bizum</option><option value="Cripto" data-i18n="o.pay.3">Cripto</option></select></label>
       </div>
-      <label class="f"><span class="label">Petición al vendedor (opcional)</span><textarea name="note" maxlength="300" style="min-height:64px"></textarea></label>
-      <label class="check"><input type="checkbox" name="adult" required><span>Soy mayor de 18 años y acepto las <a href="condiciones-compra.html">condiciones de compra</a>.</span></label>
-      <label class="check"><input type="checkbox" name="art9" required><span>Consiento expresamente que se traten los datos de este pedido, que pueden revelar información sobre mi vida sexual, solo para tramitarlo (art. 9.2.a del RGPD). Puedo retirar este consentimiento cuando quiera. <a href="privacidad.html">Más información</a>.</span></label>
-      <button class="btn btn--block" type="submit">Enviar pedido</button>
+      <label class="f"><span class="label" data-i18n="o.note">Petición al vendedor (opcional)</span><textarea name="note" maxlength="300" style="min-height:64px"></textarea></label>
+      <label class="check"><input type="checkbox" name="adult" required><span data-i18n="o.c1">Soy mayor de 18 años y acepto las <a href="condiciones-compra.html">condiciones de compra</a>.</span></label>
+      <label class="check"><input type="checkbox" name="art9" required><span data-i18n="o.c2">Consiento expresamente que se traten los datos de este pedido, que pueden revelar información sobre mi vida sexual, solo para tramitarlo (art. 9.2.a del RGPD). Puedo retirar este consentimiento cuando quiera. <a href="privacidad.html">Más información</a>.</span></label>
+      <button class="btn btn--block" type="submit" data-i18n="o.submit">Enviar pedido</button>
       <p class="msg" id="order-msg" role="status"></p>
     </form>
   </div>
 </dialog>
 
+<script src="js/i18n.js"></script>
+<script src="i18n/es.js"></script>
 <script src="js/tax.js"></script>
 <script src="js/products.js"></script>
 <script src="js/app.js"></script>
