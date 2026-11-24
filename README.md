@@ -19,6 +19,8 @@ Mercado europeo de prendas íntimas de segunda mano entre adultos. Web estática
 | `fonts/` | Cormorant Garamond e Inter (licencia SIL OFL), alojadas en el propio sitio |
 | `*.html` | Páginas legales (borrador, pendientes de titularidad) y guía de IVA |
 | `docs/ESTUDIO-LEGAL-Y-MERCADO.md` | Estudio legal, IVA, competencia y hoja de ruta |
+| `docs/AUDITORIA-INTIMAE.md` | Auditoría del estado real, competencia, riesgos y plan por fases |
+| `.vercelignore` | Excluye `docs/`, `tools/` y `screenshots/` del sitio publicado |
 | `screenshots/` | Capturas de la última versión |
 
 ## Antes de publicar
