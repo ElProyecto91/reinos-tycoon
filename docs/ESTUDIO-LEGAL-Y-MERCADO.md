@@ -31,7 +31,11 @@ Cada afirmación lleva una etiqueta de confianza:
 | Carrito (en el navegador) | Hecho | |
 | Pedido | Parcial | Abre un email a `pedidos@example.com`. Sin backend |
 | Alta de vendedor | Parcial | Abre un email. No verifica nada |
-| Páginas legales (7 + índice) | Borrador | Falta la titularidad. Revisión legal pendiente |
+| Páginas legales (8 + índice, incluida la guía de IVA) | Borrador | Falta la titularidad. Revisión legal pendiente |
+| Motor de IVA por vendedor y destino (`js/tax.js`) | Hecho (orientativo) | Particular, bienes usados, régimen general, exportación. Tipos de los 27 países |
+| Destino de envío con selector y bloqueo de vendedores no UE | Hecho | Reino Unido, Suiza y Noruega: visibles, pedido bloqueado («próximamente») |
+| Alta de vendedor con país, particular/profesional, número de IVA y régimen | Hecho | Solo valida formato; falta consulta VIES |
+| Consentimiento explícito art. 9 RGPD en el pedido | Hecho | Casilla aparte, no premarcada |
 | Pagos | No | Manual por email |
 | Cuentas de usuario | No | |
 | Verificación de edad real / identidad de vendedores | No | |
@@ -149,14 +153,49 @@ Ya redactado en `condiciones-vendedores.html`. Pendiente de implementar:
 
 ---
 
+### H. IVA y vendedores de otros países
+
+**Lo que he integrado:** cada vendedor tiene país, condición (particular o profesional) y régimen (ninguno, bienes usados o general). El comprador elige su país de destino y la ficha muestra el tratamiento. Los vendedores de fuera de la UE solo venden dentro de su país. Reino Unido, Suiza y Noruega se pueden consultar pero no pedir.
+
+| Caso | Qué hace la web | Confianza |
+|---|---|---|
+| Vendedor particular | Sin IVA; precio final; no aplican normas de consumo | **[Certeza]** La directiva Omnibus exige indicar si el vendedor es profesional y avisar de que, si no lo es, no aplica el derecho de consumo ([Iubenda](https://www.iubenda.com/en/blog/implementing-the-omnibus-directive-for-online-marketplaces/)) |
+| Dónde está la frontera particular/profesional | La decide el vendedor al registrarse | **[Certeza]** No hay un umbral único en la UE: pesa la regularidad de las ventas y cada país fija el suyo ([Catawiki](https://www.catawiki.com/en/help/seller-success-fee-vat/eu-vat-regulations-for-selling-on-catawiki)) |
+| Profesional, régimen de bienes usados | «IVA incluido», sin desglosar | **[Probable]** Se confirma que las normas de ventas a distancia no aplican a bienes en margen y tributa el país de salida ([Catawiki](https://www.catawiki.com/en/help/seller-success-fee-vat/eu-vat-regulations-for-selling-on-catawiki)); no encontré el artículo de la directiva |
+| Profesional, régimen general | IVA del país del vendedor, desglosado | **[Certeza]** Umbral único de 10.000 € para ventas a distancia B2C en la UE ([Portal OSS](https://vat-one-stop-shop.ec.europa.eu/one-stop-shop_en)) |
+| Profesional por encima de 10.000 € | Documentado, **no implementado**: el precio debería cambiar según el país de destino | Pendiente (fase 2) |
+| Márgenes y plataforma como «proveedor presunto» | El régimen de margen no se aplica si la plataforma actúa como proveedor | **[Certeza]** [Revenue (Irlanda)](https://www.revenue.ie/en/tax-professionals/tdm/value-added-tax/part10-special-schemes/vat-ecommerce-rules/deemed-supplier.pdf) |
+
+**Vendedores de fuera de la UE: por qué se bloquean**
+- **[Certeza]** Si el mercado facilita la venta de bienes importados de hasta 150 €, se le trata como proveedor a efectos de IVA; en ventas de vendedores no UE con bienes ya en la UE, a cualquier importe ([Avalara](https://www.avalara.com/us/en/learn/whitepapers/2021-eu-vat-ecommerce-reforms-guide-usversion.html)). Y puede responder solidariamente si sabía o debía saber que el vendedor incumplía ([Vertex](https://www.vertexinc.com/sites/default/files/2024-05/Practical-Implications-EU-eCommerce-VAT-Rules-eGuide-4.12.pdf)).
+- **[Certeza]** Desde el 1 de julio de 2026 y hasta el 1 de julio de 2028 hay un derecho fijo de 3 € por artículo en envíos de hasta 150 €, también con IOSS ([Comisión Europea](https://trade.ec.europa.eu/access-to-markets/en/news/eu-applies-eu3-customs-duty-item-low-value-e-commerce-consignments)). Puede haber tasas de gestión adicionales aún provisionales.
+- **[Probable]** El IOSS puede exigir un intermediario establecido en la UE según el país del vendedor ([Stripe](https://stripe.com/resources/more/ioss-and-eu-vat)); no he verificado qué países están exentos.
+- **Decisión de producto:** hasta que haya registro IOSS, los vendedores no UE solo venden en su país. Es lo más barato y lo más seguro.
+
+**Reino Unido, Noruega y Suiza: por qué «próximamente»**
+- **[Certeza] Reino Unido:** para envíos de hasta 135 £, el mercado debe cobrar el IVA en el momento de la venta ([GOV.UK](https://www.gov.uk/guidance/vat-and-overseas-goods-sold-to-customers-in-the-uk-using-online-marketplaces)). Un documento oficial de 28 de octubre de 2026 propone ampliar esa responsabilidad a bienes ya en el Reino Unido; no he comprobado si está aprobado.
+- **[Certeza] Noruega:** umbral de bajo valor de 3.000 NOK por artículo; los mercados pueden ser responsables; sin número VOEC, el envío se retiene en la frontera ([Aduana de Noruega](https://www.toll.no/en/corporate/import/the-voec-scheme)).
+- **Suiza:** **[Suposición]** no encontré fuentes. Pendiente de investigar.
+- **Consecuencia:** servir esos tres países implica registrarse como operador en cada uno. Es fase 3, con asesor.
+
+**Tipos de IVA:** los 27 tipos generales están en `js/tax.js`. **[Certeza]** Confirmados con fuente: Hungría 27 %, Finlandia 25,5 %, Luxemburgo 17 %, Rumanía 21 % desde el 1 de agosto de 2025 ([PwC](https://taxsummaries.pwc.com/romania/corporate)), Estonia 24 % desde el 1 de julio de 2025 ([KPMG](https://kpmg.com/us/en/taxnewsflash/news/2025/07/tnf-estonia-increase-in-standard-vat-rate-effective-july-1-2025.html)), Eslovaquia 23 % y Bulgaria 20 % ([Tax Foundation](https://taxfoundation.org/data/all/global/value-added-tax-vat-rates-europe/)). **[Probable]** El resto por conocimiento general: contrastar con la base de datos de la Comisión antes de operar.
+
+**Preguntas para el asesor fiscal**
+1. ¿Cómo se trata la **comisión** de la plataforma (IVA y lugar de prestación) cuando el vendedor es particular, profesional de la UE o de fuera?
+2. ¿Cuándo se me considera **proveedor presunto** si el vendedor de la UE envía dentro de la UE? ¿Solo con vendedores no UE?
+3. Régimen de bienes usados en ventas a distancia intracomunitarias: ¿país de origen o de destino? ¿Qué artículo lo regula?
+4. ¿Qué verificación del número de IVA (VIES) debo conservar para no responder solidariamente?
+5. ¿Cuándo debo registrarme en el Reino Unido y en Noruega, y cuánto cuesta mantenerlo?
+6. ¿Qué pasa con Suiza?
+
 ## 4. Hoja de ruta propuesta
 
 | Fase | Objetivo | Incluye | Depende de |
 |---|---|---|---|
 | **0 (hecha)** | Demo y textos legales | Web, catálogo demo, 7 documentos legales en borrador | |
 | **1** | Operar a pequeña escala, en la UE, con pagos manuales | Titularidad, revisión legal, cuentas, alta de vendedores con verificación, anuncios, pedidos, envíos UE con etiqueta, panel básico, moderación | Abogado, proveedor de verificación |
-| **2** | Cobros y cumplimiento fiscal | Procesador de pagos adulto, retención y pagos a vendedores, verificación de edad real, DAC7, IVA | Decisión de modelo de dinero, asesor fiscal |
-| **3** | Europa completa | Reino Unido, Suiza y Noruega con aduanas, multiidioma y multimoneda, reseñas y disputas, puntos de recogida | Fase 2 estable |
+| **2** | Cobros y cumplimiento fiscal | Procesador de pagos adulto, retención y pagos a vendedores, verificación de edad real, DAC7, IVA con cambio de precio por país de destino y consulta VIES | Decisión de modelo de dinero, asesor fiscal |
+| **3** | Europa completa | Registro de IVA en Reino Unido y Noruega, estudio de Suiza, IOSS si se admiten vendedores no UE, multiidioma y multimoneda, reseñas y disputas, puntos de recogida | Fase 2 estable |
 
 ---
 

@@ -1,19 +1,30 @@
-.legal{max-width:820px;margin:0 auto;padding:40px 20px 72px}
-.legal h1{font-size:clamp(1.8rem,5vw,2.4rem);margin-bottom:18px}
-.legal h2{margin:34px 0 10px;font-size:1.35rem;color:var(--gold)}
-.legal p,.legal li{color:var(--muted)}
-.legal li{margin-bottom:6px}
-.legal strong{color:var(--text)}
-.legal code{background:var(--card);padding:1px 6px;border-radius:6px;color:var(--text)}
-.legal table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.93rem}
-.legal th,.legal td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top;color:var(--muted)}
-.legal th{background:var(--card);color:var(--text);font-weight:600}
-.legal table tr>th:first-child:not(:last-child){width:30%}
-.draft{background:rgba(217,180,108,.12);border:1px solid var(--gold);border-radius:12px;padding:12px 16px;margin-bottom:22px;color:var(--text);font-size:.92rem}
-mark.todo{background:rgba(255,214,102,.9);color:#2a1a00;padding:0 4px;border-radius:4px;font-weight:600}
-.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 18px;margin:14px 0}
-.doclist{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:18px 0}
-.doclist a{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-decoration:none;color:var(--text)}
-.doclist a:hover{border-color:var(--rose)}
-.legal__nav{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:44px;padding-top:20px;border-top:1px solid var(--line);font-size:.9rem}
-@media (max-width:760px){.legal table{display:block;overflow-x:auto}}
+.legal{max-width:880px;margin:0 auto;padding:clamp(36px,6vw,76px) var(--gutter) clamp(56px,8vw,104px)}
+.legal h1{font-size:clamp(2.5rem,6vw,4rem);margin:0 0 26px}
+.legal h2{font:500 1.75rem/1.15 var(--serif);margin:48px 0 14px;padding-top:22px;border-top:1px solid var(--line)}
+.legal .lead{font-size:1.1rem;color:var(--ink-soft);max-width:60ch;margin-bottom:8px}
+.legal p,.legal li{color:var(--ink-soft);max-width:72ch}
+.legal p+p{margin-top:12px}
+.legal ul{list-style:disc;padding-left:1.2em;margin:12px 0}
+.legal ol{list-style:decimal;padding-left:1.4em;margin:12px 0}
+.legal li{margin-bottom:8px}
+.legal strong{color:var(--ink);font-weight:600}
+.legal a{color:var(--oxblood);text-underline-offset:3px}
+.legal code{background:var(--paper-2);padding:1px 6px;font-size:.9em}
+.legal table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+.legal th,.legal td{border-bottom:1px solid var(--line);padding:12px 14px 12px 0;text-align:left;vertical-align:top;color:var(--ink-soft)}
+.legal th{font:600 10.5px/1.3 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ink);border-bottom:1px solid var(--ink)}
+.legal table tr>th:first-child:not(:last-child):not(:only-child){width:30%}
+.draft{background:var(--card);border:1px solid var(--gold);padding:14px 18px;margin-bottom:34px;color:var(--ink);font-size:13.5px;line-height:1.55}
+mark.todo{background:#f0d98f;color:#2a1a00;padding:0 5px;font-weight:600}
+.box{background:var(--card);border:1px solid var(--line);padding:6px 20px;margin:18px 0}
+.doclist{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0;margin:22px 0;border-top:1px solid var(--ink)}
+.doclist li{margin:0;max-width:none}
+.doclist a{display:block;padding:20px 8px 20px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);font:500 1.35rem/1.2 var(--serif)}
+.doclist a:hover{color:var(--oxblood);padding-left:8px;transition:padding .25s var(--ease)}
+.rates{list-style:none;padding:0;columns:3;column-gap:36px}
+.rates li{display:flex;justify-content:space-between;border-bottom:1px solid var(--line-soft);padding:8px 0;margin:0;break-inside:avoid}
+.sources{font-size:14px}
+.legal__nav{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:56px;padding-top:22px;border-top:1px solid var(--ink);font-size:13px}
+.legal__nav a{text-decoration:none;color:var(--ink)}
+.legal__nav a:hover{color:var(--oxblood);text-decoration:underline}
+@media (max-width:760px){.legal table{display:block;overflow-x:auto}.rates{columns:1}}
