@@ -1,16 +1,15 @@
-// Catálogo de ejemplo. Los vendedores son ficticios (datos de demostración).
-// hue: tono de color del ilustrado; days: días de uso; wash: estado de lavado.
+// Catálogo de ejemplo. Vendedores ficticios (datos de demostración).
+// Las fotos son de muestra, de Unsplash (https://unsplash.com): solo prendas, sin personas.
+// img: URL base de la foto; by / handle: fotógrafo (se muestra como crédito).
+// hue: tono usado por la ilustración de respaldo si la foto no carga.
 window.PRODUCTS = [
-  { id: 1,  type: "braga",     title: "Braga de encaje negro",      seller: "Lunaroja",   size: "M",  days: 3, price: 28, hue: 340, desc: "Encaje francés, uso diario y gimnasio.", date: "2026-11-20" },
-  { id: 2,  type: "tanga",     title: "Tanga de satén burdeos",     seller: "Maribel_V",  size: "S",  days: 1, price: 22, hue: 350, desc: "Satén suave, un solo día de uso.",       date: "2026-11-18" },
-  { id: 3,  type: "sujetador", title: "Sujetador push-up rosa",     seller: "Cleo",       size: "M",  days: 5, price: 35, hue: 330, desc: "Aros y copa 85B. Perfume floral.",        date: "2026-11-17" },
-  { id: 4,  type: "culotte",   title: "Culotte de algodón blanco",  seller: "Noa",        size: "L",  days: 7, price: 30, hue: 20,  desc: "Una semana completa, ropa de diario.",    date: "2026-11-15" },
-  { id: 5,  type: "braga",     title: "Braga brasileña roja",       seller: "Sofi.Luz",   size: "S",  days: 2, price: 25, hue: 355, desc: "Corte brasileño, tela lisa.",             date: "2026-11-14" },
-  { id: 6,  type: "tanga",     title: "Tanga de encaje violeta",    seller: "Lunaroja",   size: "M",  days: 4, price: 27, hue: 290, desc: "Encaje y lazo. Usada en jornada larga.",  date: "2026-11-12" },
-  { id: 7,  type: "sujetador", title: "Bralette negro de encaje",   seller: "Aitana",     size: "S",  days: 3, price: 32, hue: 330, desc: "Sin aros, muy cómodo.",                   date: "2026-11-10" },
-  { id: 8,  type: "culotte",   title: "Culotte de seda marfil",     seller: "Mar",        size: "XL", days: 10, price: 45, hue: 40,  desc: "Seda lavable, diez días de uso.",         date: "2026-11-08" },
-  { id: 9,  type: "braga",     title: "Braga de algodón a rayas",   seller: "Carlota",    size: "L",  days: 1, price: 18, hue: 210, desc: "Estilo casual, un día.",                  date: "2026-11-06" },
-  { id: 10, type: "tanga",     title: "Tanga deportiva gris",       seller: "Fit_Irene",  size: "M",  days: 2, price: 20, hue: 230, desc: "Tela técnica, después de entrenar.",      date: "2026-11-04" },
-  { id: 11, type: "sujetador", title: "Sujetador de seda negro",    seller: "Maribel_V",  size: "L",  days: 6, price: 40, hue: 345, desc: "Copa completa, uso semanal.",             date: "2026-11-02" },
-  { id: 12, type: "braga",     title: "Braga de tul transparente",  seller: "Cleo",       size: "S",  days: 1, price: 24, hue: 310, desc: "Tul fino con bordado.",                   date: "2026-10-30" }
+  { id: 1, type: "tanga",     title: "Tanga de encaje negro",           seller: "Lunaroja",  size: "S", days: 2, price: 24, hue: 340, desc: "Encaje calado, dos días de uso.",        date: "2026-11-20", img: "https://images.unsplash.com/photo-1584061677142-c729839e341f", by: "Uliana Kopanytsia", handle: "ulian_ka" },
+  { id: 2, type: "conjunto",  title: "Lote de lencería surtida",        seller: "Cleo",      size: "M", days: 4, price: 55, hue: 330, desc: "Sujetadores y bragas de varios estilos.", date: "2026-11-18", img: "https://images.unsplash.com/photo-1568441556126-f36ae0900180", by: "Fahad Waseem", handle: "fahadzia" },
+  { id: 3, type: "sujetador", title: "Sujetador negro de encaje",       seller: "Maribel_V", size: "M", days: 3, price: 35, hue: 345, desc: "Copa suave con detalle de encaje.",       date: "2026-11-17", img: "https://images.unsplash.com/photo-1572358764342-612d02e2d2d2", by: "Danijela Prijovic", handle: "dacakockica" },
+  { id: 4, type: "sujetador", title: "Bralette burdeos de encaje",      seller: "Sofi.Luz",  size: "S", days: 6, price: 32, hue: 350, desc: "Sin aros, encaje tono vino.",             date: "2026-11-15", img: "https://images.unsplash.com/photo-1572109754335-3807540beef2", by: "Ivana Batalović", handle: "ivanabatalovic" },
+  { id: 5, type: "sujetador", title: "Sujetador azul de encaje",        seller: "Carlota",   size: "L", days: 4, price: 36, hue: 220, desc: "Encaje azul, copa completa.",             date: "2026-11-14", img: "https://images.unsplash.com/photo-1620228681518-5f0e3e29940d", by: "Nataliya Melnychuk", handle: "natinati" },
+  { id: 6, type: "sujetador", title: "Sujetador azul, copa completa",   seller: "Aitana",    size: "M", days: 5, price: 34, hue: 215, desc: "Encaje elástico, cierre trasero.",        date: "2026-11-12", img: "https://images.unsplash.com/photo-1620228757753-b28dacf3015a", by: "Nataliya Melnychuk", handle: "natinati" },
+  { id: 7, type: "camison",   title: "Camisón de satén rosa",           seller: "Noa",       size: "S", days: 2, price: 40, hue: 340, desc: "Satén con tirantes finos.",               date: "2026-11-10", img: "https://images.unsplash.com/photo-1594631775771-890a902ae42d", by: "Laura Chouette", handle: "laurachouette" },
+  { id: 8, type: "camison",   title: "Top de satén rojo con encaje",    seller: "Mar",       size: "M", days: 3, price: 38, hue: 355, desc: "Satén rojo con remate de encaje.",        date: "2026-11-08", img: "https://images.unsplash.com/photo-1624819153654-5cfb66a0fc68", by: "Emilio Garcia", handle: "piensaenpixel" },
+  { id: 9, type: "braga",     title: "Braga beige de satén",            seller: "Fit_Irene", size: "M", days: 8, price: 29, hue: 30,  desc: "Tono piel, uso intenso una semana.",      date: "2026-11-06", img: "https://images.unsplash.com/photo-1633699124189-17c808027f4a", by: "hidefumi ohmichi", handle: "hidefu" }
 ];

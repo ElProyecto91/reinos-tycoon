@@ -14,7 +14,8 @@
     set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   };
   var money = function (n) { return n.toFixed(2).replace(".", ",") + " " + CONFIG.currency; };
-  var TYPE_LABEL = { braga: "Braga", tanga: "Tanga", sujetador: "Sujetador", culotte: "Culotte" };
+  var TYPE_LABEL = { braga: "Braga", tanga: "Tanga", sujetador: "Sujetador", camison: "Camisón", conjunto: "Lote" };
+  var UTM = "?utm_source=intimae&utm_medium=referral";
 
   /* ---------- Verificación de edad ---------- */
   var gate = $("#agegate");
@@ -55,11 +56,40 @@
     return n;
   }
 
+  // Foto de muestra de Unsplash; si no carga, vuelve a la ilustración vectorial.
+  function photo(p, artBox) {
+    var img = new Image();
+    img.className = "pcard__img";
+    img.alt = p.title;
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.src = p.img + "?ixlib=rb-4.1.0&auto=format&fit=crop&crop=entropy&w=640&h=512&q=75";
+    img.onerror = function () {
+      img.remove();
+      artBox.insertAdjacentHTML("afterbegin", art(p.type, p.hue));
+    };
+    return img;
+  }
+
+  // Crédito al fotógrafo (requerido por las directrices de la API de Unsplash).
+  function credit(p) {
+    var a = el("a", "credit", "Foto: " + p.by);
+    a.href = "https://unsplash.com/@" + encodeURIComponent(p.handle) + UTM;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    return a;
+  }
+
   function card(p) {
     var c = el("article", "pcard");
     var artBox = el("div", "pcard__art");
     artBox.style.background = "linear-gradient(160deg,hsl(" + p.hue + ",45%,18%),hsl(" + p.hue + ",35%,9%))";
-    artBox.innerHTML = art(p.type, p.hue);          // markup propio, sin datos de usuario
+    if (p.img) {
+      artBox.appendChild(photo(p, artBox));
+      artBox.appendChild(credit(p));
+    } else {
+      artBox.innerHTML = art(p.type, p.hue);        // markup propio, sin datos de usuario
+    }
     artBox.appendChild(el("span", "tag", p.days + (p.days === 1 ? " día" : " días") + " de uso"));
     var body = el("div", "pcard__body");
     body.appendChild(el("h4", "pcard__title", p.title));
