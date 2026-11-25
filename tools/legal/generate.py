@@ -9,7 +9,7 @@ NAV = [
     ("privacidad.html", "Privacidad"),
     ("cookies.html", "Cookies"),
     ("condiciones-compra.html", "Condiciones de compra"),
-    ("envios.html", "Envíos y devoluciones"),
+    ("envios.html", "Envíos y entrega"),
     ("iva.html", "IVA e impuestos"),
     ("normas.html", "Normas y denuncias"),
 ]
@@ -104,6 +104,7 @@ page("aviso-legal.html", "Aviso legal", """
 
   <h2>2. Objeto del sitio y papel del titular</h2>
   <p>Este sitio es una plataforma en línea que permite a personas mayores de edad ofrecer y comprar prendas íntimas de segunda mano. Cada anuncio indica quién es el vendedor y si actúa como <strong>profesional</strong> o como <strong>particular</strong>. Salvo que se indique lo contrario, el contrato de compraventa se celebra entre comprador y vendedor; el titular actúa como intermediario y no es parte de ese contrato. El reparto de obligaciones se detalla en las <a href="condiciones-compra.html">condiciones de compra</a>.</p>
+  <p><strong>El titular no gestiona devoluciones, reclamaciones ni disputas entre compradores y vendedores.</strong> Esos asuntos se resuelven directamente con el vendedor. Sí atiende las denuncias de contenido ilegal (ver <a href="normas.html">normas y denuncias</a>).</p>
 
   <h2>3. Acceso y uso: solo mayores de edad</h2>
   <p>El sitio contiene material de carácter erótico y está dirigido exclusivamente a personas mayores de 18 años. Al acceder declaras ser mayor de edad. El titular puede exigir mecanismos adicionales de verificación de edad. Está prohibido el uso del sitio por menores.</p>
@@ -112,7 +113,7 @@ page("aviso-legal.html", "Aviso legal", """
   <p>El diseño, el código, los textos y la marca del sitio pertenecen al titular o se usan con licencia. Las fotografías de muestra proceden de <a href="https://unsplash.com/?utm_source=intimae&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>, con crédito a sus autores en cada anuncio, y se usan conforme a su licencia. Las imágenes y textos de los anuncios de vendedores son responsabilidad de estos, que declaran ser titulares de los derechos o contar con autorización.</p>
 
   <h2>5. Responsabilidad</h2>
-  <p>El titular no responde del contenido publicado por vendedores, pero actuará con diligencia para retirar contenido ilegal de acuerdo con el Reglamento (UE) 2022/2065 (Ley de Servicios Digitales) y con las <a href="normas.html">normas de la plataforma</a>. El titular no garantiza la disponibilidad ininterrumpida del sitio.</p>
+  <p>El titular no responde del contenido publicado por vendedores, pero actuará con diligencia para retirar contenido ilegal de acuerdo con el Reglamento (UE) 2022/2065 (Ley de Servicios Digitales) y con las <a href="normas.html">normas de la plataforma</a>. El titular no garantiza la disponibilidad ininterrumpida del sitio. No responde de la conformidad, la entrega ni la calidad de las prendas vendidas por terceros, sin perjuicio de las obligaciones que la ley le imponga como prestador de servicios intermediarios.</p>
 
   <h2>6. Punto de contacto (Ley de Servicios Digitales)</h2>
   <p>Autoridades de los Estados miembros, la Comisión Europea y la Junta Europea de Servicios Digitales pueden comunicarse con el titular por correo electrónico en {{EMAIL DE CONTACTO PARA AUTORIDADES}}, en español o en inglés. Los usuarios pueden contactar en {{EMAIL DE CONTACTO}}. El procedimiento de denuncias se explica en <a href="normas.html">normas y denuncias</a>.</p>
@@ -126,12 +127,14 @@ page("aviso-legal.html", "Aviso legal", """
 
 # ---------------------------------------------------------------- PRIVACIDAD
 page("privacidad.html", "Política de privacidad", """
+  <div class="box"><p><strong>Estado actual: demostración.</strong> En la versión de demostración, las cuentas, los pedidos, los mensajes, los favoritos y los datos fiscales se guardan únicamente en el almacenamiento local de tu navegador. No se envían a ningún servidor ni a terceros, la verificación de edad es simulada y no se procesan pagos reales. Lo que sigue describe el tratamiento previsto cuando el servicio funcione con servidores reales.</p></div>
+
   <h2>1. Responsable del tratamiento</h2>
   <p>{{TITULAR}}, con NIF {{NIF/CIF}} y domicilio en {{DOMICILIO COMPLETO}}. Contacto: {{EMAIL DE CONTACTO}}. Delegado de protección de datos (si procede): {{DPD o "no designado"}}.</p>
 
   <h2>2. Qué datos tratamos</h2>
   <ul>
-    <li><strong>Compradores:</strong> nombre o alias, correo, dirección de entrega, teléfono (si lo facilitas), contenido del pedido, método de pago elegido, comunicaciones con el vendedor y con nosotros.</li>
+    <li><strong>Compradores:</strong> nombre o alias, correo, dirección de entrega, teléfono (si lo facilitas), contenido del pedido, estado del pedido, comunicaciones con el vendedor y con nosotros.</li>
     <li><strong>Vendedores:</strong> lo anterior más datos de identidad y edad (documento oficial), dirección, teléfono, NIF o identificador fiscal, país de residencia fiscal, fecha de nacimiento, cuenta bancaria o medio de cobro, y datos de actividad (número e importe de ventas).</li>
     <li><strong>Técnicos:</strong> dirección IP, tipo de navegador y registros de seguridad.</li>
   </ul>
@@ -142,7 +145,7 @@ page("privacidad.html", "Política de privacidad", """
   <h2>4. Para qué los usamos y en qué base legal</h2>
   <table>
     <tr><th>Finalidad</th><th>Base legal</th></tr>
-    <tr><td>Tramitar pedidos, entregas y devoluciones</td><td>Ejecución del contrato (art. 6.1.b RGPD) y consentimiento explícito (art. 9.2.a)</td></tr>
+    <tr><td>Tramitar pedidos y entregas</td><td>Ejecución del contrato (art. 6.1.b RGPD) y consentimiento explícito (art. 9.2.a)</td></tr>
     <tr><td>Verificar edad e identidad de vendedores y evitar menores</td><td>Obligación legal e interés legítimo en proteger a menores (art. 6.1.c y 6.1.f)</td></tr>
     <tr><td>Identificar a vendedores profesionales (trazabilidad) y comunicar datos a la Administración tributaria (DAC7)</td><td>Obligación legal (art. 6.1.c)</td></tr>
     <tr><td>Prevenir fraude, abusos y contenido ilegal; atender denuncias</td><td>Interés legítimo y obligación legal</td></tr>
@@ -173,6 +176,10 @@ page("cookies.html", "Política de cookies y almacenamiento local", """
     <tr><th>Nombre</th><th>Finalidad</th><th>Tipo</th><th>Duración</th></tr>
     <tr><td><code>intimae_age_ok</code></td><td>Recordar que has confirmado ser mayor de edad</td><td>Técnico, necesario</td><td>Hasta que borres los datos del navegador</td></tr>
     <tr><td><code>intimae_cart</code></td><td>Mantener el contenido de tu carrito</td><td>Técnico, necesario</td><td>Hasta que borres los datos del navegador</td></tr>
+    <tr><td><code>intimae_lang</code>, <code>intimae_lang_manual</code></td><td>Recordar tu idioma y si lo has elegido tú</td><td>Preferencia, necesaria</td><td>Hasta que borres los datos del navegador</td></tr>
+    <tr><td><code>intimae_dest</code></td><td>Recordar tu país de envío</td><td>Preferencia, necesaria</td><td>Hasta que borres los datos del navegador</td></tr>
+    <tr><td><code>intimae_sess_v1</code></td><td>Mantener tu sesión iniciada (comprador, vendedor o administración)</td><td>Técnico, necesario</td><td>Hasta que cierres la sesión o borres los datos</td></tr>
+    <tr><td><code>intimae_db_v1</code></td><td>Versión de demostración: cuentas, anuncios, pedidos y mensajes guardados en tu navegador</td><td>Técnico, necesario</td><td>Hasta que borres los datos del navegador</td></tr>
   </table>
   <p>Al ser estrictamente necesarios para prestar el servicio que solicitas, no requieren consentimiento (art. 22.2 LSSI-CE).</p>
 
@@ -186,34 +193,36 @@ page("cookies.html", "Política de cookies y almacenamiento local", """
 # ---------------------------------------------------------------- CONDICIONES COMPRA
 page("condiciones-compra.html", "Condiciones de compra", """
   <h2>1. Quién vende</h2>
-  <p>Cada anuncio muestra el alias del vendedor y si es <strong>profesional</strong> o <strong>particular</strong>, según su propia declaración al registrarse. <strong>Si el vendedor es un particular, no se aplican las normas de protección de consumidores de la Unión Europea ni la legislación de consumidores española</strong> (derecho de desistimiento y garantía legal de consumo); se aplica el Código Civil o el derecho del país correspondiente. Si es profesional, sí se aplican. El titular facilita la comunicación y gestiona el pedido, pero no es vendedor salvo que se indique expresamente.</p>
+  <p>Cada anuncio muestra el alias del vendedor y si es <strong>profesional</strong> o <strong>particular</strong>, según su propia declaración al registrarse. <strong>Si el vendedor es un particular, no se aplican las normas de protección de consumidores de la Unión Europea ni la legislación de consumidores española</strong> (derecho de desistimiento y garantía legal de consumo); se aplica el Código Civil o el derecho del país correspondiente. Si es profesional, sí se aplican. <strong>Intimae actúa solo como intermediario:</strong> facilita el contacto, el pago y el seguimiento del pedido, pero no es el vendedor ni parte del contrato de compraventa, y no almacena, envía ni inspecciona las prendas.</p>
 
   <h2>2. Edad y capacidad</h2>
   <p>Debes ser mayor de 18 años. El titular puede pedir verificación de edad antes de tramitar un pedido y rechazar los pedidos de quien no la supere.</p>
 
   <h2>3. Precio e impuestos</h2>
-  <p>Los precios se muestran en euros y, cuando proceda, incluyen el IVA. Los gastos de envío se indican antes de confirmar el pedido: ver <a href="envios.html">envíos y devoluciones</a>. El tratamiento del IVA depende de si el vendedor es particular o profesional y de dónde se envía. Se explica en <a href="iva.html">IVA e impuestos</a> y se muestra en cada ficha antes de pedir.</p>
+  <p>Los precios se muestran en euros y, cuando proceda, incluyen el IVA. Los gastos de envío se indican antes de confirmar el pedido: ver <a href="envios.html">envíos y entrega</a>. El tratamiento del IVA depende de si el vendedor es particular o profesional y de dónde se envía. Se explica en <a href="iva.html">IVA e impuestos</a> y se muestra en cada ficha antes de pedir.</p>
 
   <h2>4. Pedido y pago</h2>
-  <p>El pedido se formaliza cuando el titular confirma disponibilidad y pago. El pago se realiza por {{MEDIOS DE PAGO ADMITIDOS}} según se indique tras tu solicitud. Cada prenda es única: si ya no está disponible, se te comunicará y se te reembolsará cualquier importe abonado.</p>
+  <p>El pago se realiza a través del proveedor de pagos {{PROVEEDOR DE PAGOS}} ({{MEDIOS DE PAGO ADMITIDOS}}). El importe queda retenido hasta que confirmes la recepción o, si no lo haces, hasta que pasen {{PLAZO DE ENTREGA AUTOMÁTICA}} días desde el envío; después se liquida al vendedor. Cada prenda es única: si ya no está disponible, o si el vendedor cancela antes de enviarla, se te reembolsa el importe íntegro. También puedes cancelar tú el pedido mientras no se haya enviado, con reembolso íntegro.</p>
+  <p>Si el comprador inicia un contracargo ante su banco, lo gestiona el proveedor de pagos y su coste se imputa al vendedor conforme a las condiciones para vendedores.</p>
 
   <h2>5. Entrega</h2>
-  <p>Plazos, zonas y embalaje neutro se detallan en <a href="envios.html">envíos y devoluciones</a>.</p>
+  <p>Plazos, zonas y embalaje neutro se detallan en <a href="envios.html">envíos y entrega</a>.</p>
 
-  <h2>6. Derecho de desistimiento (compras a vendedores profesionales)</h2>
-  <p>Cuando compras a un vendedor profesional, tienes 14 días naturales desde la recepción para desistir sin dar motivos. Para ejercerlo, comunícalo de forma inequívoca a {{EMAIL DE CONTACTO}}; puedes usar el modelo de abajo. El reembolso se hará en un máximo de 14 días desde que comunicas la decisión, por el mismo medio de pago.</p>
+  <h2>6. Desistimiento y devoluciones (compras a vendedores profesionales)</h2>
+  <p><strong>Intimae no gestiona devoluciones ni desistimientos.</strong> Cuando compras a un vendedor profesional, la ley puede darte un derecho de desistimiento de 14 días naturales desde la recepción; <strong>ese derecho se ejerce frente al vendedor, no frente a Intimae</strong>. Escríbele de forma inequívoca por el sistema de mensajes y acuerda con él la devolución y el reembolso. Los vendedores particulares no están obligados a aceptar devoluciones.</p>
   <p><strong>Excepción por higiene:</strong> las prendas íntimas se entregan en bolsa precintada. El derecho de desistimiento puede no aplicarse a bienes precintados que no sean aptos para devolverse por razones de higiene cuando se hayan desprecintado tras la entrega (art. 103.e del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios). Conviene que un abogado confirme cómo se aplica esta excepción a prendas de segunda mano. {{CRITERIO LEGAL PENDIENTE DE REVISIÓN}}</p>
   <div class="box">
     <p><strong>Modelo de formulario de desistimiento</strong> (rellénalo y envíalo solo si quieres desistir)</p>
-    <p>A la atención de {{TITULAR}}, {{DOMICILIO COMPLETO}}, {{EMAIL DE CONTACTO}}:<br>
+    <p>A la atención del vendedor (alias: ______ ):<br>
     Por la presente le comunico que desisto de mi contrato de compra del siguiente bien: ______ . Pedido el ______ , recibido el ______ . Nombre del consumidor: ______ . Domicilio del consumidor: ______ . Fecha: ______ .</p>
   </div>
 
   <h2>7. Conformidad y garantía (compras a profesionales)</h2>
-  <p>Los bienes se entregan conformes con lo descrito en el anuncio. Si el vendedor es profesional, se aplica la garantía legal del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios. En bienes de segunda mano, el plazo puede reducirse por acuerdo hasta un mínimo de un año desde la entrega; el plazo concreto se indicará en cada anuncio: {{PLAZO DE GARANTÍA}}.</p>
+  <p>Los bienes deben ser conformes con lo descrito en el anuncio. La responsabilidad por falta de conformidad es del vendedor, no de Intimae. Si el vendedor es profesional, se aplica la garantía legal del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios. En bienes de segunda mano, el plazo puede reducirse por acuerdo hasta un mínimo de un año desde la entrega; el plazo concreto se indicará en cada anuncio: {{PLAZO DE GARANTÍA}}.</p>
 
   <h2>8. Reclamaciones</h2>
-  <p>Escribe a {{EMAIL DE CONTACTO}}. Responderemos en un plazo máximo de {{PLAZO DE RESPUESTA}}. {{HOJAS DE RECLAMACIONES: indicar si procede en tu comunidad autónoma}}. Entidad de resolución alternativa de litigios adherida, si la hay: {{ENTIDAD ADR o "ninguna"}}. La plataforma europea de resolución de litigios en línea dejó de funcionar el 20 de julio de 2025.</p>
+  <p><strong>Intimae no atiende reclamaciones sobre las compraventas ni media en disputas</strong> entre comprador y vendedor. Ante cualquier problema (retraso, pérdida, prenda distinta de la anunciada) contacta con el vendedor por mensajes; si es profesional, puedes acudir a la vía de reclamación que te corresponda en tu país.</p>
+  <p>Lo que sí atiende Intimae son las denuncias de contenido ilegal, descritas en <a href="normas.html">normas y denuncias</a>. {{HOJAS DE RECLAMACIONES: indicar si procede en tu comunidad autónoma}}. Entidad de resolución alternativa de litigios adherida, si la hay: {{ENTIDAD ADR o "ninguna"}}. La plataforma europea de resolución de litigios en línea dejó de funcionar el 20 de julio de 2025.</p>
 
   <h2>9. Conductas prohibidas</h2>
   <p>Está prohibido pedir o ofrecer cualquier cosa que implique a menores, coacción, acoso o suplantación; solicitar datos personales del vendedor; o intentar contactar o acordar encuentros fuera de la plataforma.</p>
@@ -223,11 +232,12 @@ page("condiciones-compra.html", "Condiciones de compra", """
 """)
 
 # ---------------------------------------------------------------- ENVIOS
-page("envios.html", "Envíos y devoluciones", """
+page("envios.html", "Envíos y entrega", """
   <h2>1. Dónde enviamos</h2>
   <table>
     <tr><th>Zona</th><th>Aduanas</th><th>Notas</th></tr>
     <tr><td>Unión Europea (27 países)</td><td>No</td><td>Sin trámites aduaneros. El IVA depende del vendedor: ver <a href="iva.html">IVA e impuestos</a>. Plazo estimado {{PLAZO UE}}.</td></tr>
+    <tr><td>Canarias</td><td>Sí (DUA)</td><td>Por ahora solo hay envíos <strong>dentro de Canarias</strong>. Entre Canarias y el resto de la UE no se envía hasta que la plataforma gestione los trámites aduaneros y fiscales.</td></tr>
     <tr><td>Reino Unido, Suiza, Noruega</td><td>Sí</td><td><strong>Próximamente.</strong> Reino Unido y Noruega exigen que el mercado cobre el IVA local en el pago de los envíos de bajo valor; activaremos estos destinos cuando estemos registrados. Plazo estimado {{PLAZO NO UE}}.</td></tr>
     <tr><td>Resto del mundo</td><td>—</td><td>No enviamos por ahora.</td></tr>
   </table>
@@ -247,17 +257,17 @@ page("envios.html", "Envíos y devoluciones", """
   <p>Puedes elegir entrega a domicilio o, donde esté disponible, en un punto de recogida o taquilla automática para mayor privacidad. Recibirás un número de seguimiento por correo.</p>
 
   <h2>5. Retrasos, pérdida y daños</h2>
-  <p>Si el pedido no llega en {{PLAZO MÁXIMO}} días, escríbenos y abriremos una reclamación al transportista. Si se pierde o llega dañado, te ofreceremos un nuevo envío o el reembolso.</p>
+  <p>El envío lo prepara y contrata el vendedor. Intimae no es el transportista ni gestiona incidencias de transporte. Si el pedido no llega en {{PLAZO MÁXIMO}} días, escribe al vendedor por mensajes. El pago queda retenido hasta que confirmes la recepción o pase el plazo automático indicado en las <a href="condiciones-compra.html">condiciones de compra</a>.</p>
 
-  <h2>6. Devoluciones</h2>
-  <p>Las condiciones de devolución dependen de si el vendedor es profesional o particular: ver <a href="condiciones-compra.html">condiciones de compra</a>. Si procede la devolución, los gastos de devolución {{QUIÉN LOS ASUME}}. La prenda debe devolverse en su bolsa original, sin otro uso. Las prendas íntimas desprecintadas pueden quedar excluidas por razones de higiene.</p>
+  <h2>6. Devoluciones y reclamaciones</h2>
+  <p><strong>Intimae no gestiona devoluciones ni reclamaciones.</strong> Si procede una devolución (compras a vendedores profesionales: ver <a href="condiciones-compra.html">condiciones de compra</a>), se acuerda directamente con el vendedor, incluidos los gastos y el reembolso. La prenda debe devolverse en su bolsa original, sin otro uso. Las prendas íntimas desprecintadas pueden quedar excluidas por razones de higiene. Mientras el pedido no se haya enviado puedes cancelarlo y recuperar el importe íntegro.</p>
 """)
 
 # ---------------------------------------------------------------- CONDICIONES VENDEDORES
 page("vendedores/condiciones.html", "Condiciones para vendedores", """
   <h2>1. Requisitos para vender</h2>
   <ul>
-    <li>Ser mayor de 18 años. Para publicar, debes superar la verificación de identidad y edad con un documento oficial.</li>
+    <li>Ser mayor de 18 años. Para publicar, debes facilitar tus datos fiscales y superar la verificación de tu cuenta (edad e identidad) que realice el titular o su proveedor.</li>
     <li>Declarar si actúas como <strong>profesional</strong> (actividad habitual con ánimo de lucro) o <strong>particular</strong>. Es tu responsabilidad declararlo correctamente; el titular lo muestra a los compradores.</li>
     <li>Facilitar tus datos de contacto verdaderos: nombre, dirección, teléfono, correo, NIF o identificador fiscal y, si eres profesional, datos de registro. La plataforma los verifica y los conserva (art. 30 del Reglamento (UE) 2022/2065).</li>
   </ul>
@@ -277,7 +287,7 @@ page("vendedores/condiciones.html", "Condiciones para vendedores", """
   </ul>
 
   <h2>4. Precios, comisión y cobros</h2>
-  <p>Fijas el precio. La plataforma cobra una comisión del {{COMISIÓN}} % sobre cada venta. Cobras en un máximo de {{PLAZO DE PAGO}} días tras confirmarse la entrega, salvo que haya una reclamación abierta, en cuyo caso se retiene hasta resolverla.</p>
+  <p>Fijas el precio. La plataforma cobra una comisión del {{COMISIÓN}} % sobre el precio de los artículos (no sobre el envío). El pago queda retenido hasta que el comprador confirma la recepción o pasan {{PLAZO DE ENTREGA AUTOMÁTICA}} días desde el envío, y se te liquida {{PLAZO DE PAGO}} días después. <strong>Ninguna reclamación congela el pago: Intimae no gestiona reclamaciones, devoluciones ni disputas.</strong> Los contracargos y reembolsos que imponga el proveedor de pagos se descontarán de tus liquidaciones. Mientras no hayas enviado el pedido, tú o el comprador podéis cancelarlo y el importe se devuelve íntegro.</p>
 
   <h2>5. Impuestos y obligaciones fiscales</h2>
   <ul>
@@ -286,11 +296,13 @@ page("vendedores/condiciones.html", "Condiciones para vendedores", """
     <li>Si vendes como profesional a consumidores de varios países de la UE, puedes tener obligaciones de IVA en cada país (ventanilla única, OSS). Consulta la <a href="iva.html">guía de IVA e impuestos</a>.</li>
     <li>Como profesional debes indicar tu número de IVA y tu régimen (general o de bienes usados). Comprobaremos el número en el sistema europeo de validación (VIES). Los vendedores particulares no cobran IVA.</li>
     <li>No existe un umbral único en la UE para pasar de particular a profesional: depende de la regularidad y el ánimo de lucro y de cada país. Si dudas, consulta a tu administración tributaria. Declarar mal tu condición es tu responsabilidad.</li>
+    <li><strong>Vendedores de Canarias:</strong> Canarias está fuera del territorio de IVA de la UE y se aplica el IGIC. Por ahora solo se admiten envíos dentro de Canarias. El tipo y el régimen aplicados son una estimación pendiente de validar por un asesor fiscal.</li>
     <li><strong>Vendedores de fuera de la UE:</strong> por ahora solo puedes vender dentro de tu propio país. Enviar a la UE desde fuera exige registros de IVA y derechos de aduana que la plataforma aún no gestiona.</li>
   </ul>
 
-  <h2>6. Envíos</h2>
-  <p>Debes enviar en el plazo indicado en <a href="envios.html">envíos y devoluciones</a>, con bolsa sellada, embalaje neutro y sin incluir tus datos personales.</p>
+  <h2>6. Envíos, devoluciones y reclamaciones</h2>
+  <p>Debes enviar en el plazo indicado en <a href="envios.html">envíos y entrega</a>, con bolsa sellada, embalaje neutro y sin incluir tus datos personales, e indicar el transportista y el seguimiento en tu panel.</p>
+  <p>Eres el único responsable frente al comprador de la conformidad de la prenda, la entrega y, si vendes como profesional, del desistimiento y la garantía legal que la ley le reconozca. Intimae no asume devoluciones, reclamaciones ni disputas: se resuelven entre tú y el comprador por el sistema de mensajes.</p>
 
   <h2>7. Tu seguridad</h2>
   <ul>
@@ -321,7 +333,7 @@ page("normas.html", "Normas de la plataforma y denuncias", """
   </ul>
 
   <h2>2. Cómo denunciar contenido ilegal</h2>
-  <p>Cualquier persona puede notificar un contenido que considere ilegal escribiendo a {{EMAIL DE DENUNCIAS}} con:</p>
+  <p>Cualquier persona, tenga o no cuenta, puede notificar un contenido que considere ilegal con el botón «Denunciar este anuncio» de cada ficha o escribiendo a {{EMAIL DE DENUNCIAS}}. Cada denuncia recibe un número de seguimiento. Debe incluir:</p>
   <ol>
     <li>Una explicación de por qué considera ilegal el contenido.</li>
     <li>La dirección exacta (URL) del contenido.</li>
@@ -336,8 +348,8 @@ page("normas.html", "Normas de la plataforma y denuncias", """
   <h2>4. Medidas</h2>
   <p>Según la gravedad y la reiteración podemos: retirar el contenido, restringir funciones, suspender o cancelar la cuenta y, en su caso, informar a las autoridades. Siempre comunicamos al afectado la decisión y sus motivos, salvo que la ley lo impida.</p>
 
-  <h2>5. Reclamar una decisión</h2>
-  <p>Puedes impugnar nuestra decisión durante 6 meses desde que la recibes, escribiendo a {{EMAIL DE RECLAMACIONES}}. La revisará una persona distinta de quien la tomó. También puedes acudir a un organismo de resolución extrajudicial certificado: {{ORGANISMO CERTIFICADO}}.</p>
+  <h2>5. Reclamar una decisión de moderación</h2>
+  <p>Esto se refiere solo a nuestras decisiones sobre anuncios y cuentas; Intimae no gestiona reclamaciones sobre compraventas. Puedes impugnar nuestra decisión durante 6 meses desde que la recibes, escribiendo a {{EMAIL DE RECLAMACIONES}}. La revisará una persona distinta de quien la tomó. También puedes acudir a un organismo de resolución extrajudicial certificado: {{ORGANISMO CERTIFICADO}}.</p>
 
   <h2>6. Cómo se ordenan los anuncios</h2>
   <p>El orden del catálogo depende de lo que elijas (novedad, precio, días de uso). No hacemos perfiles tuyos para recomendar anuncios y no mostramos publicidad.</p>
@@ -390,14 +402,17 @@ page("vendedores/impuestos.html", "Impuestos para vendedores", f"""
   </ul>
   <p>Activaremos estos destinos cuando el mercado esté registrado en cada país.</p>
 
-  <h2>7. Tipos generales de IVA</h2>
+  <h2>7. Canarias</h2>
+  <p>Canarias queda fuera del territorio de IVA de la UE: allí se aplica el IGIC (tipo general del 7 %, estimación pendiente de validar) y no el IVA. Los vendedores profesionales de Canarias muestran el IGIC en la ficha, o el régimen especial de bienes usados del IGIC si se acogen a él. Los envíos entre Canarias y el resto de la UE requieren trámites aduaneros y fiscales (DUA) que la plataforma aún no gestiona, por lo que por ahora solo se admiten envíos <strong>dentro de Canarias</strong>. {{CRITERIO DEL ASESOR FISCAL CANARIO: tipo, régimen, alta en registros y obligaciones de la comisión}}</p>
+
+  <h2>8. Tipos generales de IVA</h2>
   <p>Tipos generales vigentes en el momento de redactar este documento. Verifícalos en la base de datos de tipos de IVA de la Comisión Europea antes de operar.</p>
   <ul class="rates">{rate_items}</ul>
 
-  <h2>8. Qué hace Intimae con los datos fiscales de los vendedores</h2>
+  <h2>9. Qué hace Intimae con los datos fiscales de los vendedores</h2>
   <p>Recogemos y verificamos tus datos de identificación y el número de IVA, y comunicamos a la Administración tributaria la actividad de los vendedores que superen los umbrales de la directiva DAC7. Más detalle en la <a href="privacidad.html">política de privacidad</a> y en las <a href="condiciones.html">condiciones para vendedores</a>.</p>
 
-  <h2>9. Fuentes</h2>
+  <h2>10. Fuentes</h2>
   <ul class="sources">
     <li><a href="https://vat-one-stop-shop.ec.europa.eu/one-stop-shop_en" target="_blank" rel="noopener noreferrer">Comisión Europea: ventanilla única (OSS)</a></li>
     <li><a href="https://trade.ec.europa.eu/access-to-markets/en/news/eu-applies-eu3-customs-duty-item-low-value-e-commerce-consignments" target="_blank" rel="noopener noreferrer">Comisión Europea: derecho de 3 € por artículo</a></li>
@@ -429,11 +444,14 @@ page("iva.html", "IVA e impuestos", f"""
   <h2>4. Envíos fuera de la UE</h2>
   <p>Reino Unido, Noruega y Suiza son destinos <strong>próximos</strong>, no activos. Reino Unido y Noruega exigen que el mercado cobre el IVA local en el momento del pago, y todavía no estamos registrados. Los vendedores de fuera de la UE solo venden dentro de su propio país.</p>
 
-  <h2>5. Tipos generales de IVA</h2>
+  <h2>5. Canarias</h2>
+  <p>Canarias está fuera del territorio de IVA de la UE y allí se aplica el IGIC en lugar del IVA (estimación pendiente de validar por un asesor fiscal). Por ahora solo se admiten envíos dentro de Canarias; entre Canarias y el resto de la UE hacen falta trámites aduaneros y fiscales que la plataforma aún no gestiona.</p>
+
+  <h2>6. Tipos generales de IVA</h2>
   <p>Tipos generales vigentes en el momento de redactar este documento. Verifícalos en la base de datos de tipos de IVA de la Comisión Europea.</p>
   <ul class="rates">{rate_items}</ul>
 
-  <h2>6. Fuentes</h2>
+  <h2>7. Fuentes</h2>
   <ul class="sources">
     <li><a href="https://vat-one-stop-shop.ec.europa.eu/one-stop-shop_en" target="_blank" rel="noopener noreferrer">Comisión Europea: ventanilla única (OSS)</a></li>
     <li><a href="https://www.gov.uk/guidance/vat-and-overseas-goods-sold-to-customers-in-the-uk-using-online-marketplaces" target="_blank" rel="noopener noreferrer">GOV.UK: mercados en línea y envíos al Reino Unido</a></li>
@@ -452,7 +470,7 @@ pending = [
     ("Datos registrales", "Solo si es sociedad"),
     ("Dominio", "Nombre del sitio"),
     ("Proveedores", "Pagos, verificación de identidad y edad, alojamiento"),
-    ("Condiciones comerciales", "Comisión, plazos de pago, tarifas y plazos de envío, garantía"),
+    ("Condiciones comerciales", "Comisión, plazos de entrega automática y de pago, tarifas y plazos de envío, garantía"),
     ("Reclamaciones", "Hojas de reclamaciones, entidad ADR, organismo certificado DSA"),
     ("Jurisdicción", "Ciudad de los tribunales"),
 ]

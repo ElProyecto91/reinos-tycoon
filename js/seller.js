@@ -2,10 +2,8 @@
 (function () {
   "use strict";
 
-  // Configuración: se completará cuando haya titularidad y correos reales.
-  var CONFIG = { sellerEmail: "vendedores@example.com" };
-  // Comisión sobre el precio de venta (sin envío). PROPUESTA, pendiente de confirmar (ver docs/ESTUDIO-LEGAL-Y-MERCADO.md).
-  var COMMISSION_PCT = 20;
+  // Comisión sobre el precio de venta (sin envío): se lee de los ajustes (administración). PROPUESTA, pendiente de confirmar.
+  function commissionPct() { return INT.settings().commission; }
 
   var t = I18N.t, money = I18N.money;
   var $ = function (s) { return document.querySelector(s); };
@@ -47,9 +45,9 @@
   var price = $("#calc-price");
   function renderCalc() {
     var p = Math.max(0, parseFloat(price.value) || 0);
-    var fee = Math.round(p * COMMISSION_PCT) / 100;
+    var fee = Math.round(p * commissionPct()) / 100;
     $("#calc-sale").textContent = money(p);
-    $("#calc-fee-label").textContent = t("sv.calc.fee", { pct: I18N.number(COMMISSION_PCT) });
+    $("#calc-fee-label").textContent = t("sv.calc.fee", { pct: I18N.number(commissionPct()) });
     $("#calc-fee").textContent = "− " + money(fee);
     $("#calc-net").textContent = money(p - fee);
   }
@@ -74,15 +72,18 @@
     if (!form.checkValidity()) return setMsg(t("sv.msg.invalid"), true);
     var pro = d.get("kind") === "profesional";
     var vat = String(d.get("vatid") || "").replace(/\s+/g, "").toUpperCase();
-    if (pro && vat && !/^[A-Z]{2}[0-9A-Z]{8,12}$/.test(vat)) return setMsg(t("sv.msg.vat"), true);
+    var ic = d.get("country") === "IC";
+    if (pro && vat && !(ic ? /^(ES)?[A-Z0-9]{9}$/ : /^[A-Z]{2}[0-9A-Z]{8,12}$/).test(vat)) return setMsg(t("sv.msg.vat"), true);
+    if (String(d.get("pass")).length < 8) return setMsg(t("sv.msg.pass"), true);
     var c = TAX.get(d.get("country"));
-    // El correo va en español: es el idioma de trabajo del equipo; se indica el idioma de la persona.
-    var body = "Alias: " + d.get("alias") + "\nCorreo: " + d.get("email") + "\nPaís: " + d.get("country") +
-      "\nIdioma de comunicación: " + d.get("comm") + "\nEdad: " + d.get("age") +
-      "\nVende como: " + d.get("kind") + (pro ? "\nNúmero de IVA: " + (vat || "-") + "\nRégimen: " + (d.get("regime") || "sin indicar") : "") +
-      "\n\n" + (d.get("about") || "");
-    window.location.href = "mailto:" + CONFIG.sellerEmail + "?subject=" + encodeURIComponent("Solicitud de vendedor: " + d.get("alias")) + "&body=" + encodeURIComponent(body);
-    setMsg(c && !c.eu ? t("sv.msg.outside", { country: cname(c.code) }) : t("sv.msg.sent"));
+    INT.seller.apply({ alias: d.get("alias"), email: d.get("email"), pass: d.get("pass"), country: d.get("country"), comm: d.get("comm"), age: d.get("age"),
+      kind: d.get("kind"), vatId: vat, regime: d.get("regime"), about: d.get("about") })
+      .then(function () {
+        form.reset(); renderHint();
+        setMsg(t("sv.msg.created") + (c && !c.eu ? " " + t("sv.msg.outside", { country: cname(c.code) }) : ""));
+        var a = document.createElement("a"); a.className = "link"; a.href = "panel/"; a.textContent = t("sv.hdr.panel"); msg.appendChild(document.createTextNode(" ")); msg.appendChild(a);
+      })
+      .catch(function (err) { setMsg(err.code === "exists" ? t("sv.msg.exists") : err.code === "minor" ? t("sv.msg.age") : err.code === "pass" ? t("sv.msg.pass") : t("sv.msg.invalid"), true); });
   });
 
   /* ---------- Aparición suave ---------- */

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel de vendedor · Intimae</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#171213">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../../fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../css/fonts.css">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/app.css">
+  <script>(function(){var d=document.documentElement;d.classList.add("js");try{var l=localStorage.getItem("intimae_lang_manual")==="1"?localStorage.getItem("intimae_lang"):(navigator.language||"es").slice(0,2);if(l&&l!=="es")d.classList.add("i18n-pending")}catch(e){}setTimeout(function(){d.classList.remove("i18n-pending")},1800)})()</script>
+</head>
+<body class="seller">
+<a class="skip" href="#main">Saltar al contenido</a>
+<header class="app-header"><div class="wrap app-header__in">
+  <div><a class="wordmark" href="../" aria-label="Intimae, área de vendedores">Intimae</a><span class="app-tag">Panel de vendedor</span></div>
+  <div class="app-tools"><select class="lang" id="lang" aria-label="Idioma"></select><a href="../">Área de vendedores</a><a href="../../">Ir a la tienda →</a><button class="link" id="logout" type="button" hidden>Salir</button></div>
+</div></header>
+<main id="main" class="wrap app-main">
+  <div class="notice" id="es-only" hidden></div>
+  <h1>Panel de vendedor</h1>
+  <p class="app-sub" id="sub">Gestiona tus anuncios, pedidos, cobros y mensajes.</p>
+  <div class="demo-banner"><strong>Modo demostración.</strong> Tu cuenta, tus anuncios y tus pedidos se guardan solo en este navegador. No hay verificación real de identidad ni pagos reales. Intimae actúa solo como intermediario: no gestiona devoluciones, reclamaciones ni disputas; esas gestiones son entre tú y el comprador.</div>
+  <section id="auth" hidden></section>
+  <section id="app" hidden>
+    <div class="tabs" id="tabbar"></div>
+    <div id="panel"></div>
+  </section>
+</main>
+<script src="../../js/i18n.js"></script>
+<script src="../../i18n/es.js"></script>
+<script src="../../js/tax.js"></script>
+<script src="../../js/products.js"></script>
+<script src="../../js/core.js"></script>
+<script src="../../js/ui.js"></script>
+<script src="../../js/panel.js"></script>
+</body>
+</html>

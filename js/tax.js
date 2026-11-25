@@ -9,6 +9,9 @@
  *    (el mercado debe cobrar el IVA local en el pago).
  *  - Vendedores de fuera de la UE solo venden en su propio país: importar a la UE exige IOSS
  *    y el derecho de 3 € por artículo.
+ *  - Canarias (código IC) está fuera del territorio de IVA de la UE: allí se aplica el IGIC. Solo se admiten
+ *    envíos dentro de Canarias; entre Canarias y el resto se requieren trámites aduaneros y fiscales (DUA)
+ *    que la plataforma no gestiona. Tipo y régimen: ESTIMACIÓN PENDIENTE DE VALIDAR por un asesor fiscal canario.
  */
 (function () {
   "use strict";
@@ -27,7 +30,10 @@
     { code: "CH", vat: 8.1, eu: false, open: false }
   ];
 
-  var ALL = C.concat(NON_EU);
+  // Canarias: IGIC, tipo general 7 % (estimación pendiente de validar).
+  var CANARIAS = [{ code: "IC", vat: 7, eu: true, open: true, igic: true }];
+
+  var ALL = C.concat(CANARIAS, NON_EU);
   var BY = {};
   ALL.forEach(function (c) { BY[c.code] = c; });
 
@@ -37,6 +43,7 @@
   function zone(sellerCode, destCode) {
     var s = BY[sellerCode], d = BY[destCode];
     if (!s || !d) return "unknown";
+    if ((s.code === "IC") !== (d.code === "IC")) return "customs"; // Canarias <-> resto: DUA
     if (s.code === d.code) return "domestic";
     if (s.eu && d.eu) return "eu";
     if (s.eu && !d.eu) return "export";
@@ -45,6 +52,7 @@
 
   function shippable(seller, destCode) {
     var z = zone(seller.country, destCode);
+    if (z === "customs") return { ok: false, zone: z, reasonKey: "tax.off.customs" };
     if (z === "blocked") return { ok: false, zone: z, reasonKey: "tax.off.reason", reasonVars: { country: seller.country } };
     return { ok: true, zone: z };
   }
@@ -67,7 +75,8 @@
       out.titleKey = "tax.title.final"; out.noteKey = "tax.note.particular";
     } else if (seller.vat === "margin") {
       out.kind = "used";
-      out.titleKey = "tax.title.used"; out.noteKey = "tax.note.used";
+      out.titleKey = seller.country === "IC" ? "tax.title.usedigic" : "tax.title.used";
+      out.noteKey = seller.country === "IC" ? "tax.note.usedigic" : "tax.note.used";
     } else {
       out.kind = "general";
       if (z === "export") {
@@ -75,7 +84,8 @@
         out.titleKey = "tax.title.export"; out.noteKey = "tax.note.export";
       } else {
         out.vatIncluded = round2(product.price - product.price / (1 + r / 100));
-        out.titleKey = "tax.title.vat"; out.noteKey = "tax.note.vat";
+        out.titleKey = seller.country === "IC" ? "tax.title.igic" : "tax.title.vat";
+        out.noteKey = seller.country === "IC" ? "tax.note.igic" : "tax.note.vat";
       }
     }
 

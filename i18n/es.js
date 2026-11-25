@@ -24,7 +24,6 @@ I18N.register("es", {
   "msg.soon": "Los envíos a {country} estarán disponibles próximamente. Elige un país de la UE.",
   "msg.off": "Quita los artículos no disponibles para tu destino.",
   "msg.invalid": "Completa los campos obligatorios y acepta las dos confirmaciones.",
-  "msg.sent": "Se abrirá tu correo con el pedido. Te responderemos con las instrucciones de pago.",
   // impuestos
   "tax.title.final": "Precio final, sin IVA",
   "tax.title.used": "IVA incluido (régimen de bienes usados)",
@@ -41,10 +40,27 @@ I18N.register("es", {
   "sv.msg.age": "Debes ser mayor de 18 años para vender.",
   "sv.msg.invalid": "Completa los campos obligatorios y acepta las condiciones.",
   "sv.msg.vat": "El número de IVA debe empezar por el código de país, por ejemplo ESB12345678.",
-  "sv.msg.sent": "Se abrirá tu correo con la solicitud. Te pediremos la verificación de identidad en el siguiente paso.",
-  "sv.msg.outside": "Se abrirá tu correo. Al estar fuera de la UE, de momento solo podrás vender dentro de {country}.",
+  "sv.msg.outside": "Al estar fuera de la UE, de momento solo podrás vender dentro de tu propio país: {country}.",
+  "sv.msg.pass": "La contraseña debe tener al menos 8 caracteres.",
+  "sv.msg.exists": "Ya existe una solicitud con ese correo o alias.",
+  "sv.msg.created": "Solicitud recibida. Entra en tu panel para completar tus datos fiscales; hasta que verifiquemos tu cuenta no podrás publicar.",
   "sv.hint.particular": "Vendes artículos propios de forma ocasional. No cobras IVA y no se aplican las normas de consumo.",
   "sv.hint.profesional": "Vendes de forma habitual o con ánimo de lucro. Cobras IVA según tu régimen y sí se aplican las normas de consumo.",
+  // cuenta, favoritos, mensajes, denuncias y pago simulado
+  "fav.add": "Guardar en favoritos", "fav.remove": "Quitar de favoritos", "fav.save": "Guardar", "fav.saved": "Guardado",
+  "pdp.ask.login": "Inicia sesión como comprador para escribir al vendedor.", "pdp.ask.sent": "Mensaje enviado. Verás la respuesta en tu cuenta.", "pdp.ask.blocked": "Por seguridad, no se pueden compartir correos, teléfonos ni enlaces.",
+  "rate.one": "{avg} de 5 · {n} valoración", "rate.other": "{avg} de 5 · {n} valoraciones", "rate.none": "Sin valoraciones todavía",
+  "rep.sent": "Denuncia recibida. Número: {no}.", "rep.invalid": "Indica el motivo y marca la declaración.",
+  "cart.login": "Para pagar necesitas una cuenta de comprador.", "cart.age": "Para pagar debes verificar tu edad.", "cart.cta": "Entrar o crear cuenta", "cart.cta.age": "Verificar edad",
+  "msg.paid": "Pedido registrado: {no}. El pago queda retenido hasta que confirmes la recepción.", "msg.stock": "Alguna prenda ya no está disponible. Actualiza el pedido.", "msg.addr": "Completa tu nombre y dirección de entrega.", "o.link": "Ver mis pedidos",
+  // Canarias
+  "tax.title.igic": "IGIC incluido: {amount} ({rate} %)",
+  "tax.note.igic": "Vendedor profesional en Canarias. Precio con IGIC (tipo general). Estimación pendiente de validar por un asesor fiscal.",
+  "tax.title.usedigic": "IGIC incluido (régimen especial de bienes usados)",
+  "tax.note.usedigic": "Vendedor profesional en Canarias acogido al régimen especial de bienes usados del IGIC. Estimación pendiente de validar por un asesor fiscal. Se aplican las normas de consumo.",
+  "tax.off.customs": "Los envíos entre Canarias y el resto de la UE exigen trámites aduaneros y fiscales (DUA) que la plataforma aún no gestiona. Por ahora solo hay envíos dentro de Canarias.",
+  // secciones solo en español
+  "app.es_only": "Esta sección solo está disponible en español por ahora.",
   // páginas legales
   "legal.es_only": "Este documento solo está disponible en español. La traducción jurídica está pendiente.",
   "legal.hdr": "Información legal", "legal.back": "← Volver a la tienda", "legal.backSeller": "← Volver al área de vendedores"

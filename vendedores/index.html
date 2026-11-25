@@ -27,6 +27,7 @@
       <a href="#comision" data-i18n="sv.nav.fees">Comisión</a>
       <a href="#impuestos" data-i18n="sv.nav.tax">Impuestos</a>
       <a href="#solicitud" data-i18n="sv.nav.apply">Solicitar acceso</a>
+      <a href="panel/" data-i18n="sv.hdr.panel">Mi panel</a>
     </nav>
     <div class="sv-tools">
       <select class="lang" id="lang" data-i18n-attr="aria-label:aria.lang" aria-label="Idioma"></select>
@@ -67,7 +68,7 @@
       <div class="sec-head reveal"><div><p class="eyebrow" data-i18n="sv.how.eyebrow">01 · Cómo funciona</p><h2 data-i18n="sv.how.h2">Cuatro pasos para <em>empezar</em></h2></div></div>
       <ol class="steps steps--4">
         <li class="step reveal"><span class="step__n num">01</span><h3 data-i18n="sv.how.1.t">Solicita</h3><p data-i18n="sv.how.1.p">Rellena el formulario con tu alias, tu país y si vendes como particular o como profesional.</p></li>
-        <li class="step reveal"><span class="step__n num">02</span><h3 data-i18n="sv.how.2.t">Verifica</h3><p data-i18n="sv.how.2.p">Comprobamos tu identidad y tu edad con un documento oficial. Es obligatorio antes de publicar.</p></li>
+        <li class="step reveal"><span class="step__n num">02</span><h3 data-i18n="sv.how.2.t">Verifica</h3><p data-i18n="sv.how.2.p">Comprobamos tus datos fiscales y tu edad antes de que puedas publicar. Es obligatorio.</p></li>
         <li class="step reveal"><span class="step__n num">03</span><h3 data-i18n="sv.how.3.t">Publica</h3><p data-i18n="sv.how.3.p">Sube tus anuncios con fotos propias. Revisamos que cumplan las normas.</p></li>
         <li class="step reveal"><span class="step__n num">04</span><h3 data-i18n="sv.how.4.t">Cobra</h3><p data-i18n="sv.how.4.p">Cuando el comprador recibe el pedido, te pagamos descontando la comisión.</p></li>
       </ol>
@@ -123,6 +124,7 @@
           <label class="f"><span class="label" data-i18n="sv.f.country">País de residencia</span><select name="country" id="s-country" required></select></label>
           <label class="f"><span class="label" data-i18n="sv.f.lang">Idioma de comunicación</span><select name="comm" id="s-comm"></select></label>
         </div>
+        <label class="f"><span class="label" data-i18n="sv.f.pass">Contraseña</span><input name="pass" type="password" required minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres" data-i18n-attr="placeholder:sv.f.pass.ph"></label>
         <label class="f" style="max-width:200px"><span class="label" data-i18n="sv.f.age">Edad</span><input name="age" type="number" min="18" max="99" required inputmode="numeric" placeholder="18 o más" data-i18n-attr="placeholder:sv.f.age.ph"></label>
         <fieldset style="border:0;padding:0;margin:0">
           <legend class="label" style="margin-bottom:10px" data-i18n="sv.f.kind">Vendes como</legend>
@@ -142,6 +144,7 @@
         <label class="check"><input type="checkbox" name="ok" required><span data-i18n="sv.f.ok">Confirmo que soy mayor de 18 años, que las prendas son mías y que acepto la verificación de identidad y las <a href="condiciones.html">condiciones para vendedores</a>.</span></label>
         <button class="btn btn--block" type="submit" data-i18n="sv.f.submit">Enviar solicitud</button>
         <p class="msg" id="seller-msg" role="status"></p>
+        <a class="link" href="panel/" data-i18n="sv.form.login">¿Ya tienes cuenta? Entra en tu panel</a>
       </form>
     </div>
   </section>
@@ -165,6 +168,8 @@
 <script src="../js/i18n.js"></script>
 <script src="../i18n/es.js"></script>
 <script src="../js/tax.js"></script>
+<script src="../js/products.js"></script>
+<script src="../js/core.js"></script>
 <script src="../js/seller.js"></script>
 </body>
 </html>

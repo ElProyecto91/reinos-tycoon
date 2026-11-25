@@ -6,8 +6,14 @@ Mercado europeo de prendas íntimas de segunda mano entre adultos. Web estática
 
 | Ruta | Contenido |
 |---|---|
-| `index.html` | Tienda (solo compradores): catálogo, ficha, pedido, FAQ |
+| `index.html` | Tienda (solo compradores): catálogo, búsqueda, ficha, favoritos, mensajes, denuncias, pago simulado |
+| `cuenta/` | Cuenta de comprador: pedidos, favoritos, mensajes, verificación de edad (simulada), datos y privacidad |
 | `vendedores/` | Área de vendedores, separada: portada, solicitud, condiciones, guía de impuestos |
+| `vendedores/panel/` | Panel de vendedor: anuncios con fotos, pedidos y envíos, cobros, mensajes, datos fiscales (DAC7) |
+| `admin/` | Administración: moderación, denuncias, vendedores, pedidos, DAC7, ajustes, auditoría |
+| `js/core.js` | Capa de datos del **modo demostración** (almacenamiento local del navegador) con la API que sustituirá un backend real |
+| `js/ui.js`, `js/cuenta.js`, `js/panel.js`, `js/admin.js` | Interfaz de cuenta, panel y administración |
+| `db/schema.sql` | Esquema PostgreSQL/Supabase con RLS para el backend real (**borrador sin ejecutar**) |
 | `css/` | `fonts.css` (tipografías propias), `styles.css` (sistema de diseño), `legal.css` |
 | `js/products.js` | Catálogo y vendedores de demostración |
 | `js/tax.js` | Motor de IVA orientativo: tipos por país, regímenes, destinos |
@@ -23,13 +29,24 @@ Mercado europeo de prendas íntimas de segunda mano entre adultos. Web estática
 | `.vercelignore` | Excluye `docs/`, `tools/` y `screenshots/` del sitio publicado |
 | `screenshots/` | Capturas de la última versión |
 
+## Modo demostración
+
+Todo funciona, pero **sin servidor**: cuentas, anuncios, pedidos, mensajes y favoritos se guardan solo en el navegador de cada persona (`localStorage`), la verificación de edad y los pagos son simulados y las contraseñas no están protegidas de verdad. Sirve para probar el flujo completo, no para operar. Contraseña de administración de demostración: `demo-admin` (en `/admin/`).
+
+Política de producto: Intimae es intermediario y **no gestiona devoluciones, reclamaciones ni disputas**; solo se puede cancelar un pedido antes del envío. Los textos legales lo reflejan.
+
+Canarias (código `IC`): IGIC (tipo general 7 %, estimación pendiente de validar por un asesor fiscal) y envíos solo dentro de Canarias.
+
+Idiomas: la tienda y el alta de vendedores están en 7 idiomas; cuenta, panel y administración, por ahora solo en español.
+
 ## Antes de publicar
 
 1. Completar los campos resaltados de las páginas legales (titularidad, correos, comisión, plazos).
-2. Cambiar los correos de `CONFIG` en `js/app.js`.
+2. Cambiar el correo de contacto (campos `{{EMAIL ...}}` de las páginas legales).
 3. Sustituir productos y vendedores de demostración, y las fotos de muestra de Unsplash.
 4. Revisar con un abogado y un asesor fiscal (ver preguntas en el estudio).
-5. Comprobar que el hosting y el medio de cobro admiten contenido para adultos.
+5. Comprobar que el hosting y el medio de cobro admiten contenido para adultos (ver `docs/CONSULTA-PROCESADORES.md`).
+6. Sustituir `js/core.js` por un backend real (esquema en `db/schema.sql`), un proveedor real de pagos y de verificación de edad.
 
 ## Probar en local
 

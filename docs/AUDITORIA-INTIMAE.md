@@ -39,6 +39,8 @@ Consecuencia práctica: si pegas el documento maestro en otra IA sin esta correc
 - **Textos de las páginas legales**: describen cosas que aún no existen (verificación de identidad, cifrado, cuentas, retención de pagos). Eso es un riesgo si se publicara tal cual. [Verificado]
 - **Calculadora de comisión** del área de vendedores: usa 20 % (`COMMISSION_PCT` en `js/seller.js`); es una propuesta mía, no una decisión tuya. [Verificado]
 
+> **Actualización (25-11-2026):** buena parte de esta lista ya existe **en modo demostración** (sin servidor): ver la sección 12. Lo que sigue describe el estado previo.
+
 ### 1.3 Lo que falta por completo [Verificado]
 Cuentas y autenticación; base de datos; alta/edición de anuncios por el vendedor; subida de fotos; pagos y reparto a vendedores; custodia/liberación de fondos; seguimiento de envíos; mensajería; reseñas; disputas y devoluciones; panel de moderación y cola de denuncias; verificación de edad e identidad; registro de datos DAC7; facturación/justificantes; correo transaccional; copias de seguridad; registro de auditoría; recuperación de cuenta; panel de administración.
 
@@ -214,3 +216,16 @@ La verdad incómoda: el cuello de botella no es el código, es **conseguir cobra
 Capital inmovilizado por reservas del procesador (10 % del volumen durante 6 meses): ≈ 2.500 € en el escenario base y ≈ 10.500 € en el optimista, aparte de las pérdidas.
 
 **Lectura:** con pago integrado y costes de alto riesgo, solo el escenario optimista (500 pedidos/mes a los 12 meses, sin audiencia previa) llega a beneficio, y solo si el IVA sobre la comisión no se come el margen. Necesidad de liquidez realista para sostener 24 meses: 20.000–30.000 €. Esto es [Suposición] salvo los puntos de equilibrio, que son aritmética sobre esos supuestos.
+
+
+---
+
+## 12. Estado tras la integración en modo demostración (25-11-2026)
+
+**Qué hay ahora [Verificado con pruebas de navegador automatizadas]:** cuentas de comprador y de vendedor (contraseña con hash SHA-256 con sal, solo demostración); verificación de edad simulada que no guarda la fecha de nacimiento; anuncios con fotos reducidas a 900 px y sin metadatos; moderación previa; pedidos por vendedor con pago simulado retenido, envío con seguimiento, confirmación de recepción, liquidación automática o manual y cancelación solo antes del envío; mensajes entre comprador y vendedor con bloqueo de correos, teléfonos y enlaces; valoraciones; favoritos; denuncias con número y resolución con exposición de motivos; datos fiscales (DAC7) con exportación CSV y umbrales; ajustes (comisión y plazos); registro de auditoría; Canarias (IGIC, solo envíos internos); esquema de base de datos con RLS (sin ejecutar).
+
+**Qué sigue sin existir y por qué importa [Verificado]:** servidor y base de datos reales (hoy los datos viven en cada navegador y no se comparten); pagos reales y proveedor de pagos; verificación real de edad e identidad; correo transaccional; seguimiento de transportistas; traducción de cuenta, panel y administración (solo español); datos legales de la titularidad; revisión de abogado y asesor fiscal; confirmación escrita de los procesadores.
+
+**Política decidida:** Intimae no gestiona devoluciones, reclamaciones ni disputas. Efectos: sin estados de disputa en el código; pago que no se congela por reclamaciones; contracargos imputados al vendedor en las condiciones. **Riesgos [Probable]:** los procesadores y las tarjetas esperan un procedimiento de reclamaciones y los consumidores UE conservan derechos frente a vendedores profesionales que unas condiciones no pueden eliminar; sin protección al comprador es previsible más contracargos, que son justo lo que pone en riesgo la cuenta de pagos. Hay que validarlo con el abogado y con el procesador.
+
+**Qué no hay que dar por hecho:** el modo demostración **no** es una versión operable. Cuentas, contraseñas y administración no tienen seguridad real porque no hay servidor.

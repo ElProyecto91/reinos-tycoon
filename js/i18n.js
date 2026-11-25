@@ -13,7 +13,7 @@
   var NATIVE = { es: "Español", en: "English", fr: "Français", de: "Deutsch", it: "Italiano", pt: "Português", nl: "Nederlands" };
   var LOCALE = { es: "es-ES", en: "en-GB", fr: "fr-FR", de: "de-DE", it: "it-IT", pt: "pt-PT", nl: "nl-NL" };
   // Idioma sugerido por país. Los países sin traducción propia usan inglés hasta que se añada la suya.
-  var BY_COUNTRY = { ES: "es", FR: "fr", LU: "fr", DE: "de", AT: "de", CH: "de", NL: "nl", BE: "nl", IT: "it", PT: "pt", GB: "en", IE: "en", MT: "en" };
+  var BY_COUNTRY = { ES: "es", IC: "es", FR: "fr", LU: "fr", DE: "de", AT: "de", CH: "de", NL: "nl", BE: "nl", IT: "it", PT: "pt", GB: "en", IE: "en", MT: "en" };
   var K_LANG = "intimae_lang", K_MANUAL = "intimae_lang_manual";
 
   var lang = "es", dicts = {}, listeners = [], selects = [], loading = {};

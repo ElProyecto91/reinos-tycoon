@@ -26,6 +26,7 @@
   <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></symbol>
 </svg>
 
 <a class="skip" href="#catalogo" data-i18n="skip">Saltar al catálogo</a>
@@ -55,6 +56,7 @@
       <a href="#catalogo" data-i18n="nav.catalog">Catálogo</a>
       <a href="#como" data-i18n="nav.how">Cómo funciona</a>
       <a href="#impuestos" data-i18n="nav.taxes">Impuestos</a>
+      <a class="menu__account" href="cuenta/" data-i18n="nav.account">Mi cuenta</a>
       <div class="menu__prefs">
         <select class="lang" id="lang-menu" data-i18n-attr="aria-label:aria.lang" aria-label="Idioma"></select>
         <select class="destsel" id="dest-menu" data-i18n-attr="aria-label:aria.dest" aria-label="País de envío"></select>
@@ -67,6 +69,7 @@
       <label class="dest desk"><span data-i18n="dest.label">Enviar a</span>
         <select id="dest" data-i18n-attr="aria-label:aria.dest" aria-label="País de envío"></select>
       </label>
+      <a class="link desk" href="cuenta/" data-i18n="nav.account">Mi cuenta</a>
       <button class="cart-btn" id="open-cart" type="button" data-i18n-attr="aria-label:aria.cart" aria-label="Abrir pedido">
         <svg class="icon"><use href="#i-bag"/></svg><span class="cart-btn__n num" id="cart-count">0</span>
       </button>
@@ -86,7 +89,7 @@
           <a class="btn" href="#catalogo" data-i18n="hero.cta">Ver el catálogo</a>
         </div>
         <ul class="hero__facts">
-          <li data-i18n="hero.f1">Identidad y edad verificadas</li>
+          <li data-i18n="hero.f1">Vendedores verificados</li>
           <li data-i18n="hero.f2">Embalaje neutro</li>
           <li data-i18n="hero.f3">IVA transparente</li>
         </ul>
@@ -100,7 +103,7 @@
 
   <section class="values" data-i18n-attr="aria-label:aria.values" aria-label="Garantías">
     <div class="wrap values__grid">
-      <div class="value"><svg class="icon"><use href="#i-shield"/></svg><div><h3 data-i18n="val.1.t">Vendedores identificados</h3><p data-i18n="val.1.p">Verificamos identidad y edad de cada vendedor antes de que publique.</p></div></div>
+      <div class="value"><svg class="icon"><use href="#i-shield"/></svg><div><h3 data-i18n="val.1.t">Vendedores identificados</h3><p data-i18n="val.1.p">Cada vendedor pasa una verificación de su cuenta antes de poder publicar.</p></div></div>
       <div class="value"><svg class="icon"><use href="#i-box"/></svg><div><h3 data-i18n="val.2.t">Envío neutro</h3><p data-i18n="val.2.p">Bolsa sellada, caja sin logotipos y remitente genérico.</p></div></div>
       <div class="value"><svg class="icon"><use href="#i-globe"/></svg><div><h3 data-i18n="val.3.t">27 países de la UE</h3><p data-i18n="val.3.p">Reino Unido, Suiza y Noruega, próximamente. Tú eliges el destino.</p></div></div>
       <div class="value"><svg class="icon"><use href="#i-receipt"/></svg><div><h3 data-i18n="val.4.t">Impuestos claros</h3><p data-i18n="val.4.p">Ves el IVA y los costes de importación antes de pedir.</p></div></div>
@@ -118,6 +121,9 @@
       </div>
 
       <div class="toolbar" role="group" data-i18n-attr="aria-label:aria.filters" aria-label="Filtros del catálogo">
+        <label class="field field--q"><span data-i18n="f.q">Buscar</span>
+          <input id="f-q" type="search" maxlength="60" placeholder="Prenda, color, material…" data-i18n-attr="placeholder:f.q.ph" autocomplete="off">
+        </label>
         <label class="field"><span data-i18n="f.type">Prenda</span>
           <select id="f-type"><option value="" data-i18n="opt.all">Todas</option><option value="braga" data-i18n="type.braga">Braga</option><option value="tanga" data-i18n="type.tanga">Tanga</option><option value="sujetador" data-i18n="type.sujetador">Sujetador</option><option value="camison" data-i18n="type.camison">Camisón</option><option value="conjunto" data-i18n="type.conjunto">Lote</option></select>
         </label>
@@ -145,7 +151,7 @@
       </div>
       <ol class="steps">
         <li class="step reveal"><span class="step__n num">01</span><h3 data-i18n="how.1.t">Elige</h3><p data-i18n="how.1.p">Filtra por prenda, talla y días de uso. En cada ficha ves quién vende, desde dónde envía y qué impuestos se aplican a tu destino.</p></li>
-        <li class="step reveal"><span class="step__n num">02</span><h3 data-i18n="how.2.t">Confirma</h3><p data-i18n="how.2.p">Indica tu país y envía el pedido. Te respondemos con las instrucciones de pago y el plazo; por ahora el pago es manual.</p></li>
+        <li class="step reveal"><span class="step__n num">02</span><h3 data-i18n="how.2.t">Confirma</h3><p data-i18n="how.2.p">Inicia sesión, indica tu país y paga. El dinero queda retenido hasta que confirmes la recepción. Por ahora todo funciona en modo demostración.</p></li>
         <li class="step reveal"><span class="step__n num">03</span><h3 data-i18n="how.3.t">Recibe</h3><p data-i18n="how.3.p">La prenda sale en bolsa sellada dentro de un embalaje neutro, sin logotipos ni datos personales del vendedor.</p></li>
       </ol>
     </div>
@@ -176,6 +182,7 @@
         <details><summary data-i18n="faq.3.q">¿Puedo comprar a un vendedor de otro país?</summary><p data-i18n="faq.3.a">Sí, si el vendedor está en la UE. Elige tu país de envío arriba y verás en cada ficha el coste de envío y el tratamiento de IVA.</p></details>
         <details><summary data-i18n="faq.4.q">¿Cómo sé si el vendedor es particular o profesional?</summary><p data-i18n="faq.4.a">Cada ficha lo indica. Los particulares no cobran IVA y, al no ser una venta profesional, no se aplican las normas de consumo de la UE. Con vendedores profesionales sí tienes desistimiento y garantía legal.</p></details>
         <details><summary data-i18n="faq.5.q">¿Y la higiene?</summary><p data-i18n="faq.5.a">Son artículos usados y se venden como tales. Se envían en bolsa hermética. Lávalos antes de volver a usarlos.</p></details>
+        <details><summary data-i18n="faq.7.q">¿Quién se encarga de devoluciones y reclamaciones?</summary><p data-i18n="faq.7.a">Intimae es solo intermediario: no gestiona devoluciones, reclamaciones ni disputas. Cualquier asunto sobre una compra se resuelve directamente con el vendedor por mensajes. Antes del envío puedes cancelar el pedido y recuperar el importe íntegro.</p></details>
         <details><summary data-i18n="faq.6.q">¿Qué datos guardáis?</summary><p data-i18n="faq.6.a">Lo mínimo para tramitar el pedido, con tu consentimiento explícito para los datos que puedan revelar tu vida sexual. El carrito vive solo en tu navegador. Más detalle en la <a href="privacidad.html" style="text-decoration:underline">política de privacidad</a>.</p></details>
       </div>
     </div>
@@ -186,7 +193,7 @@
   <div class="wrap">
     <div class="footer__grid">
       <div><a class="wordmark" href="#top">Intimae</a><p data-i18n="ft.about">Mercado europeo de prendas íntimas de segunda mano entre adultos. Sitio para mayores de 18 años.</p></div>
-      <div><h4 data-i18n="ft.h.shop">Tienda</h4><ul><li><a href="#catalogo" data-i18n="ft.catalog">Catálogo</a></li><li><a href="#como" data-i18n="ft.how">Cómo funciona</a></li><li><a href="envios.html" data-i18n="ft.ship">Envíos y devoluciones</a></li><li><a href="iva.html" data-i18n="ft.vat">IVA e impuestos</a></li></ul></div>
+      <div><h4 data-i18n="ft.h.shop">Tienda</h4><ul><li><a href="#catalogo" data-i18n="ft.catalog">Catálogo</a></li><li><a href="#como" data-i18n="ft.how">Cómo funciona</a></li><li><a href="cuenta/" data-i18n="nav.account">Mi cuenta</a></li><li><a href="envios.html" data-i18n="ft.ship">Envíos y entrega</a></li><li><a href="iva.html" data-i18n="ft.vat">IVA e impuestos</a></li></ul></div>
       <div><h4 data-i18n="ft.h.legal">Legal</h4><ul><li><a href="aviso-legal.html" data-i18n="ft.aviso">Aviso legal</a></li><li><a href="privacidad.html" data-i18n="ft.priv">Privacidad</a></li><li><a href="cookies.html" data-i18n="ft.cook">Cookies</a></li><li><a href="condiciones-compra.html" data-i18n="ft.compra">Condiciones de compra</a></li><li><a href="normas.html" data-i18n="ft.normas">Normas y denuncias</a></li></ul></div>
       <div><h4 data-i18n="ft.h.sell">¿Quieres vender?</h4><ul><li><a href="vendedores/" data-i18n="ft.sell">Vender en Intimae</a></li></ul></div>
     </div>
@@ -209,7 +216,17 @@
     <dl class="specs" id="pdp-specs"></dl>
     <div class="pdp__actions">
       <button class="btn" type="button" id="pdp-add" data-i18n="pdp.add">Añadir al pedido</button>
-      <a class="link" id="pdp-report" href="normas.html" data-i18n="pdp.report">Denunciar este anuncio</a>
+      <button class="btn btn--line" type="button" id="pdp-fav"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><span id="pdp-fav-t"></span></button>
+      <button class="btn btn--line" type="button" id="pdp-ask" data-i18n="pdp.ask">Preguntar al vendedor</button>
+      <button class="link" id="pdp-report" type="button" data-i18n="pdp.report">Denunciar este anuncio</button>
+    </div>
+    <div class="ask" id="pdp-askbox" hidden>
+      <p class="hint" id="pdp-ask-login" hidden></p>
+      <form id="ask-form" class="form">
+        <label class="f"><span class="sr" data-i18n="pdp.ask">Preguntar al vendedor</span><textarea name="text" required maxlength="600" style="min-height:84px" placeholder="Escribe tu pregunta. No compartas datos personales." data-i18n-attr="placeholder:pdp.ask.ph"></textarea></label>
+        <button class="btn btn--sm" type="submit" data-i18n="pdp.ask.send">Enviar mensaje</button>
+        <p class="msg" id="ask-msg" role="status"></p>
+      </form>
     </div>
   </div>
 </dialog>
@@ -221,19 +238,38 @@
   <div class="cart__foot" id="cart-foot">
     <div class="sum" id="sum"></div>
     <p class="cart-note" id="cart-note" hidden></p>
+    <div class="cart-gate" id="cart-gate" hidden><p class="cart-note" id="cart-gate-text"></p><a class="btn btn--block" id="cart-gate-cta" href="cuenta/?next=store"></a></div>
     <form id="order-form" class="form" novalidate>
       <label class="f"><span class="label" data-i18n="o.name">Nombre o alias</span><input name="name" required autocomplete="name"></label>
-      <label class="f"><span class="label" data-i18n="o.email">Correo</span><input name="email" type="email" required autocomplete="email"></label>
+      <label class="f"><span class="label" data-i18n="o.email">Correo</span><input name="email" type="email" required autocomplete="email" readonly></label>
       <label class="f"><span class="label" data-i18n="o.addr">Dirección de entrega</span><textarea name="addr" required autocomplete="street-address" style="min-height:72px"></textarea></label>
       <div class="row">
         <label class="f"><span class="label" data-i18n="o.country">País de entrega</span><input name="country" id="o-country" readonly></label>
-        <label class="f"><span class="label" data-i18n="o.pay">Pago preferido</span><select name="pay"><option value="Transferencia" data-i18n="o.pay.1">Transferencia</option><option value="Bizum" data-i18n="o.pay.2">Bizum</option><option value="Cripto" data-i18n="o.pay.3">Cripto</option></select></label>
       </div>
       <label class="f"><span class="label" data-i18n="o.note">Petición al vendedor (opcional)</span><textarea name="note" maxlength="300" style="min-height:64px"></textarea></label>
       <label class="check"><input type="checkbox" name="adult" required><span data-i18n="o.c1">Soy mayor de 18 años y acepto las <a href="condiciones-compra.html">condiciones de compra</a>.</span></label>
       <label class="check"><input type="checkbox" name="art9" required><span data-i18n="o.c2">Consiento expresamente que se traten los datos de este pedido, que pueden revelar información sobre mi vida sexual, solo para tramitarlo (art. 9.2.a del RGPD). Puedo retirar este consentimiento cuando quiera. <a href="privacidad.html">Más información</a>.</span></label>
-      <button class="btn btn--block" type="submit" data-i18n="o.submit">Enviar pedido</button>
+      <button class="btn btn--block" type="submit" data-i18n="o.submit">Pagar (simulación)</button>
+      <p class="cart-note" data-i18n="cart.demo">Modo demostración: no se cobra nada y no se envía ningún pedido real.</p>
       <p class="msg" id="order-msg" role="status"></p>
+      <a class="link" id="order-link" href="cuenta/#pedidos" hidden data-i18n="o.link">Ver mis pedidos</a>
+    </form>
+  </div>
+</dialog>
+
+<!-- Denuncia de contenido (Reglamento (UE) 2022/2065) -->
+<dialog class="cart" id="report" aria-labelledby="rep-title">
+  <div class="cart__head"><h2 id="rep-title" data-i18n="rep.title">Denunciar este anuncio</h2><button class="close" type="button" data-close data-i18n-attr="aria-label:aria.close" aria-label="Cerrar"><svg class="icon"><use href="#i-close"/></svg></button></div>
+  <div class="cart__foot">
+    <form id="report-form" class="form" novalidate>
+      <p class="cart-note" id="rep-target"></p>
+      <label class="f"><span class="label" data-i18n="rep.reason">Motivo</span>
+        <select name="reason" required><option value="illegal" data-i18n="rep.r.illegal">Contenido ilegal</option><option value="minor" data-i18n="rep.r.minor">Menores</option><option value="consent" data-i18n="rep.r.consent">Imágenes sin consentimiento</option><option value="fake" data-i18n="rep.r.fake">Engaño o suplantación</option><option value="other" data-i18n="rep.r.other">Otro</option></select></label>
+      <label class="f"><span class="label" data-i18n="rep.text">Explicación</span><textarea name="text" maxlength="600" style="min-height:96px"></textarea></label>
+      <label class="f"><span class="label" data-i18n="rep.email">Tu correo (opcional, para informarte de la decisión)</span><input name="email" type="email" maxlength="120" autocomplete="email"></label>
+      <label class="check"><input type="checkbox" name="good" required><span data-i18n="rep.good">Declaro que esta denuncia se hace de buena fe y es exacta y completa.</span></label>
+      <button class="btn btn--block" type="submit" data-i18n="rep.submit">Enviar denuncia</button>
+      <p class="msg" id="rep-msg" role="status"></p>
     </form>
   </div>
 </dialog>
@@ -242,6 +278,7 @@
 <script src="i18n/es.js"></script>
 <script src="js/tax.js"></script>
 <script src="js/products.js"></script>
+<script src="js/core.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
