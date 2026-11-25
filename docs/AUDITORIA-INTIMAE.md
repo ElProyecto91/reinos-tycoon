@@ -187,3 +187,30 @@ La verdad incómoda: el cuello de botella no es el código, es **conseguir cobra
 - Competidores: leí cuatro de seis (Snifffr, PantyDeal, The Panty Bank, y solo metadatos de underprivé). Sofia Gray y All Things Worn estaban tras un desafío de Cloudflare y no los analicé. Solo páginas públicas, sin registro.
 - No he consultado BOE, AEAT, ATC ni la Comisión Europea directamente en esta pasada; las cifras fiscales y regulatorias son de fuentes secundarias o de mi conocimiento y deben contrastarse con fuente oficial antes de actuar.
 - Las tarifas de envío, comisión e impuestos del sitio son de demostración.
+
+---
+
+## 11. Costes y beneficios estimados (modelo de ejemplo, 25-11-2026)
+
+**Todo son supuestos míos, no datos de mercado.** Sirven para ver órdenes de magnitud, no para pedir un préstamo. Excluyen tu tiempo, el desarrollo (lo haces tú) y el impuesto de sociedades (15 % los dos primeros años con beneficio es lo habitual en España; ZEC/Canarias sin confirmar).
+
+**Supuestos:** ticket medio 35 €; coste variable por pedido = 7,5 % (6 % procesador de alto riesgo + 1,5 % fraude/contracargos) + 1,50 € (soporte, verificación de edad, correo) = **4,125 €**. Pagos únicos 4.800 € (SL 600, abogado 2.500, asesor fiscal 600, RGPD 800, marca/fotos 300). Fijos 372 €/mes el año 1 (hosting Vercel Pro + Supabase 45, correo 20, dominio 2, gestoría 100, seguro 40, herramientas 50, cumplimiento/DAC7 25, cuota de autónomo societario 90) y 582 €/mes el año 2 (cuota sin tarifa plana 300). Marketing 500 €/mes el año 1 y 700 € el año 2. Pedidos/mes: pesimista 20 → 60 (meses 12 → 24), base 120 → 350, optimista 500 → 1.500.
+
+| Modelo de ingreso | Ingreso bruto/pedido | Contribución/pedido | Equilibrio (fijos + marketing, año 1) |
+|---|---|---|---|
+| A. Comisión 20 % al vendedor | 7,00 € | 2,88 € (1,66 € si la comisión lleva 21 % de IVA) | 303 pedidos/mes (525 con IVA) |
+| B. Comisión 10 % al vendedor | 3,50 € | −0,62 € | imposible |
+| C. 10 % vendedor + 5 % + 0,50 € comprador | 5,75 € | 1,62 € (0,63 € con IVA) | 537 pedidos/mes (1.391 con IVA) |
+| D. Suscripción 9,99 €/mes, pago fuera de plataforma | 9,99 €/vendedor | ≈ 7,3 € por vendedor de pago | 120 vendedores de pago (≈ 800 activos si paga el 15 %) |
+
+**Resultado acumulado a 24 meses (modelo A, 20 %):**
+
+| Escenario | Sin IVA sobre la comisión | Con 21 % de IVA |
+|---|---|---|
+| Pesimista | −28.800 € | −29.600 € |
+| Base | −20.000 € | −24.500 € |
+| Optimista | +14.600 € (caja mínima −7.600 €) | −4.500 € (caja mínima −10.400 €) |
+
+Capital inmovilizado por reservas del procesador (10 % del volumen durante 6 meses): ≈ 2.500 € en el escenario base y ≈ 10.500 € en el optimista, aparte de las pérdidas.
+
+**Lectura:** con pago integrado y costes de alto riesgo, solo el escenario optimista (500 pedidos/mes a los 12 meses, sin audiencia previa) llega a beneficio, y solo si el IVA sobre la comisión no se come el margen. Necesidad de liquidez realista para sostener 24 meses: 20.000–30.000 €. Esto es [Suposición] salvo los puntos de equilibrio, que son aritmética sobre esos supuestos.
