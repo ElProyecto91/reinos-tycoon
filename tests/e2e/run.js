@@ -244,6 +244,17 @@ const shot = (p, n) => p.screenshot({ path: SHOT + n });
   ok('descarga de errores en JSON', Array.isArray(JSON.parse(fs.readFileSync(await edl.path(), 'utf8'))));
   await p.evaluate(() => TEL.clearErrors());
 
+
+  // ================= 7c. Analítica de Vercel preparada, pero nunca en pruebas ni en áreas privadas
+  const A = await p.evaluate(() => window.INTIMAE_ANALYTICS);
+  await store();
+  ok('analítica: no se inyecta en la web de pruebas (sin error 404)', await p.evaluate(() => !document.querySelector('script[src*="_vercel/insights"]')));
+  ok('analítica: decisión de carga (producción sí; DNT, GPC, opt-out y localhost no)', await p.evaluate(() => { const f = INTIMAE_ANALYTICS.shouldLoad; return f('intimae.vercel.app', null, false, false) === true && f('intimae.vercel.app', '1', false, false) === false && f('intimae.vercel.app', null, true, false) === false && f('intimae.vercel.app', null, false, true) === false && f('localhost', null, false, false) === false && f('intimae.test', null, false, false) === false; }));
+  for (const u of ['cuenta/', 'vendedores/panel/', 'admin/']) { await p.goto(R + u); ok('analítica: no está en ' + u, await p.evaluate(() => typeof window.INTIMAE_ANALYTICS === 'undefined')); }
+  await p.goto(R + 'cookies.html'); ok('cookies: describe Vercel Web Analytics y permite desactivarla', /Vercel Web Analytics/.test(await p.locator('main').innerText()) && await p.locator('#opt-analytics').count() === 1);
+  await p.locator('#opt-analytics').check(); ok('opt-out guardado', await p.evaluate(() => localStorage.getItem('intimae_no_analytics') === '1')); await p.locator('#opt-analytics').uncheck();
+  await adminLogin(); await adminTab('estadisticas'); ok('admin: tarjeta de Vercel Web Analytics con el paso pendiente', /Vercel Web Analytics/.test(await p.locator('#panel').innerText()) && /Pendiente de activar/i.test(await p.locator('#panel').innerText()));
+
   // ================= 8. Idiomas
   await p.evaluate(() => { localStorage.setItem('intimae_lang', 'fr'); localStorage.setItem('intimae_lang_manual', '1'); });
   await store(); await p.waitForTimeout(300);

@@ -67,6 +67,7 @@ def page(fname, title, body, zone="buyer"):
   {extra_css}
   <script>(function(){{var d=document.documentElement;d.classList.add("js");try{{var l=localStorage.getItem("intimae_lang_manual")==="1"?localStorage.getItem("intimae_lang"):(navigator.language||"es").slice(0,2);if(l&&l!=="es")d.classList.add("i18n-pending")}}catch(e){{}}setTimeout(function(){{d.classList.remove("i18n-pending")}},1800)}})()</script>
   <script src="{pfx}js/telemetry.js"></script>
+  <script src="{pfx}js/analytics.js"></script>
 </head>
 <body{body_class}>
 <a class="skip" href="#main">Saltar al contenido</a>
@@ -150,12 +151,13 @@ page("privacidad.html", "Política de privacidad", """
     <tr><td>Tramitar pedidos y entregas</td><td>Ejecución del contrato (art. 6.1.b RGPD) y consentimiento explícito (art. 9.2.a)</td></tr>
     <tr><td>Verificar edad e identidad de vendedores y evitar menores</td><td>Obligación legal e interés legítimo en proteger a menores (art. 6.1.c y 6.1.f)</td></tr>
     <tr><td>Identificar a vendedores profesionales (trazabilidad) y comunicar datos a la Administración tributaria (DAC7)</td><td>Obligación legal (art. 6.1.c)</td></tr>
+    <tr><td>Medir el uso del sitio y mejorarlo (estadísticas agregadas, sin cookies)</td><td>Interés legítimo (art. 6.1.f). {{REVISAR CON ABOGADO}}</td></tr>
     <tr><td>Prevenir fraude, abusos y contenido ilegal; atender denuncias</td><td>Interés legítimo y obligación legal</td></tr>
     <tr><td>Comunicaciones comerciales</td><td>Consentimiento (art. 6.1.a), opcional</td></tr>
   </table>
 
   <h2>5. Destinatarios</h2>
-  <p>Vendedor correspondiente (solo los datos necesarios para el envío), transportistas, proveedor de pagos {{PROVEEDOR DE PAGOS}}, proveedor de verificación de identidad y edad {{PROVEEDOR DE VERIFICACIÓN}}, proveedor de alojamiento {{HOSTING}}, asesores, y autoridades cuando la ley lo exija (por ejemplo, la Agencia Tributaria). No vendemos tus datos.</p>
+  <p>Vendedor correspondiente (solo los datos necesarios para el envío), transportistas, proveedor de pagos {{PROVEEDOR DE PAGOS}}, proveedor de verificación de identidad y edad {{PROVEEDOR DE VERIFICACIÓN}}, proveedor de alojamiento y de estadísticas de visitas sin cookies (Vercel Inc., {{HOSTING}}), asesores, y autoridades cuando la ley lo exija (por ejemplo, la Agencia Tributaria). No vendemos tus datos.</p>
 
   <h2>6. Transferencias internacionales</h2>
   <p>Si algún proveedor trata datos fuera del Espacio Económico Europeo, lo haremos con garantías adecuadas (decisión de adecuación o cláusulas contractuales tipo). Detalle: {{LISTA DE PROVEEDORES Y PAÍSES}}.</p>
@@ -173,7 +175,7 @@ page("privacidad.html", "Política de privacidad", """
 # ---------------------------------------------------------------- COOKIES
 page("cookies.html", "Política de cookies y almacenamiento local", """
   <h2>1. Qué usamos hoy</h2>
-  <p>Este sitio no usa cookies de publicidad ni de seguimiento, ni servicios de analítica de terceros. Solo guarda en tu navegador, mediante almacenamiento local, los datos imprescindibles para que funcione lo que has pedido:</p>
+  <p>Este sitio no usa cookies de publicidad ni de seguimiento. Solo mide las visitas con un servicio sin cookies (ver el apartado de medición de visitas). Además guarda en tu navegador, mediante almacenamiento local, los datos imprescindibles para que funcione lo que has pedido:</p>
   <table>
     <tr><th>Nombre</th><th>Finalidad</th><th>Tipo</th><th>Duración</th></tr>
     <tr><td><code>intimae_age_ok</code></td><td>Recordar que has confirmado ser mayor de edad</td><td>Técnico, necesario</td><td>Hasta que borres los datos del navegador</td></tr>
@@ -187,10 +189,16 @@ page("cookies.html", "Política de cookies y almacenamiento local", """
   </table>
   <p>Al ser estrictamente necesarios para prestar el servicio que solicitas, no requieren consentimiento (art. 22.2 LSSI-CE).</p>
 
-  <h2>2. Si añadimos otras herramientas</h2>
+  <h2>2. Medición de visitas (Vercel Web Analytics)</h2>
+  <p>En el sitio publicado medimos las visitas con <strong>Vercel Web Analytics</strong>, un servicio de Vercel Inc. (EE. UU.) que <strong>no usa cookies ni guarda identificadores en tu dispositivo</strong>. Registra la página visitada, el país, el tipo de dispositivo, el sistema, el navegador y la página de procedencia, sin identificarte, para saber cuántas personas usan el sitio y qué páginas funcionan. No se mide en tu cuenta, en el panel de vendedor ni en la administración. Respetamos la señal «No rastrear» (DNT) y Global Privacy Control del navegador.</p>
+  <p><label><input type="checkbox" id="opt-analytics"> No contar mis visitas en este navegador</label></p>
+  <script>(function(){var c=document.getElementById("opt-analytics"),k="intimae_no_analytics";try{c.checked=localStorage.getItem(k)==="1";c.addEventListener("change",function(){if(c.checked)localStorage.setItem(k,"1");else localStorage.removeItem(k)})}catch(e){c.disabled=true}})()</script>
+  <p>{{BASE JURÍDICA Y NECESIDAD DE CONSENTIMIENTO PARA LA MEDICIÓN: revisar con abogado}}</p>
+
+  <h2>3. Si añadimos otras herramientas</h2>
   <p>Cualquier cookie o tecnología no necesaria (analítica, publicidad, redes sociales) solo se activará después de que la aceptes mediante un aviso con botones de aceptar y rechazar del mismo nivel. Por la naturaleza del sitio, no se instalarán herramientas que reciban el contenido de carritos o pedidos.</p>
 
-  <h2>3. Cómo eliminarlas</h2>
+  <h2>4. Cómo eliminarlas</h2>
   <p>Puedes borrar el almacenamiento local desde los ajustes de tu navegador. Si lo haces, se te pedirá de nuevo confirmar tu edad y se vaciará el carrito.</p>
 """)
 

@@ -14,6 +14,7 @@
   
   <script>(function(){var d=document.documentElement;d.classList.add("js");try{var l=localStorage.getItem("intimae_lang_manual")==="1"?localStorage.getItem("intimae_lang"):(navigator.language||"es").slice(0,2);if(l&&l!=="es")d.classList.add("i18n-pending")}catch(e){}setTimeout(function(){d.classList.remove("i18n-pending")},1800)})()</script>
   <script src="js/telemetry.js"></script>
+  <script src="js/analytics.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Saltar al contenido</a>
@@ -28,7 +29,7 @@
   <h1>Política de cookies y almacenamiento local</h1>
 
   <h2>1. Qué usamos hoy</h2>
-  <p>Este sitio no usa cookies de publicidad ni de seguimiento, ni servicios de analítica de terceros. Solo guarda en tu navegador, mediante almacenamiento local, los datos imprescindibles para que funcione lo que has pedido:</p>
+  <p>Este sitio no usa cookies de publicidad ni de seguimiento. Solo mide las visitas con un servicio sin cookies (ver el apartado de medición de visitas). Además guarda en tu navegador, mediante almacenamiento local, los datos imprescindibles para que funcione lo que has pedido:</p>
   <table>
     <tr><th>Nombre</th><th>Finalidad</th><th>Tipo</th><th>Duración</th></tr>
     <tr><td><code>intimae_age_ok</code></td><td>Recordar que has confirmado ser mayor de edad</td><td>Técnico, necesario</td><td>Hasta que borres los datos del navegador</td></tr>
@@ -42,10 +43,16 @@
   </table>
   <p>Al ser estrictamente necesarios para prestar el servicio que solicitas, no requieren consentimiento (art. 22.2 LSSI-CE).</p>
 
-  <h2>2. Si añadimos otras herramientas</h2>
+  <h2>2. Medición de visitas (Vercel Web Analytics)</h2>
+  <p>En el sitio publicado medimos las visitas con <strong>Vercel Web Analytics</strong>, un servicio de Vercel Inc. (EE. UU.) que <strong>no usa cookies ni guarda identificadores en tu dispositivo</strong>. Registra la página visitada, el país, el tipo de dispositivo, el sistema, el navegador y la página de procedencia, sin identificarte, para saber cuántas personas usan el sitio y qué páginas funcionan. No se mide en tu cuenta, en el panel de vendedor ni en la administración. Respetamos la señal «No rastrear» (DNT) y Global Privacy Control del navegador.</p>
+  <p><label><input type="checkbox" id="opt-analytics"> No contar mis visitas en este navegador</label></p>
+  <script>(function(){var c=document.getElementById("opt-analytics"),k="intimae_no_analytics";try{c.checked=localStorage.getItem(k)==="1";c.addEventListener("change",function(){if(c.checked)localStorage.setItem(k,"1");else localStorage.removeItem(k)})}catch(e){c.disabled=true}})()</script>
+  <p><mark class="todo">[BASE JURÍDICA Y NECESIDAD DE CONSENTIMIENTO PARA LA MEDICIÓN: revisar con abogado]</mark></p>
+
+  <h2>3. Si añadimos otras herramientas</h2>
   <p>Cualquier cookie o tecnología no necesaria (analítica, publicidad, redes sociales) solo se activará después de que la aceptes mediante un aviso con botones de aceptar y rechazar del mismo nivel. Por la naturaleza del sitio, no se instalarán herramientas que reciban el contenido de carritos o pedidos.</p>
 
-  <h2>3. Cómo eliminarlas</h2>
+  <h2>4. Cómo eliminarlas</h2>
   <p>Puedes borrar el almacenamiento local desde los ajustes de tu navegador. Si lo haces, se te pedirá de nuevo confirmar tu edad y se vaciará el carrito.</p>
 
   <nav class="legal__nav" aria-label="Otros documentos legales"><a href="legal.html">Índice</a><a href="aviso-legal.html">Aviso legal</a><a href="privacidad.html">Privacidad</a><a href="cookies.html">Cookies</a><a href="condiciones-compra.html">Condiciones de compra</a><a href="envios.html">Envíos y entrega</a><a href="iva.html">IVA e impuestos</a><a href="incidencias.html">Incidencias y reclamaciones</a><a href="normas.html">Normas y denuncias</a></nav>

@@ -86,7 +86,13 @@
 
   function tabStats(p) {
     var T = TEL.read(), st = T.stats, sel = U.select("range", [["7", "Últimos 7 días"], ["14", "Últimos 14 días"], ["30", "Últimos 30 días"], ["90", "Últimos 90 días"]], "14"), host = el("div");
-    p.appendChild(el("div", "demo-banner", "Estas estadísticas son las de **este navegador** (modo demostración: no se envía nada a ningún servidor), así que no incluyen a las personas a las que se lo enseñes desde otros dispositivos. Para ver las visitas reales hace falta un servidor o un servicio de analítica; ver la propuesta en el informe.".replace(/\*\*/g, "")));
+    p.appendChild(el("div", "demo-banner", "Las estadísticas de abajo son las de **este navegador** (modo demostración: no se envía nada a ningún servidor), así que no incluyen a las personas a las que se lo enseñes desde otros dispositivos. Para ver visitas reales usa Vercel Web Analytics (arriba).".replace(/\*\*/g, "")));
+    var va = el("div", "card stack"); va.style.marginBottom = "18px"; va.appendChild(el("h3", null, "Visitas reales: Vercel Web Analytics"));
+    add(va, el("p", "muted-s", "Mide a las personas que abren el sitio publicado, sin cookies (páginas, países, dispositivos, procedencia). El código ya está preparado; falta activarlo una vez en Vercel. Hasta entonces el script devuelve 404 y no se mide nada. Respeta «No rastrear» y la opción de desactivarlo en la página de cookies; no se mide en cuenta, panel ni administración."));
+    var st1 = el("div"); st1.appendChild(U.pill("warn", "Pendiente de activar en Vercel")); va.appendChild(st1);
+    var ol = el("ol", "history"); ["Abre el proyecto «intimae» en Vercel y entra en la pestaña Analytics.", "Pulsa «Enable» (Web Analytics). En el plan Hobby es gratuito y solo para uso no comercial.", "Vuelve a abrir el sitio publicado (no vale la versión local): los primeros datos tardan unos minutos."].forEach(function (t0) { ol.appendChild(el("li", null, t0)); }); va.appendChild(ol);
+    var la = el("a", "link", "Abrir Analytics en Vercel"); la.href = "https://vercel.com/elproyecto91s-projects/intimae/analytics"; la.target = "_blank"; la.rel = "noopener noreferrer"; va.appendChild(la);
+    p.appendChild(va);
     add(p, U.field("Periodo", sel), host);
     function paint() {
       U.clear(host); var n = +sel.value, ds = days(n), lab = function (d) { return d.slice(8) + "/" + d.slice(5, 7); };
