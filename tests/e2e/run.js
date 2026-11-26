@@ -1,7 +1,7 @@
 // Prueba de extremo a extremo del modo demostración: node tests/e2e/run.js
 // Cubre tienda, cuenta, vendedor, administración, incidencias, tiendas públicas, filtros, idiomas, móvil y cabeceras CSP.
 const { chromium } = require('playwright');
-const { R, SHOT, ROOT, ok, serve, finish, fs, path } = require('./lib');
+const L = require('./lib'); const { R, SHOT, ROOT, ok, serve, finish, fs, path } = L;
 const PNG = fs.readFileSync(path.join(__dirname, 'muestra.png'));
 const shot = (p, n) => p.screenshot({ path: SHOT + n });
 
@@ -214,6 +214,35 @@ const shot = (p, n) => p.screenshot({ path: SHOT + n });
   await store(); ok('catálogo vacío: invitación a vendedores fundadores', await p.locator('#founder-empty').isVisible() && /vendedor fundador/i.test(await p.locator('#founder-empty').innerText()));
   await p.evaluate(() => document.querySelector('#catalogo').scrollIntoView()); await p.waitForTimeout(300); await shot(p, '40-catalogo-vacio-fundadores.png');
   await p.evaluate(() => { const d = JSON.parse(localStorage.getItem('intimae_db_v1')); d.settings.showSamples = true; d.listings.forEach(l => { if (!l.seed && l.status === 'paused') l.status = 'active'; }); localStorage.setItem('intimae_db_v1', JSON.stringify(d)); });
+
+
+  // ================= 7b. Telemetría: estadísticas y errores
+  await adminLogin(); await adminTab('resumen');
+  ok('resumen: requiere atención, comunidad y pedidos', /requiere atención/i.test(await p.locator('#panel').innerText()) && /comunidad y catálogo/i.test(await p.locator('#panel').innerText()) && /pedidos y dinero/i.test(await p.locator('#panel').innerText()));
+  await shot(p, '42-admin-resumen.png');
+  await adminTab('estadisticas'); await p.waitForSelector('#panel svg.chart');
+  const sp = await p.locator('#panel').innerText();
+  ok('estadísticas: embudo, páginas, dispositivos, búsquedas y rendimiento', /embudo de compra/i.test(sp) && /páginas más vistas/i.test(sp) && /dispositivos/i.test(sp) && /búsquedas más frecuentes/i.test(sp) && /rendimiento/i.test(sp));
+  ok('estadísticas: 6 gráficos con datos', (await p.locator('#panel svg.chart').count()) === 6);
+  const pv = await p.evaluate(() => { const s = TEL.read().stats, k = Object.keys(s.days); return k.reduce((a, d) => a + (s.days[d].pv || 0), 0); }); ok('se han contado páginas vistas', pv > 10, pv);
+  const ord = await p.evaluate(() => { const s = TEL.read().stats; return Object.keys(s.days).reduce((a, d) => a + (s.days[d]['order.created'] || 0), 0); }); ok('se han contado pedidos', ord >= 3, ord);
+  await shot(p, '43-admin-estadisticas.png');
+  // provocar los tres tipos de fallo en otra página y comprobar que el panel los muestra
+  const ep = await ctx.newPage();
+  await ep.goto(R + 'index.html'); await ep.waitForSelector('#grid', { state: 'attached' });
+  await ep.evaluate(() => { setTimeout(() => { throw new Error('Fallo provocado por la prueba'); }, 0); try { new Function('return 1'); } catch (e) {} const i = document.createElement('img'); i.src = '/no-existe.png'; document.body.appendChild(i); Promise.reject(new Error('Promesa rechazada de prueba')); });
+  await ep.waitForTimeout(600); await ep.close(); L.errs.length = 0;
+  await adminLogin(); await adminTab('errores');
+  const et = await p.locator('#panel').innerText();
+  ok('errores: JavaScript, promesa, recurso y CSP registrados', /Fallo provocado por la prueba/.test(et) && /Promesa rechazada de prueba/.test(et) && /no-existe\.png/.test(et) && /CSP/.test(et), et.slice(0, 400));
+  await shot(p, '44-admin-errores.png');
+  await p.getByRole('button', { name: 'Marcar como resuelto' }).first().click(); await p.waitForTimeout(200);
+  ok('error marcado como resuelto', await p.evaluate(() => TEL.read().errors.list.some(e => e.status === 'resolved')));
+  await p.getByRole('button', { name: 'Probar la captura' }).click(); await p.waitForTimeout(700); L.errs.length = 0;
+  ok('"Probar la captura" genera un error de prueba', /Error de prueba generado/.test(await p.locator('#panel').innerText()));
+  const [edl] = await Promise.all([p.waitForEvent('download'), p.getByRole('button', { name: 'Descargar errores (JSON)' }).click()]);
+  ok('descarga de errores en JSON', Array.isArray(JSON.parse(fs.readFileSync(await edl.path(), 'utf8'))));
+  await p.evaluate(() => TEL.clearErrors());
 
   // ================= 8. Idiomas
   await p.evaluate(() => { localStorage.setItem('intimae_lang', 'fr'); localStorage.setItem('intimae_lang_manual', '1'); });

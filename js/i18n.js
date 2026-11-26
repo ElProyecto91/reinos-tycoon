@@ -112,7 +112,7 @@
       var o = document.createElement("option"); o.value = c; o.textContent = NATIVE[c]; sel.appendChild(o);
     });
     sel.value = lang;
-    sel.addEventListener("change", function () { set(sel.value, true); });
+    sel.addEventListener("change", function () { try { if (window.TEL) window.TEL.track("lang.change"); } catch (e) {} set(sel.value, true); });
     selects.push(sel);
   }
 

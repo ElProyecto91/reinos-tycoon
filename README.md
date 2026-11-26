@@ -10,7 +10,8 @@ Mercado europeo de prendas íntimas de segunda mano entre adultos. Web estática
 | `cuenta/` | Cuenta de comprador: pedidos, favoritos, mensajes, verificación de edad (simulada), datos y privacidad |
 | `vendedores/` | Área de vendedores, separada: portada, solicitud, condiciones, guía de impuestos |
 | `vendedores/panel/` | Panel de vendedor: anuncios con fotos, pedidos y envíos, cobros, mensajes, datos fiscales (DAC7) |
-| `admin/` | Administración: moderación, denuncias, vendedores, pedidos, DAC7, ajustes, auditoría |
+| `admin/` | Administración: resumen y alertas, estadísticas, errores, moderación, denuncias, incidencias, vendedores, pedidos, DAC7, ajustes, avisos, auditoría |
+| `js/telemetry.js` | Captura errores (JS, promesas, recursos, CSP) y contadores técnicos anónimos en el navegador; los lee el panel de administración |
 | `js/core.js` | Capa de datos del **modo demostración** (almacenamiento local del navegador) con la API que sustituirá un backend real |
 | `js/ui.js`, `js/cuenta.js`, `js/panel.js`, `js/admin.js` | Interfaz de cuenta, panel y administración |
 | `tienda/` | Tienda pública de cada vendedor: distintivos de confianza, piezas, valoraciones, seguir, contactar, denunciar y bloquear |

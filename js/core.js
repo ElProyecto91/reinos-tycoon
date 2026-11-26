@@ -25,6 +25,7 @@
   var db = null, listeners = [], memoryOnly = false;
 
   /* ---------- utilidades ---------- */
+  function T(n, v) { try { if (window.TEL) window.TEL.track(n, v); } catch (e) {} }
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function now() { return Date.now(); }
   function today() { return new Date().toISOString().slice(0, 10); }
@@ -109,7 +110,7 @@
     if (changed) commit();
   }
   function move(o, status, by, note) { o.status = status; o.history.push({ at: now(), status: status, by: by, note: note || "" }); }
-  function release(o, by) { var res = pay.provider.payout(o.sellerNet, o.no); o.releasedAt = now(); o.payoutRef = res.ref; move(o, "released", by, "liquidado al vendedor"); log(by, "liquidación", o.no); note("s:" + o.seller, "Pedido " + o.no + " liquidado: " + o.sellerNet.toFixed(2) + " €", "cobros"); }
+  function release(o, by) { var res = pay.provider.payout(o.sellerNet, o.no); o.releasedAt = now(); o.payoutRef = res.ref; move(o, "released", by, "liquidado al vendedor"); log(by, "liquidación", o.no); T("order.released"); T("payout.cents", Math.round(o.sellerNet * 100)); note("s:" + o.seller, "Pedido " + o.no + " liquidado: " + o.sellerNet.toFixed(2) + " €", "cobros"); }
 
   /* ---------- pagos (proveedor intercambiable) ---------- */
   var pay = {
@@ -149,7 +150,7 @@
       var salt = newSalt();
       return sha(salt + ":" + o.pass).then(function (h) {
         var u = { id: "u" + (++db.seq.user), email: email, name: cleanText(o.name, 60), addr: "", country: "", salt: salt, hash: h, ageVerified: null, createdAt: now() };
-        db.users.push(u); db.acceptances.push({ who: "comprador " + u.id, doc: "condiciones de compra y privacidad", version: "borrador 2026-11", at: now() }); log("comprador " + u.id, "alta"); commit();
+        db.users.push(u); db.acceptances.push({ who: "comprador " + u.id, doc: "condiciones de compra y privacidad", version: "borrador 2026-11", at: now() }); log("comprador " + u.id, "alta"); T("signup.buyer"); commit();
         var s = sess(); s.buyer = u.id; setSess(s); listeners.forEach(function (fn) { fn(); }); return u;
       });
     },
@@ -211,7 +212,7 @@
           type: pro ? "profesional" : "particular", vat: pro ? (o.regime === "margin" ? "margin" : "standard") : "none",
           vatId: pro ? cleanText(o.vatId, 20).toUpperCase() : "", about: cleanText(o.about, 400), since: new Date().getFullYear(),
           status: "pending", fiscal: {}, createdAt: now() };
-        db.sellers.push(s); db.acceptances.push({ who: "vendedor " + s.id, doc: "condiciones para vendedores", version: "borrador 2026-11", at: now() }); log("vendedor " + s.id, "solicitud", alias); commit();
+        db.sellers.push(s); db.acceptances.push({ who: "vendedor " + s.id, doc: "condiciones para vendedores", version: "borrador 2026-11", at: now() }); log("vendedor " + s.id, "solicitud", alias); T("signup.seller"); commit();
         var ss = sess(); ss.seller = s.id; setSess(ss); return s;
       });
     },
@@ -265,7 +266,7 @@
       hist(l, draft ? "creado como borrador" : "enviado a revisión");
       db.listings.push(l);
       if (!commit()) { db.listings.pop(); db.seq.listing--; sync(); fail("storage", "No hay espacio en el navegador: usa fotos más pequeñas."); }
-      log("vendedor " + sellerId, "anuncio creado", l.ref); commit(); return l;
+      log("vendedor " + sellerId, "anuncio creado", l.ref); T("listing.created"); commit(); return l;
     },
     update: function (sellerId, id, d, draft) {
       var l = find(db.listings, function (x) { return x.id === id && x.seller === sellerId; });
@@ -339,7 +340,7 @@
           addr: { name: cleanText(addr.name, 60), line: cleanText(addr.line, 300), country: dest }, status: "paid", history: [], createdAt: now() };
         move(o, "paid", "comprador", "pago recibido");
         by[sid].forEach(function (l) { l.status = "sold"; });
-        db.orders.push(o); out.push(o); log("comprador " + u.id, "pedido", no); note("s:" + sid, "Nuevo pedido " + no + ": prepáralo y márcalo como enviado", "pedidos");
+        db.orders.push(o); out.push(o); log("comprador " + u.id, "pedido", no); T("order.created"); T("order.cents", Math.round(total * 100)); T("commission.cents", Math.round(comm * 100)); note("s:" + sid, "Nuevo pedido " + no + ": prepáralo y márcalo como enviado", "pedidos");
       });
       commit(); return out;
     },
@@ -350,7 +351,7 @@
       var o = orders.get(id); if (!o || o.seller !== sellerId || o.status !== "paid") fail("state", "El pedido no se puede marcar como enviado.");
       carrier = cleanText(carrier, 40); tracking = cleanText(tracking, 60);
       if (!carrier || !tracking) fail("tracking", "Indica transportista y número de seguimiento.");
-      o.carrier = carrier; o.tracking = tracking; o.shippedAt = now(); move(o, "shipped", "vendedor", carrier + " " + tracking); note("b:" + o.buyer, "Tu pedido " + o.no + " ha sido enviado (" + carrier + " " + tracking + ")", "pedidos"); commit(); return o;
+      o.carrier = carrier; o.tracking = tracking; o.shippedAt = now(); move(o, "shipped", "vendedor", carrier + " " + tracking); T("order.shipped"); note("b:" + o.buyer, "Tu pedido " + o.no + " ha sido enviado (" + carrier + " " + tracking + ")", "pedidos"); commit(); return o;
     },
     // Solo antes del envío. No existen devoluciones ni reclamaciones en Intimae.
     cancel: function (role, actorId, id) {
@@ -358,11 +359,11 @@
       if ((role === "buyer" && o.buyer !== actorId) || (role === "seller" && o.seller !== actorId)) fail("auth");
       var rf = pay.provider.refund(o.total, o.no); o.refundRef = rf.ref; move(o, "cancelled", role, "cancelado antes del envío; importe devuelto íntegramente");
       o.items.forEach(function (it) { var l = listing.get(it.listing); if (l && l.status === "sold") l.status = "active"; });
-      log(role + " " + actorId, "pedido cancelado", o.no); note(role === "buyer" ? "s:" + o.seller : "b:" + o.buyer, "El pedido " + o.no + " se ha cancelado y el importe se devuelve íntegro", role === "buyer" ? "pedidos" : "pedidos"); commit(); return o;
+      log(role + " " + actorId, "pedido cancelado", o.no); T("order.cancelled"); note(role === "buyer" ? "s:" + o.seller : "b:" + o.buyer, "El pedido " + o.no + " se ha cancelado y el importe se devuelve íntegro", role === "buyer" ? "pedidos" : "pedidos"); commit(); return o;
     },
     confirmReceipt: function (buyerId, id) {
       var o = orders.get(id); if (!o || o.buyer !== buyerId || o.status !== "shipped") fail("state", "El pedido no está en camino.");
-      o.deliveredAt = now(); move(o, "delivered", "comprador", "recepción confirmada"); note("s:" + o.seller, "El comprador ha confirmado la recepción del pedido " + o.no, "pedidos"); commit(); return o;
+      o.deliveredAt = now(); move(o, "delivered", "comprador", "recepción confirmada"); T("order.delivered"); note("s:" + o.seller, "El comprador ha confirmado la recepción del pedido " + o.no, "pedidos"); commit(); return o;
     }
   };
 
@@ -377,7 +378,7 @@
       if (block.has(buyerId, l.seller)) fail("blockedUser", "Has bloqueado a este vendedor.");
       var t = find(db.threads, function (x) { return x.buyer === buyerId && x.listing === l.id; });
       if (!t) { t = { id: ++db.seq.thread, listing: l.id, listingTitle: l.title, buyer: buyerId, seller: l.seller, msgs: [], readB: 0, readS: 0 }; db.threads.push(t); }
-      t.msgs.push({ from: "b", text: text, at: now() }); t.readB = now(); note("s:" + t.seller, "Nuevo mensaje sobre «" + t.listingTitle + "»", "mensajes"); commit(); return t;
+      t.msgs.push({ from: "b", text: text, at: now() }); t.readB = now(); T("message.sent"); note("s:" + t.seller, "Nuevo mensaje sobre «" + t.listingTitle + "»", "mensajes"); commit(); return t;
     },
     reply: function (threadId, role, text) {
       var t = find(db.threads, function (x) { return x.id === +threadId; }); if (!t) fail("state");
@@ -400,7 +401,7 @@
       var o = orders.get(orderId); if (!o || o.buyer !== buyerId || ["delivered", "released"].indexOf(o.status) === -1) fail("state", "Solo puedes valorar pedidos recibidos.");
       if (find(db.reviews, function (r) { return r.order === o.id; })) fail("exists", "Ya has valorado este pedido.");
       rating = Math.round(+rating); if (!(rating >= 1 && rating <= 5)) fail("rating", "La valoración va de 1 a 5.");
-      db.reviews.push({ id: ++db.seq.review, order: o.id, buyer: buyerId, seller: o.seller, rating: rating, text: cleanText(text, 300), at: now() }); note("s:" + o.seller, "Nueva valoración de " + rating + " estrellas en el pedido " + o.no, "valoraciones"); commit();
+      db.reviews.push({ id: ++db.seq.review, order: o.id, buyer: buyerId, seller: o.seller, rating: rating, text: cleanText(text, 300), at: now() }); T("review.created"); note("s:" + o.seller, "Nueva valoración de " + rating + " estrellas en el pedido " + o.no, "valoraciones"); commit();
     },
     reply: function (sellerId, reviewId, text) {
       var r = find(db.reviews, function (x) { return x.id === +reviewId && x.seller === sellerId; }); if (!r) fail("state");
@@ -414,7 +415,7 @@
     has: function (buyerId, id) { return !!find(db.favs, function (f) { return f.buyer === buyerId && f.listing === id; }); },
     toggle: function (buyerId, id) {
       var f = find(db.favs, function (x) { return x.buyer === buyerId && x.listing === id; });
-      if (f) db.favs.splice(db.favs.indexOf(f), 1); else db.favs.push({ buyer: buyerId, listing: id });
+      if (f) db.favs.splice(db.favs.indexOf(f), 1); else db.favs.push({ buyer: buyerId, listing: id }); T(f ? "fav.removed" : "fav.added");
       commit(); return !f;
     },
     list: function (buyerId) { return db.favs.filter(function (f) { return f.buyer === buyerId; }).map(function (f) { return listing.get(f.listing); }).filter(Boolean); }
@@ -431,7 +432,7 @@
       if (!reason) fail("reason", "Indica el motivo.");
       var r = { id: ++db.seq.report, no: "DN-" + pad(db.seq.report, 5), target: l ? "listing" : "seller", listing: l ? l.id : null, listingRef: l ? l.ref : "", seller: l ? l.seller : sl.id,
         reason: reason, text: text, email: cleanText(o.email, 120), status: "open", at: now() };
-      db.reports.push(r); log("denunciante", "denuncia", r.no); note("a", "Nueva denuncia " + r.no, "denuncias"); commit(); return r;
+      db.reports.push(r); log("denunciante", "denuncia", r.no); T("report.created"); note("a", "Nueva denuncia " + r.no, "denuncias"); commit(); return r;
     }
   };
 
@@ -441,16 +442,16 @@
     login: function (pass) { return sha(ADMIN_SALT + ":" + pass).then(function (h) { if (h !== ADMIN_HASH) fail("auth", "Contraseña incorrecta."); var s = sess(); s.admin = true; setSess(s); }); },
     logout: function () { var s = sess(); delete s.admin; setSess(s); },
     need: function () { if (!admin.isIn()) fail("auth", "Acceso restringido."); },
-    approve: function (id) { admin.need(); var l = listing.get(id); if (!l || l.status !== "pending") fail("state"); l.status = "active"; l.moderation = { status: "approved", at: now() }; hist(l, "aprobado"); log("admin", "anuncio aprobado", l.ref);
+    approve: function (id) { admin.need(); var l = listing.get(id); if (!l || l.status !== "pending") fail("state"); l.status = "active"; l.moderation = { status: "approved", at: now() }; hist(l, "aprobado"); log("admin", "anuncio aprobado", l.ref); T("listing.approved");
       note("s:" + l.seller, "Tu anuncio N.º " + l.ref + " ha sido aprobado y ya está publicado", "anuncios");
       db.follows.forEach(function (f) { if (f.seller === l.seller) note("b:" + f.buyer, "Novedad de una tienda que sigues: «" + l.title + "»", "siguiendo"); });
       db.searches.forEach(function (q) { if (matchSearch(l, q)) note("b:" + q.buyer, "Coincide con tu búsqueda guardada «" + q.label + "»: «" + l.title + "»", "siguiendo"); });
       commit(); },
-    reject: function (id, reason) { admin.need(); var l = listing.get(id); if (!l || l.status !== "pending") fail("state"); reason = cleanText(reason, 300); if (!reason) fail("reason", "Indica el motivo."); l.status = "rejected"; l.moderation = { status: "rejected", reason: reason, at: now() }; hist(l, "rechazado"); log("admin", "anuncio rechazado", l.ref); note("s:" + l.seller, "Tu anuncio N.º " + l.ref + " ha sido rechazado: " + reason, "resumen"); commit(); },
+    reject: function (id, reason) { admin.need(); var l = listing.get(id); if (!l || l.status !== "pending") fail("state"); reason = cleanText(reason, 300); if (!reason) fail("reason", "Indica el motivo."); l.status = "rejected"; l.moderation = { status: "rejected", reason: reason, at: now() }; hist(l, "rechazado"); log("admin", "anuncio rechazado", l.ref); T("listing.rejected"); note("s:" + l.seller, "Tu anuncio N.º " + l.ref + " ha sido rechazado: " + reason, "resumen"); commit(); },
     verifySeller: function (id) {
       admin.need(); var s = find(db.sellers, function (x) { return x.id === id; });
       if (!s || s.seed) fail("state"); if (!s.fiscal || !s.fiscal.complete) fail("fiscal", "Faltan los datos fiscales (DAC7) del vendedor.");
-      s.status = "verified"; log("admin", "vendedor verificado", s.alias); note("s:" + s.id, "Tu cuenta ha sido verificada: ya puedes publicar", "anuncios"); commit();
+      s.status = "verified"; log("admin", "vendedor verificado", s.alias); T("seller.verified"); note("s:" + s.id, "Tu cuenta ha sido verificada: ya puedes publicar", "anuncios"); commit();
     },
     setSellerStatus: function (id, status) {
       admin.need(); var s = find(db.sellers, function (x) { return x.id === id; }); if (!s || s.seed) fail("state");
@@ -478,7 +479,7 @@
       else fail("decision", "Decisión no válida.");
       inc.status = "resolved"; inc.resolution = { decision: decision, amount: o.refundAmount || 0, statement: statement, at: now() };
       inc.messages.push({ from: "a", text: "Resolución: " + ({ refund: "reembolso total", partial: "reembolso parcial", reject: "incidencia rechazada" })[decision] + ". " + statement, at: now() });
-      note("b:" + o.buyer, "Incidencia " + inc.no + " resuelta", "pedidos"); note("s:" + o.seller, "Incidencia " + inc.no + " resuelta", "incidencias"); log("admin", "incidencia " + decision, inc.no); commit();
+      note("b:" + o.buyer, "Incidencia " + inc.no + " resuelta", "pedidos"); note("s:" + o.seller, "Incidencia " + inc.no + " resuelta", "incidencias"); log("admin", "incidencia " + decision, inc.no); T("incident.resolved." + decision); if (o.refundAmount) T("refund.cents", Math.round(o.refundAmount * 100)); commit();
     },
     forceRelease: function (id) { admin.need(); var o = orders.get(id); if (!o || ["delivered"].indexOf(o.status) === -1) fail("state", "Solo se puede liberar un pedido entregado."); release(o, "admin"); commit(); },
     // Para los vendedores de demostración, que no tienen panel.
@@ -523,7 +524,7 @@
         status: "open", messages: [{ from: "b", text: text, at: now() }], at: now(), prevStatus: o.status };
       db.incidents.push(inc); move(o, "incident", "comprador", reason);
       note("s:" + o.seller, "Incidencia " + inc.no + " abierta en el pedido " + o.no + ": responde en " + db.settings.incidentReplyDays + " días", "incidencias");
-      log("comprador " + buyerId, "incidencia abierta", inc.no); commit(); return inc;
+      log("comprador " + buyerId, "incidencia abierta", inc.no); T("incident.opened"); T("incident.reason." + reason); commit(); return inc;
     },
     reply: function (role, actorId, id, text) {
       var inc = incident.get(id); if (!inc || inc.status === "resolved") fail("state", "La incidencia ya está resuelta.");
@@ -539,7 +540,7 @@
   /* ---------- seguir tiendas, bloqueos y búsquedas guardadas ---------- */
   var follow = {
     has: function (b, s) { return !!find(db.follows, function (f) { return f.buyer === b && f.seller === s; }); },
-    toggle: function (b, s) { var f = find(db.follows, function (x) { return x.buyer === b && x.seller === s; }); if (f) db.follows.splice(db.follows.indexOf(f), 1); else db.follows.push({ buyer: b, seller: s }); commit(); return !f; },
+    toggle: function (b, s) { var f = find(db.follows, function (x) { return x.buyer === b && x.seller === s; }); if (f) db.follows.splice(db.follows.indexOf(f), 1); else db.follows.push({ buyer: b, seller: s }); T(f ? "follow.removed" : "follow.added"); commit(); return !f; },
     list: function (b) { return db.follows.filter(function (f) { return f.buyer === b; }).map(function (f) { return find(db.sellers, function (s) { return s.id === f.seller; }); }).filter(Boolean); },
     count: function (s) { return db.follows.filter(function (f) { return f.seller === s; }).length; }
   };
@@ -561,7 +562,7 @@
       if (!q.q && !q.type && !q.size && !q.color && !q.pmin && !q.pmax && !q.country) fail("empty", "Aplica algún filtro o escribe algo antes de guardar la búsqueda.");
       q.label = [q.q, q.type, q.size, q.color, q.pmax ? "≤ " + q.pmax + " €" : "", q.country].filter(Boolean).join(" · ");
       if (db.searches.filter(function (x) { return x.buyer === b; }).length >= 10) fail("limit", "Puedes guardar hasta 10 búsquedas.");
-      db.searches.push(q); commit(); return q;
+      db.searches.push(q); T("search.saved"); commit(); return q;
     },
     list: function (b) { return db.searches.filter(function (x) { return x.buyer === b; }); },
     remove: function (b, id) { db.searches = db.searches.filter(function (x) { return !(x.id === +id && x.buyer === b); }); commit(); }

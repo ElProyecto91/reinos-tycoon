@@ -50,7 +50,7 @@
     gate.showModal();
     gate.addEventListener("cancel", function (e) { e.preventDefault(); });
   }
-  $("#ag-yes").addEventListener("click", function () { store.set("intimae_age_ok", "1"); gate.close(); });
+  $("#ag-yes").addEventListener("click", function () { store.set("intimae_age_ok", "1"); TEL.track("agegate.ok"); gate.close(); });
 
   /* ---------- País de entrega e idioma ---------- */
   var destSels = [$("#dest"), $("#dest-menu")];
@@ -77,7 +77,7 @@
   }
   destSels.forEach(function (sel) {
     sel.addEventListener("change", function () {
-      dest = sel.value;
+      dest = sel.value; TEL.track("dest." + dest);
       store.set("intimae_dest", dest);
       // El idioma sigue al país de entrega, salvo que la persona ya haya elegido uno
       I18N.suggestForCountry(dest).then(renderAll);
@@ -215,7 +215,14 @@
     empty.hidden = list.length > 0 || none; $("#founder-empty").hidden = !none; grid.hidden = none;
     countEl.textContent = none ? "" : plural("count", list.length);
   }
-  Object.keys(f).forEach(function (k) { f[k].addEventListener(k === "q" || k === "pmin" || k === "pmax" ? "input" : "change", function () { renderGrid(); renderCats(); }); });
+  var qTimer;
+  Object.keys(f).forEach(function (k) {
+    f[k].addEventListener(k === "q" || k === "pmin" || k === "pmax" ? "input" : "change", function () {
+      renderGrid(); renderCats();
+      if (k === "q") { clearTimeout(qTimer); qTimer = setTimeout(function () { var found = grid.children.length > 0; TEL.track("search"); TEL.term(f.q.value, found); if (f.q.value.trim().length > 1 && !found) TEL.track("search.zero"); }, 800); }
+      else TEL.track("filter." + k);
+    });
+  });
   $("#save-search").addEventListener("click", function () {
     var u = user(), m = $("#search-msg");
     if (!u) { m.className = "msg err"; m.textContent = t("search.login"); return; }
@@ -271,7 +278,7 @@
 
     $("#pdp-add").disabled = !sh.ok;
   }
-  function openPdp(p) { pdpCurrent = p; INT.listing.view(p.id); fillPdp(p); $("#pdp-askbox").hidden = true; $("#ask-msg").textContent = ""; pdp.showModal(); }
+  function openPdp(p) { pdpCurrent = p; TEL.track("pdp.open"); INT.listing.view(p.id); fillPdp(p); $("#pdp-askbox").hidden = true; $("#ask-msg").textContent = ""; pdp.showModal(); }
   $("#pdp-fav").addEventListener("click", function () { if (pdpCurrent) { toggleFav(pdpCurrent); if (user()) fillPdp(pdpCurrent); } });
 
   // Preguntar al vendedor
@@ -312,11 +319,11 @@
   var cart = [];
   try { cart = JSON.parse(store.get("intimae_cart") || "[]").filter(function (id) { return !!byId(id); }); } catch (e) { cart = []; }
   var cartDlg = $("#cart");
-  $("#open-cart").addEventListener("click", function () { renderCart(); cartDlg.showModal(); });
+  $("#open-cart").addEventListener("click", function () { TEL.track("cart.open"); renderCart(); cartDlg.showModal(); });
 
   var lastOrder = "";
   function addToCart(id, open) {
-    lastOrder = "";
+    lastOrder = ""; TEL.track("cart.add");
     if (cart.indexOf(id) === -1) cart.push(id);
     saveCart();
     if (pdp.open) pdp.close();
@@ -403,7 +410,7 @@
 
   $("#order-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    var form = e.target, r = calc(), u = user();
+    var form = e.target, r = calc(), u = user(); TEL.track("checkout.submit");
     if (!u) return setMsg(t("cart.login"), true);
     if (!u.ageVerified) return setMsg(t("cart.age"), true);
     if (!cart.length) return setMsg(t("msg.empty"), true);
@@ -415,12 +422,13 @@
     var made;
     try { made = INT.orders.create(u.id, cart.slice(), dest, { name: d.get("name"), line: d.get("addr") }); }
     catch (err) {
+      TEL.track("checkout.fail." + (err.code || "otro"));
       var k = { stock: "msg.stock", age: "cart.age", addr: "msg.addr", auth: "cart.login", ship: "msg.off", dest: "msg.off" }[err.code];
       return setMsg(k ? t(k) : err.message, true);
     }
     if (note) { try { INT.msg.start(u.id, made[0].items[0].listing, "[" + made[0].no + "] " + note); } catch (x) {} }
     INT.buyer.update({ name: d.get("name"), addr: d.get("addr"), country: dest });
-    lastOrder = made.map(function (o) { return o.no; }).join(", ");
+    TEL.track("order.ok"); lastOrder = made.map(function (o) { return o.no; }).join(", ");
     cart = []; form.reset(); saveCart(); setMsg("");
   });
 

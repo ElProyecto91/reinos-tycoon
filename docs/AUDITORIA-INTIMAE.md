@@ -242,3 +242,17 @@ Se han añadido, siempre en modo demostración: tienda pública por vendedor con
 **Las muestras se mantienen** para enseñar el proyecto, etiquetadas como «Muestra» y con banner de demostración; se pueden ocultar desde Ajustes.
 
 **Sigue siendo una maqueta:** sin servidor real, sin pagos reales, sin verificación real de edad ni identidad, y el panel de administración sin protección. El repositorio es público.
+
+
+---
+
+## 14. Estadísticas y errores (26-11-2026)
+
+**Qué hay [Verificado con pruebas]:** `/admin/` tiene ahora **Resumen** (alertas operativas: moderación atrasada, pedidos fuera de plazo, incidencias sin respuesta, verificaciones pendientes, errores, uso del almacenamiento; KPI de comunidad, catálogo, pedidos y dinero), **Estadísticas** (6 gráficos por día, embudo de compra, páginas, dispositivos, idiomas, navegadores, países de envío, búsquedas y búsquedas sin resultado, fricción de validación, motivos de incidencia, rendimiento LCP/CLS/carga, exportación JSON) y **Errores** (agrupados por causa, con traza, páginas afectadas, estado, regresiones y exportación). `js/telemetry.js` está cargado en todas las páginas.
+
+**Límite importante [Certeza]:** todo se guarda en el navegador donde se abre la web. **No incluye a las personas a las que enseñes el proyecto desde otros dispositivos.** Para estadísticas y errores de visitantes reales hacen falta, o un servidor propio (Supabase), o un servicio externo.
+
+**Opciones para visitantes reales (decisión pendiente):**
+1. Vercel Web Analytics (sin cookies; visitas, páginas, países, dispositivos) y Speed Insights: se activan en el panel de Vercel y requieren añadir un script; obligaría a actualizar la política de cookies y privacidad. El plan Hobby es solo para uso no comercial. **[Probable]**
+2. Sentry (errores), con plan gratuito limitado: requiere cuenta y ampliar la CSP.
+3. Recogida propia en Supabase cuando exista el backend: más control de privacidad y de coste, más trabajo.

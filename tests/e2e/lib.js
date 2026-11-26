@@ -25,5 +25,5 @@ async function serve(ctx) {
     pg.on('dialog', d => d.accept(d.type() === 'prompt' ? 'Motivo de prueba suficiente' : undefined));
   });
 }
-function finish(label) { console.log('\nERRORES DE CONSOLA:', errs); console.log(fails ? 'FALLOS: ' + fails : 'TODO OK (' + label + ')'); return fails; }
+function finish(label) { console.log('\nERRORES DE CONSOLA:', errs); if (errs.length) fails++; console.log(fails ? 'FALLOS: ' + fails : 'TODO OK (' + label + ')'); return fails; }
 module.exports = { R, ROOT, SHOT, TMP, ok, serve, finish, errs, fs, path };

@@ -66,6 +66,7 @@ def page(fname, title, body, zone="buyer"):
   <link rel="stylesheet" href="{pfx}css/legal.css">
   {extra_css}
   <script>(function(){{var d=document.documentElement;d.classList.add("js");try{{var l=localStorage.getItem("intimae_lang_manual")==="1"?localStorage.getItem("intimae_lang"):(navigator.language||"es").slice(0,2);if(l&&l!=="es")d.classList.add("i18n-pending")}}catch(e){{}}setTimeout(function(){{d.classList.remove("i18n-pending")}},1800)}})()</script>
+  <script src="{pfx}js/telemetry.js"></script>
 </head>
 <body{body_class}>
 <a class="skip" href="#main">Saltar al contenido</a>
@@ -128,7 +129,7 @@ page("aviso-legal.html", "Aviso legal", """
 
 # ---------------------------------------------------------------- PRIVACIDAD
 page("privacidad.html", "Política de privacidad", """
-  <div class="box"><p><strong>Estado actual: demostración.</strong> En la versión de demostración, las cuentas, los pedidos, los mensajes, los favoritos y los datos fiscales se guardan únicamente en el almacenamiento local de tu navegador. No se envían a ningún servidor ni a terceros, la verificación de edad es simulada y no se procesan pagos reales. Lo que sigue describe el tratamiento previsto cuando el servicio funcione con servidores reales.</p></div>
+  <div class="box"><p><strong>Estado actual: demostración.</strong> En la versión de demostración, las cuentas, los pedidos, los mensajes, los favoritos y los datos fiscales se guardan únicamente en el almacenamiento local de tu navegador. No se envían a ningún servidor ni a terceros, la verificación de edad es simulada y no se procesan pagos reales. Los contadores técnicos y el registro de errores también se guardan solo en tu navegador, sin datos personales. Lo que sigue describe el tratamiento previsto cuando el servicio funcione con servidores reales.</p></div>
 
   <h2>1. Responsable del tratamiento</h2>
   <p>{{TITULAR}}, con NIF {{NIF/CIF}} y domicilio en {{DOMICILIO COMPLETO}}. Contacto: {{EMAIL DE CONTACTO}}. Delegado de protección de datos (si procede): {{DPD o "no designado"}}.</p>
@@ -172,7 +173,7 @@ page("privacidad.html", "Política de privacidad", """
 # ---------------------------------------------------------------- COOKIES
 page("cookies.html", "Política de cookies y almacenamiento local", """
   <h2>1. Qué usamos hoy</h2>
-  <p>Este sitio no usa cookies de analítica, publicidad ni seguimiento. Solo guarda en tu navegador, mediante almacenamiento local, los datos imprescindibles para que funcione lo que has pedido:</p>
+  <p>Este sitio no usa cookies de publicidad ni de seguimiento, ni servicios de analítica de terceros. Solo guarda en tu navegador, mediante almacenamiento local, los datos imprescindibles para que funcione lo que has pedido:</p>
   <table>
     <tr><th>Nombre</th><th>Finalidad</th><th>Tipo</th><th>Duración</th></tr>
     <tr><td><code>intimae_age_ok</code></td><td>Recordar que has confirmado ser mayor de edad</td><td>Técnico, necesario</td><td>Hasta que borres los datos del navegador</td></tr>
@@ -180,6 +181,8 @@ page("cookies.html", "Política de cookies y almacenamiento local", """
     <tr><td><code>intimae_lang</code>, <code>intimae_lang_manual</code></td><td>Recordar tu idioma y si lo has elegido tú</td><td>Preferencia, necesaria</td><td>Hasta que borres los datos del navegador</td></tr>
     <tr><td><code>intimae_dest</code></td><td>Recordar tu país de envío</td><td>Preferencia, necesaria</td><td>Hasta que borres los datos del navegador</td></tr>
     <tr><td><code>intimae_sess_v1</code></td><td>Mantener tu sesión iniciada (comprador, vendedor o administración)</td><td>Técnico, necesario</td><td>Hasta que cierres la sesión o borres los datos</td></tr>
+    <tr><td><code>intimae_stats_v1</code>, <code>intimae_errors_v1</code>, <code>intimae_vid</code></td><td>Contadores técnicos anónimos (páginas vistas, errores, rendimiento) para diagnosticar fallos. Se guardan solo en tu navegador, sin enviarse a ningún servidor ni asociarse a tu identidad; <code>intimae_vid</code> es un número aleatorio</td><td>Técnico, necesario para el mantenimiento</td><td>90 días los contadores; hasta que borres los datos el resto</td></tr>
+    <tr><td><code>intimae_sess</code>, <code>intimae_v_*</code> (sesión)</td><td>Distinguir sesiones y no contar dos veces la misma visita a una ficha</td><td>Técnico, necesario</td><td>Hasta cerrar la pestaña</td></tr>
     <tr><td><code>intimae_db_v1</code></td><td>Versión de demostración: cuentas, anuncios, pedidos y mensajes guardados en tu navegador</td><td>Técnico, necesario</td><td>Hasta que borres los datos del navegador</td></tr>
   </table>
   <p>Al ser estrictamente necesarios para prestar el servicio que solicitas, no requieren consentimiento (art. 22.2 LSSI-CE).</p>

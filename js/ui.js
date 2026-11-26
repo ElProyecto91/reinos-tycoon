@@ -50,7 +50,11 @@
   }
   // Ejecuta una acción (síncrona o promesa), muestra el error en pantalla y devuelve la promesa.
   function run(fn, ok) {
-    return Promise.resolve().then(fn).then(function (r) { if (ok) toast(ok); return r; }, function (e) { toast(e && e.message ? e.message : "Ha ocurrido un error.", true); throw e; });
+    return Promise.resolve().then(fn).then(function (r) { if (ok) toast(ok); return r; }, function (e) {
+      // Errores esperados (validaciones de la capa de datos) llevan «code»: se cuentan como fricción de uso. Los demás son fallos.
+      try { if (window.TEL) { if (e && e.code) window.TEL.track("validation." + e.code); else window.TEL.error({ type: "app", message: e && e.message, stack: e && e.stack }); } } catch (x) {}
+      toast(e && e.message ? e.message : "Ha ocurrido un error.", true); throw e;
+    });
   }
   function download(name, text, mime) {
     var a = el("a"); a.href = URL.createObjectURL(new Blob([text], { type: mime || "text/plain;charset=utf-8" })); a.download = name;
@@ -109,5 +113,24 @@
     var th = el("div", "thumbs"); (list || []).forEach(function (d) { var i = el("img"); i.src = d; i.alt = "Prueba adjunta"; th.appendChild(i); }); return th;
   }
 
-  window.UI = { REASONS: REASONS, bubbles: bubbles, evidence: evidence, el: el, add: add, pill: pill, date: date, money: money, btn: btn, field: field, input: input, select: select, table: table, clear: clear, toast: toast, run: run, download: download, csv: csv, resizeImage: resizeImage, tabs: tabs, STATUS: STATUS };
+  // Gráfico de barras en SVG: series = [{label, value}]. Incluye título y resumen accesibles.
+  function bars(series, o) {
+    o = o || {}; var W = 640, H = 170, pad = 22, max = Math.max.apply(null, series.map(function (x) { return x.value; }).concat([1]));
+    var NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg"), bw = (W - pad) / series.length;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + (H + 26)); svg.setAttribute("class", "chart"); svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", (o.title || "Gráfico") + ": " + series.map(function (x) { return x.label + " " + (o.fmt ? o.fmt(x.value) : x.value); }).join(", "));
+    var base = document.createElementNS(NS, "line"); base.setAttribute("x1", 0); base.setAttribute("x2", W); base.setAttribute("y1", H); base.setAttribute("y2", H); base.setAttribute("class", "chart__axis"); svg.appendChild(base);
+    series.forEach(function (x, i) {
+      var h = Math.round((x.value / max) * (H - 18)), r = document.createElementNS(NS, "rect");
+      r.setAttribute("x", pad / 2 + i * bw + 2); r.setAttribute("width", Math.max(2, bw - 4)); r.setAttribute("y", H - h); r.setAttribute("height", h); r.setAttribute("class", "chart__bar");
+      var t = document.createElementNS(NS, "title"); t.textContent = x.label + ": " + (o.fmt ? o.fmt(x.value) : x.value); r.appendChild(t); svg.appendChild(r);
+      if (series.length <= 16 || i % Math.ceil(series.length / 10) === 0) {
+        var l = document.createElementNS(NS, "text"); l.setAttribute("x", pad / 2 + i * bw + bw / 2); l.setAttribute("y", H + 16); l.setAttribute("text-anchor", "middle"); l.setAttribute("class", "chart__lbl"); l.textContent = x.label; svg.appendChild(l);
+      }
+      if (x.value > 0 && series.length <= 16) { var v = document.createElementNS(NS, "text"); v.setAttribute("x", pad / 2 + i * bw + bw / 2); v.setAttribute("y", H - h - 4); v.setAttribute("text-anchor", "middle"); v.setAttribute("class", "chart__val"); v.textContent = o.fmt ? o.fmt(x.value) : x.value; svg.appendChild(v); }
+    });
+    var wrap = el("figure", "chartbox"); if (o.title) wrap.appendChild(el("figcaption", null, o.title)); wrap.appendChild(svg); return wrap;
+  }
+
+  window.UI = { bars: bars, REASONS: REASONS, bubbles: bubbles, evidence: evidence, el: el, add: add, pill: pill, date: date, money: money, btn: btn, field: field, input: input, select: select, table: table, clear: clear, toast: toast, run: run, download: download, csv: csv, resizeImage: resizeImage, tabs: tabs, STATUS: STATUS };
 })();
