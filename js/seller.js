@@ -77,7 +77,7 @@
     if (String(d.get("pass")).length < 8) return setMsg(t("sv.msg.pass"), true);
     var c = TAX.get(d.get("country"));
     INT.seller.apply({ alias: d.get("alias"), email: d.get("email"), pass: d.get("pass"), country: d.get("country"), comm: d.get("comm"), age: d.get("age"),
-      kind: d.get("kind"), vatId: vat, regime: d.get("regime"), about: d.get("about") })
+      kind: d.get("kind"), vatId: vat, regime: d.get("regime"), about: d.get("about"), accept: !!d.get("ok") })
       .then(function () {
         form.reset(); renderHint();
         setMsg(t("sv.msg.created") + (c && !c.eu ? " " + t("sv.msg.outside", { country: cname(c.code) }) : ""));

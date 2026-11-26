@@ -88,7 +88,7 @@
 
   /* ---------- Catálogo ---------- */
   var grid = $("#grid"), empty = $("#empty"), countEl = $("#count");
-  var f = { q: $("#f-q"), type: $("#f-type"), size: $("#f-size"), days: $("#f-days"), sort: $("#f-sort") };
+  var f = { q: $("#f-q"), pmin: $("#f-pmin"), pmax: $("#f-pmax"), color: $("#f-color"), country: $("#f-country"), rating: $("#f-rating"), type: $("#f-type"), size: $("#f-size"), days: $("#f-days"), sort: $("#f-sort") };
 
   function card(p) {
     var s = SELLERS[p.seller];
@@ -103,6 +103,7 @@
     img.alt = loc(p, "title"); img.loading = "lazy"; img.decoding = "async";
     media.appendChild(img);
     media.appendChild(el("span", "tag num", plural("tag", p.days)));
+    if (s.seed) media.appendChild(el("span", "tag tag--sample", t("sample.tag")));
     if (p.by) {
       var cr = el("a", "credit", t("photo") + " " + p.by);
       cr.href = "https://unsplash.com/@" + encodeURIComponent(p.handle) + UTM;
@@ -144,25 +145,83 @@
     return c;
   }
 
-  function renderGrid() {
-    var minDays = +f.days.value, q = f.q.value.trim().toLowerCase();
-    var list = window.PRODUCTS.filter(function (p) {
-      var hay = q ? [loc(p, "title"), loc(p, "material"), loc(p, "colour"), t("type." + p.type), p.ref].join(" ").toLowerCase() : "";
-      return (!f.type.value || p.type === f.type.value) && (!f.size.value || p.size === f.size.value) && p.days >= minDays && (!q || hay.indexOf(q) !== -1);
+  function opt(v, label) { var o = el("option", null, label); o.value = v; return o; }
+  function visible() { var u = user(); return window.PRODUCTS.filter(function (p) { return !(u && INT.block.has(u.id, p.seller)); }); }
+  function favCount(p) { return INT.data().favs.filter(function (x) { return x.listing === p.id; }).length; }
+
+  // Colores, países y sugerencias de búsqueda según el catálogo que hay en cada momento
+  function fillFilters() {
+    var all = visible(), keepC = f.color.value, keepK = f.country.value, colors = {}, countries = {};
+    all.forEach(function (p) { if (p.colour && p.colour !== "—") colors[p.colour] = loc(p, "colour"); countries[SELLERS[p.seller].country] = 1; });
+    f.color.textContent = ""; f.color.appendChild(opt("", t("opt.all")));
+    Object.keys(colors).sort().forEach(function (c) { f.color.appendChild(opt(c, colors[c])); });
+    f.color.value = colors[keepC] != null ? keepC : "";
+    f.country.textContent = ""; f.country.appendChild(opt("", t("opt.all")));
+    Object.keys(countries).sort(function (a, b) { return cname(a).localeCompare(cname(b), I18N.current()); }).forEach(function (c) { f.country.appendChild(opt(c, cname(c))); });
+    f.country.value = countries[keepK] ? keepK : "";
+    var dl = $("#f-q-list"), seen = {}; dl.textContent = "";
+    all.forEach(function (p) { [loc(p, "title"), loc(p, "colour"), loc(p, "material")].forEach(function (w) { if (w && w !== "—" && !seen[w]) { seen[w] = 1; var o = document.createElement("option"); o.value = w; dl.appendChild(o); } }); });
+  }
+  function renderCats() {
+    var box = $("#cats"); box.textContent = "";
+    [["", t("opt.all")]].concat(["braga", "tanga", "sujetador", "camison", "conjunto"].map(function (k) { return [k, t("type." + k)]; })).forEach(function (c) {
+      var on = f.type.value === c[0], b = el("button", "chip" + (on ? " on" : ""), c[1]); b.type = "button"; b.setAttribute("aria-pressed", String(on));
+      b.addEventListener("click", function () { f.type.value = c[0]; renderGrid(); renderCats(); }); box.appendChild(b);
     });
-    var s = f.sort.value;
+  }
+  function renderSellers() {
+    var sec = $("#tiendas"), box = $("#shops"), u = user(); box.textContent = "";
+    var data = Object.keys(SELLERS).filter(function (id) { return !(u && INT.block.has(u.id, id)); }).map(function (id) { return { id: id, s: SELLERS[id], n: window.PRODUCTS.filter(function (p) { return p.seller === id; }).length }; })
+      .filter(function (x) { return x.n > 0; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 6);
+    sec.hidden = !data.length;
+    data.forEach(function (x) {
+      var a = el("a", "shop"); a.href = "tienda/?s=" + encodeURIComponent(x.id);
+      var body = el("span", "shop__body"), rt = INT.seller.rating(x.id);
+      body.appendChild(el("strong", null, x.s.alias));
+      body.appendChild(el("small", null, cname(x.s.country) + " · " + t(x.s.type === "particular" ? "seller.particular" : "seller.pro")));
+      body.appendChild(el("small", null, (rt.n ? t("rate." + (rt.n === 1 ? "one" : "other"), { avg: I18N.number(rt.avg), n: rt.n }) : t("rate.none")) + " · " + plural("count", x.n)));
+      a.appendChild(el("span", "shop__av", x.s.alias.charAt(0).toUpperCase())); a.appendChild(body);
+      if (x.s.seed) a.appendChild(el("span", "badge", t("sample.tag")));
+      a.appendChild(el("span", "shop__go", t("shop.view"))); box.appendChild(a);
+    });
+  }
+  function renderBars() {
+    var n = window.PRODUCTS.length, any = window.PRODUCTS.some(function (p) { return p.seed; });
+    $(".demobar").hidden = n > 0 && !any;
+    var u = user(), c = u ? INT.msg.forBuyer(u.id).reduce(function (a, th) { return a + INT.msg.unread(th, "buyer"); }, 0) : 0, mb = $("#mn-msgs");
+    mb.hidden = !c; mb.textContent = c;
+  }
+
+  function renderGrid() {
+    var all = visible(), minDays = +f.days.value, q = f.q.value.trim().toLowerCase(), pmin = +f.pmin.value || 0, pmax = +f.pmax.value || 0, rmin = +f.rating.value || 0;
+    var list = all.filter(function (p) {
+      var hay = q ? [loc(p, "title"), loc(p, "material"), loc(p, "colour"), t("type." + p.type), p.ref].join(" ").toLowerCase() : "";
+      return (!f.type.value || p.type === f.type.value) && (!f.size.value || p.size === f.size.value) && p.days >= minDays && (!q || hay.indexOf(q) !== -1) &&
+        (!pmin || p.price >= pmin) && (!pmax || p.price <= pmax) && (!f.color.value || p.colour === f.color.value) &&
+        (!f.country.value || SELLERS[p.seller].country === f.country.value) && (!rmin || INT.seller.rating(p.seller).avg >= rmin);
+    });
+    var so = f.sort.value;
     list.sort(function (a, b) {
-      if (s === "asc") return a.price - b.price;
-      if (s === "desc") return b.price - a.price;
-      if (s === "days") return b.days - a.days;
+      if (so === "asc") return a.price - b.price;
+      if (so === "desc") return b.price - a.price;
+      if (so === "days") return b.days - a.days;
+      if (so === "rating") return INT.seller.rating(b.seller).avg - INT.seller.rating(a.seller).avg;
+      if (so === "pop") return favCount(b) - favCount(a);
       return a.date < b.date ? 1 : -1;
     });
     grid.textContent = "";
     list.forEach(function (p) { grid.appendChild(card(p)); });
-    empty.hidden = list.length > 0;
-    countEl.textContent = plural("count", list.length);
+    var none = all.length === 0;
+    empty.hidden = list.length > 0 || none; $("#founder-empty").hidden = !none; grid.hidden = none;
+    countEl.textContent = none ? "" : plural("count", list.length);
   }
-  Object.keys(f).forEach(function (k) { f[k].addEventListener(k === "q" ? "input" : "change", renderGrid); });
+  Object.keys(f).forEach(function (k) { f[k].addEventListener(k === "q" || k === "pmin" || k === "pmax" ? "input" : "change", function () { renderGrid(); renderCats(); }); });
+  $("#save-search").addEventListener("click", function () {
+    var u = user(), m = $("#search-msg");
+    if (!u) { m.className = "msg err"; m.textContent = t("search.login"); return; }
+    try { INT.search.save(u.id, { q: f.q.value, type: f.type.value, size: f.size.value, color: f.color.value, pmin: f.pmin.value, pmax: f.pmax.value, country: f.country.value }); m.className = "msg"; m.textContent = t("search.saved"); }
+    catch (e) { m.className = "msg err"; m.textContent = e.code === "empty" ? t("search.empty") : e.message; }
+  });
 
   /* ---------- Ficha de producto ---------- */
   var pdp = $("#pdp"), pdpCurrent = null;
@@ -185,6 +244,8 @@
     line.appendChild(el("span", "badge", t(s.type === "particular" ? "seller.particular" : "seller.pro")));
     var rt = INT.seller.rating(p.seller);
     line.appendChild(el("span", "badge", rt.n ? t("rate." + (rt.n === 1 ? "one" : "other"), { avg: I18N.number(rt.avg), n: rt.n }) : t("rate.none")));
+    if (s.seed) line.appendChild(el("span", "badge", t("sample.tag")));
+    $("#pdp-shop").href = "tienda/?s=" + encodeURIComponent(p.seller);
     var u1 = user(), fon = !!(u1 && INT.fav.has(u1.id, p.id));
     $("#pdp-fav-t").textContent = t(fon ? "fav.saved" : "fav.save"); $("#pdp-fav").setAttribute("aria-pressed", String(fon));
 
@@ -205,12 +266,12 @@
     var sp = $("#pdp-specs"); sp.textContent = "";
     [[t("spec.size"), p.size], [t("spec.use"), plural("days", p.days)], [t("spec.state"), t("spec.state.v")],
      [t("spec.material"), loc(p, "material")], [t("spec.colour"), loc(p, "colour")],
-     [t("spec.from"), cname(s.country)], [t("spec.since"), String(s.since)]
-    ].forEach(function (r) { sp.appendChild(el("dt", null, r[0])); sp.appendChild(el("dd", null, r[1])); });
+     [t("spec.from"), cname(s.country)]].concat(sh.ok ? [[t("spec.eta"), t("eta." + sh.zone)]] : [], [[t("spec.since"), String(s.since)]])
+    .forEach(function (r) { sp.appendChild(el("dt", null, r[0])); sp.appendChild(el("dd", null, r[1])); });
 
     $("#pdp-add").disabled = !sh.ok;
   }
-  function openPdp(p) { pdpCurrent = p; fillPdp(p); $("#pdp-askbox").hidden = true; $("#ask-msg").textContent = ""; pdp.showModal(); }
+  function openPdp(p) { pdpCurrent = p; INT.listing.view(p.id); fillPdp(p); $("#pdp-askbox").hidden = true; $("#ask-msg").textContent = ""; pdp.showModal(); }
   $("#pdp-fav").addEventListener("click", function () { if (pdpCurrent) { toggleFav(pdpCurrent); if (user()) fillPdp(pdpCurrent); } });
 
   // Preguntar al vendedor
@@ -384,7 +445,7 @@
   /* ---------- Arranque ---------- */
   function renderAll() {
     cart = cart.filter(function (id) { return !!byId(id); });
-    fillDest(); renderGrid(); renderCart();
+    fillDest(); fillFilters(); renderCats(); renderSellers(); renderBars(); renderGrid(); renderCart();
     if (pdp.open && pdpCurrent) fillPdp(pdpCurrent);
   }
   I18N.onChange(renderAll);

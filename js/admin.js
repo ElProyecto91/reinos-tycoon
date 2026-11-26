@@ -41,16 +41,41 @@
     p.appendChild(el("p", "app-sub", "Denuncias de contenido (Reglamento (UE) 2022/2065). Al retirar un anuncio se registran y se comunican al vendedor los motivos de la decisión."));
     if (!rs.length) return p.appendChild(el("p", "empty-s", "No hay denuncias."));
     rs.forEach(function (r) {
-      var c = el("div", "thread"), h = el("header"); add(h, el("span", null, r.no + " · anuncio N.º " + r.listingRef + " · " + r.reason), U.pill(r.status === "open" ? "open" : r.status === "removed" ? "removed" : "dismissed")); c.appendChild(h);
+      var c = el("div", "thread"), h = el("header"); add(h, el("span", null, r.no + " · " + (r.target === "seller" ? "tienda " + ((sellerOf(r.seller) || {}).alias || r.seller) : "anuncio N.º " + r.listingRef) + " · " + r.reason), U.pill(r.status === "open" ? "open" : r.status === "removed" ? "removed" : "dismissed")); c.appendChild(h);
       add(c, el("p", null, r.text || "(sin texto)"), el("p", "muted-s", U.date(r.at) + (r.email ? " · contacto: " + r.email : " · sin contacto")));
       if (r.statement) c.appendChild(el("p", "muted-s", "Decisión: " + r.statement));
       if (r.status === "open") {
         var acts = el("div", "acts"); acts.style.cssText = "display:flex;gap:10px;margin-top:10px";
-        add(acts, U.btn("Retirar anuncio", function () { var m = ask("Motivos de la retirada (se comunican al vendedor):"); if (m) U.run(function () { return A.resolveReport(r.id, "remove", m); }, "Anuncio retirado.").then(refresh, function () {}); }), U.btn("Desestimar", function () { var m = ask("Motivos para desestimar:"); if (m) U.run(function () { return A.resolveReport(r.id, "dismiss", m); }, "Denuncia desestimada.").then(refresh, function () {}); }, "btn--line"));
+        add(acts, U.btn(r.target === "seller" ? "Suspender tienda" : "Retirar anuncio", function () { var m = ask("Motivos de la decisión (se comunican al vendedor):"); if (m) U.run(function () { return A.resolveReport(r.id, "remove", m); }, "Decisión aplicada.").then(refresh, function () {}); }), U.btn("Desestimar", function () { var m = ask("Motivos para desestimar:"); if (m) U.run(function () { return A.resolveReport(r.id, "dismiss", m); }, "Denuncia desestimada.").then(refresh, function () {}); }, "btn--line"));
         c.appendChild(acts);
       }
       p.appendChild(c);
     });
+  }
+
+  function tabIncidents(p) {
+    var list = D().incidents.slice().sort(function (a, b) { return b.id - a.id; });
+    p.appendChild(el("p", "app-sub", "Incidencias de compradores. Se resuelven dentro de las facultades de Intimae y de las reglas del proveedor de pagos; no se prometen reembolsos fuera de ese procedimiento."));
+    if (!list.length) return p.appendChild(el("p", "empty-s", "No hay incidencias."));
+    list.forEach(function (inc) {
+      var o = INT.orders.get(inc.order), c = el("div", "thread"), h = el("header");
+      add(h, el("span", null, inc.no + " · pedido " + inc.orderNo + " · " + U.REASONS[inc.reason] + " · total " + U.money(o.total)), U.pill(inc.status === "resolved" ? "resolved" : inc.status === "open" ? "incident" : "disputed", inc.status === "open" ? "Esperando al vendedor" : inc.status === "disputed" ? "En revisión" : "Resuelta"));
+      add(c, h, U.bubbles(inc.messages, "a"), U.evidence(inc.evidence));
+      if (inc.status !== "resolved") {
+        var f = el("form", "form stack"), dec = U.select("decision", [["refund", "Reembolso total"], ["partial", "Reembolso parcial"], ["reject", "Rechazar la incidencia"]]), amt = U.input("amount", "number", { min: "0", step: "0.01", placeholder: "Importe del reembolso parcial (€)" }), st = el("textarea");
+        st.name = "statement"; st.required = true; st.maxLength = 500; st.placeholder = "Motivos de la decisión (se comunican a las dos partes)"; st.style.minHeight = "70px";
+        var b = el("button", "btn btn--sm", "Resolver"); b.type = "submit"; add(f, U.field("Decisión", dec), amt, st, b);
+        f.addEventListener("submit", function (e) { e.preventDefault(); U.run(function () { return A.resolveIncident(inc.id, dec.value, amt.value, st.value); }, "Incidencia resuelta.").then(refresh, function () {}); }); c.appendChild(f);
+      } else c.appendChild(el("p", "muted-s", "Resolución: " + inc.resolution.decision + (inc.resolution.amount ? " · " + U.money(inc.resolution.amount) : "") + " · " + inc.resolution.statement));
+      p.appendChild(c);
+    });
+  }
+
+  function tabNotes(p) {
+    var list = INT.notify.list("a");
+    if (!list.length) return p.appendChild(el("p", "empty-s", "No hay avisos."));
+    list.slice(0, 60).forEach(function (n) { var r = el("div", "thread"); add(r, el("header", null, n.text), el("p", "muted-s", U.date(n.at))); p.appendChild(r); });
+    INT.notify.readAll("a");
   }
 
   function tabSellers(p) {
@@ -70,7 +95,7 @@
     if (!list.length) return p.appendChild(el("p", "empty-s", "No hay pedidos."));
     p.appendChild(U.table(["Pedido", "Fecha", "Vendedor", "Total", "Comisión", "Estado", "Acciones"], list.map(function (o) {
       var s = sellerOf(o.seller), acts = el("div", "acts"); acts.style.cssText = "display:flex;gap:6px;flex-wrap:wrap";
-      if (o.status === "paid_held" && s && s.seed) acts.appendChild(U.btn("Enviar (demo)", function () { U.run(function () { return A.demoShip(o.id); }).then(refresh, function () {}); }, "btn--line"));
+      if (o.status === "paid" && s && s.seed) acts.appendChild(U.btn("Enviar (demo)", function () { U.run(function () { return A.demoShip(o.id); }).then(refresh, function () {}); }, "btn--line"));
       if (o.status === "shipped" && s && s.seed) acts.appendChild(U.btn("Entregar (demo)", function () { U.run(function () { var x = INT.orders.get(o.id); return INT.orders.confirmReceipt(x.buyer, o.id); }).then(refresh, function () {}); }, "btn--line"));
       if (o.status === "delivered") acts.appendChild(U.btn("Liberar pago", function () { U.run(function () { return A.forceRelease(o.id); }, "Pago liquidado.").then(refresh, function () {}); }));
       return [o.no, U.date(o.createdAt), s ? s.alias : o.seller, U.money(o.total), U.money(o.commission), U.pill(o.status), acts];
@@ -96,9 +121,12 @@
     var s = INT.settings(), f = el("form", "card form stack"); f.style.maxWidth = "520px"; f.appendChild(el("h2", null, "Ajustes"));
     add(f, U.field("Comisión sobre el precio de los artículos (%)", U.input("commission", "number", { min: "0", max: "50", step: "0.5", value: s.commission }), "Propuesta pendiente de confirmar. Se aplica a los pedidos nuevos."),
       U.field("Días desde el envío hasta la entrega automática", U.input("autoDeliverDays", "number", { min: "1", max: "60", value: s.autoDeliverDays })),
-      U.field("Días desde la entrega hasta liquidar al vendedor", U.input("autoReleaseDays", "number", { min: "0", max: "30", value: s.autoReleaseDays })));
+      U.field("Días desde la entrega hasta liquidar al vendedor", U.input("autoReleaseDays", "number", { min: "0", max: "30", value: s.autoReleaseDays })),
+      U.field("Días de plazo de preparación del vendedor (antes de poder abrir una incidencia por «no enviado»)", U.input("shipDeadlineDays", "number", { min: "1", max: "30", value: s.shipDeadlineDays })),
+      U.field("Días que tiene el vendedor para responder a una incidencia", U.input("incidentReplyDays", "number", { min: "1", max: "30", value: s.incidentReplyDays })));
+    var ck = el("label", "check"), cb = el("input"); cb.type = "checkbox"; cb.name = "showSamples"; cb.checked = s.showSamples !== false; add(ck, cb, el("span", null, "Mostrar artículos y tiendas de muestra en la tienda (para enseñar el proyecto)")); f.appendChild(ck);
     var b = el("button", "btn", "Guardar ajustes"); b.type = "submit"; f.appendChild(b);
-    f.addEventListener("submit", function (e) { e.preventDefault(); var d = new FormData(f); U.run(function () { return A.setSettings({ commission: d.get("commission"), autoDeliverDays: d.get("autoDeliverDays"), autoReleaseDays: d.get("autoReleaseDays") }); }, "Ajustes guardados.").then(refresh, function () {}); });
+    f.addEventListener("submit", function (e) { e.preventDefault(); var d = new FormData(f); U.run(function () { return A.setSettings({ commission: d.get("commission"), autoDeliverDays: d.get("autoDeliverDays"), autoReleaseDays: d.get("autoReleaseDays"), shipDeadlineDays: d.get("shipDeadlineDays"), incidentReplyDays: d.get("incidentReplyDays"), showSamples: !!d.get("showSamples") }); }, "Ajustes guardados.").then(refresh, function () {}); });
     p.appendChild(f);
     var z = el("div", "card stack"); z.style.cssText = "max-width:520px;margin-top:18px"; add(z, el("h2", null, "Restablecer demostración"), el("p", "muted-s", "Borra cuentas, anuncios, pedidos y mensajes de este navegador y vuelve a los datos de ejemplo."), U.btn("Restablecer", function () { if (confirm("Se borrará todo lo guardado en este navegador. ¿Continuar?")) U.run(function () { return A.reset(); }, "Datos restablecidos.").then(refresh, function () {}); }, "btn--line")); p.appendChild(z);
   }
@@ -117,10 +145,12 @@
     ctl = U.tabs($("#tabbar"), $("#panel"), [
       { id: "moderacion", label: "Moderación", badge: pend, render: tabModeration },
       { id: "denuncias", label: "Denuncias", badge: open, render: tabReports },
+      { id: "incidencias", label: "Incidencias", badge: function () { return D().incidents.filter(function (i) { return i.status !== "resolved"; }).length; }, render: tabIncidents },
       { id: "vendedores", label: "Vendedores", render: tabSellers },
       { id: "pedidos", label: "Pedidos", render: tabOrders },
       { id: "dac7", label: "DAC7", render: tabDac7 },
       { id: "ajustes", label: "Ajustes", render: tabSettings },
+      { id: "avisos", label: "Avisos", badge: function () { return INT.notify.unread("a"); }, render: tabNotes },
       { id: "auditoria", label: "Auditoría", render: tabAudit }
     ]);
   }

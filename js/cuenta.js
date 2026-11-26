@@ -40,7 +40,7 @@
     add(ck, cb, el("span", null, "Soy mayor de 18 años y acepto las condiciones de compra y la política de privacidad."));
     rf.appendChild(ck);
     var rb = el("button", "btn btn--block", "Crear cuenta"); rb.type = "submit"; rf.appendChild(rb);
-    rf.addEventListener("submit", function (e) { e.preventDefault(); var d = new FormData(rf); U.run(function () { return INT.buyer.register({ name: d.get("name"), email: d.get("email"), pass: d.get("pass") }); }, "Cuenta creada.").then(after, function () {}); });
+    rf.addEventListener("submit", function (e) { e.preventDefault(); var d = new FormData(rf); U.run(function () { return INT.buyer.register({ name: d.get("name"), email: d.get("email"), pass: d.get("pass"), accept: !!d.get("ok") }); }, "Cuenta creada.").then(after, function () {}); });
     add(g, lf, rf); box.appendChild(g);
   }
 
@@ -55,7 +55,7 @@
     var h = el("ul", "history"); o.history.forEach(function (x) { h.appendChild(el("li", null, U.date(x.at) + " · " + (U.STATUS[x.status] ? U.STATUS[x.status][0] : x.status) + (x.note ? " (" + x.note + ")" : ""))); }); c.appendChild(h);
     var acts = el("div", "acts"); acts.style.marginTop = "12px";
     var u = INT.buyer.current();
-    if (o.status === "paid_held") acts.appendChild(U.btn("Cancelar pedido", function () { if (confirm("Se cancelará el pedido y se te devolverá el importe completo. ¿Continuar?")) U.run(function () { return INT.orders.cancel("buyer", u.id, o.id); }, "Pedido cancelado. Importe devuelto.").then(function () { tabsCtl.refresh(); }, function () {}); }, "btn--line"));
+    if (o.status === "paid") acts.appendChild(U.btn("Cancelar pedido", function () { if (confirm("Se cancelará el pedido y se te devolverá el importe completo. ¿Continuar?")) U.run(function () { return INT.orders.cancel("buyer", u.id, o.id); }, "Pedido cancelado. Importe devuelto.").then(function () { tabsCtl.refresh(); }, function () {}); }, "btn--line"));
     if (o.status === "shipped") acts.appendChild(U.btn("Confirmar recepción", function () { U.run(function () { return INT.orders.confirmReceipt(u.id, o.id); }, "Recepción confirmada.").then(function () { tabsCtl.refresh(); }, function () {}); }));
     c.appendChild(acts);
     if (o.status === "delivered" || o.status === "released") {
@@ -68,6 +68,25 @@
         c.appendChild(f);
       }
     }
+    var u2 = INT.buyer.current();
+    INT.incident.forOrder(o.id).forEach(function (inc) {
+      var box = el("div", "thread"); box.style.marginTop = "12px";
+      var h = el("header"); add(h, el("span", null, inc.no + " · " + U.REASONS[inc.reason]), U.pill(inc.status === "resolved" ? "resolved" : inc.status === "open" ? "incident" : "disputed", inc.status === "open" ? "Esperando al vendedor" : inc.status === "disputed" ? "En revisión" : "Resuelta"));
+      add(box, h, U.bubbles(inc.messages, "b"), U.evidence(inc.evidence));
+      if (inc.status !== "resolved") box.appendChild(composer("Añadir información…", function (t) { return Promise.resolve().then(function () { return INT.incident.reply("buyer", u2.id, inc.id, t); }).then(function () { tabsCtl.refresh(); }); }, "Enviar"));
+      c.appendChild(box);
+    });
+    if (["paid", "shipped", "delivered"].indexOf(o.status) !== -1 && !INT.incident.forOrder(o.id).some(function (i) { return i.status !== "resolved"; })) {
+      var dd = el("details"); dd.style.marginTop = "12px"; dd.appendChild(el("summary", null, "Abrir una incidencia con este pedido"));
+      var ff = el("form", "form stack"), reason = U.select("reason", Object.keys(U.REASONS).map(function (k) { return [k, U.REASONS[k]]; })), tx2 = el("textarea"), files = el("input"), prev = el("div", "thumbs"), ev = [];
+      tx2.maxLength = 800; tx2.required = true; tx2.style.minHeight = "84px"; tx2.placeholder = "Cuenta qué ha ocurrido (mínimo 10 caracteres)";
+      files.type = "file"; files.accept = "image/jpeg,image/png,image/webp"; files.multiple = true;
+      files.addEventListener("change", function () { Promise.all(Array.prototype.slice.call(files.files).slice(0, 2).map(U.resizeImage)).then(function (r) { ev = r; U.clear(prev); r.forEach(function (d) { var i = el("img"); i.src = d; i.alt = "Prueba"; prev.appendChild(i); }); }, function (e) { U.toast(e.message, true); }); });
+      var sb2 = el("button", "btn btn--sm", "Abrir incidencia"); sb2.type = "submit";
+      add(ff, U.field("Motivo", reason), U.field("Descripción", tx2), U.field("Pruebas (hasta 2 fotos, opcional)", files), prev, sb2);
+      ff.addEventListener("submit", function (e) { e.preventDefault(); U.run(function () { return INT.incident.open(u2.id, o.id, reason.value, tx2.value, ev); }, "Incidencia abierta. El vendedor ha sido avisado.").then(function () { tabsCtl.refresh(); }, function () {}); });
+      dd.appendChild(ff); c.appendChild(dd);
+    }
     if (["cancelled"].indexOf(o.status) === -1) {
       var d = el("details"); d.style.marginTop = "12px"; d.appendChild(el("summary", null, "Escribir al vendedor sobre este pedido"));
       d.appendChild(composer("Tu mensaje. No compartas datos personales.", function (t) { return Promise.resolve().then(function () { return INT.msg.start(u.id, o.items[0].listing, "[" + o.no + "] " + t); }).catch(msgError).then(function () { U.toast("Mensaje enviado."); }); }, "Enviar"));
@@ -77,7 +96,7 @@
   }
   function tabOrders(p) {
     var u = INT.buyer.current(); INT.tick();
-    p.appendChild(el("p", "app-sub", "Intimae es solo intermediario: no gestiona devoluciones, reclamaciones ni disputas. Cualquier asunto sobre una compra se resuelve con el vendedor por mensajes. Antes del envío puedes cancelar y recuperar el importe íntegro."));
+    p.appendChild(el("p", "app-sub", "Si hay un problema con un pedido, abre una incidencia: el vendedor responde y Intimae revisa el caso aplicando el procedimiento del proveedor de pagos. No podemos prometer reembolsos fuera de ese procedimiento; tus derechos legales como consumidor no se ven afectados. Antes del envío puedes cancelar y recuperar el importe íntegro."));
     var list = INT.orders.forBuyer(u.id);
     if (!list.length) return p.appendChild(el("p", "empty-s", "Todavía no tienes pedidos."));
     list.forEach(function (o) { var c = orderCard(o); c.style.marginBottom = "14px"; p.appendChild(c); });
@@ -112,6 +131,32 @@
   }
 
   /* ---------- datos ---------- */
+  /* ---------- avisos ---------- */
+  function tabNotes(p) {
+    var u = INT.buyer.current(), key = "b:" + u.id, list = INT.notify.list(key);
+    if (!list.length) return p.appendChild(el("p", "empty-s", "No tienes avisos."));
+    list.slice(0, 60).forEach(function (n) {
+      var r = el("div", "thread"), h = el("header"); add(h, el("span", null, n.text), n.read ? null : U.pill("warn", "Nuevo")); add(r, h, el("p", "muted-s", U.date(n.at)));
+      if (n.link) { var a = el("a", "link", "Ir a " + n.link); a.href = "#" + n.link; a.addEventListener("click", function () { setTimeout(function () { tabsCtl.refresh(); }, 0); }); r.appendChild(a); }
+      p.appendChild(r);
+    });
+    INT.notify.readAll(key);
+  }
+
+  /* ---------- búsquedas, tiendas seguidas y bloqueos ---------- */
+  function tabFollow(p) {
+    var u = INT.buyer.current(), searches = INT.search.list(u.id), shops = INT.follow.list(u.id), blocked = INT.block.list(u.id);
+    p.appendChild(el("h2", null, "Búsquedas guardadas")); p.lastChild.style.cssText = "font-size:1.5rem;margin:0 0 8px";
+    if (!searches.length) p.appendChild(el("p", "empty-s", "Guarda una búsqueda desde la tienda y te avisaremos aquí cuando aparezca algo nuevo."));
+    searches.forEach(function (q) { var r = el("div", "row-card"); r.style.gridTemplateColumns = "1fr auto"; add(r, el("span", null, q.label), U.btn("Quitar", function () { INT.search.remove(u.id, q.id); tabsCtl.refresh(); }, "btn--line")); p.appendChild(r); });
+    p.appendChild(el("h2", null, "Tiendas que sigues")); p.lastChild.style.cssText = "font-size:1.5rem;margin:28px 0 8px";
+    if (!shops.length) p.appendChild(el("p", "empty-s", "No sigues ninguna tienda. Puedes hacerlo desde la página pública de cada tienda."));
+    shops.forEach(function (s) { var r = el("div", "row-card"); r.style.gridTemplateColumns = "1fr auto auto"; var a = el("a", "link", s.alias); a.href = "../tienda/?s=" + encodeURIComponent(s.id); add(r, a, el("small", null, I18N.country(s.country)), U.btn("Dejar de seguir", function () { INT.follow.toggle(u.id, s.id); tabsCtl.refresh(); }, "btn--line")); p.appendChild(r); });
+    p.appendChild(el("h2", null, "Vendedores bloqueados")); p.lastChild.style.cssText = "font-size:1.5rem;margin:28px 0 8px";
+    if (!blocked.length) p.appendChild(el("p", "empty-s", "No has bloqueado a nadie."));
+    blocked.forEach(function (s) { var r = el("div", "row-card"); r.style.gridTemplateColumns = "1fr auto"; add(r, el("span", null, s.alias), U.btn("Desbloquear", function () { INT.block.toggle(u.id, s.id); tabsCtl.refresh(); }, "btn--line")); p.appendChild(r); });
+  }
+
   function tabData(p) {
     var u = INT.buyer.current(), g = el("div", "auth-grid");
     var f = el("form", "card form stack"); f.appendChild(el("h2", null, "Mis datos"));
@@ -148,6 +193,8 @@
       { id: "pedidos", label: "Pedidos", render: tabOrders },
       { id: "favoritos", label: "Favoritos", render: tabFavs },
       { id: "mensajes", label: "Mensajes", badge: unread, render: tabMsgs },
+      { id: "avisos", label: "Avisos", badge: function () { return INT.notify.unread("b:" + u.id); }, render: tabNotes },
+      { id: "siguiendo", label: "Siguiendo", render: tabFollow },
       { id: "datos", label: "Mis datos", render: tabData }
     ]);
   }

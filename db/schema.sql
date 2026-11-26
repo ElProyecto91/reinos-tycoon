@@ -2,15 +2,16 @@
 -- ESTADO: BORRADOR SIN EJECUTAR. No se ha probado contra ninguna base de datos. Revisar con quien vaya a operarlo.
 -- La interfaz actual funciona en modo demostración (almacenamiento local del navegador, js/core.js) con la misma forma de datos.
 -- Principios: datos personales mínimos; el comprador nunca ve datos del vendedor ni al revés; todo acceso por filas (RLS);
--- las contraseñas las gestiona el servicio de autenticación (no se guardan aquí); sin estados de devolución ni de disputa.
+-- las contraseñas las gestiona el servicio de autenticación (no se guardan aquí). El estado de pago y de pedido
+-- solo cambia desde el servidor con eventos verificados del proveedor de pagos, nunca desde el navegador.
 
 create extension if not exists pgcrypto;
 
 create type seller_kind   as enum ('particular', 'profesional');
 create type vat_regime    as enum ('none', 'standard', 'margin');
 create type seller_status as enum ('pending', 'verified', 'suspended');
-create type listing_status as enum ('pending', 'active', 'paused', 'sold', 'rejected', 'removed');
-create type order_status  as enum ('paid_held', 'shipped', 'delivered', 'released', 'cancelled');
+create type listing_status as enum ('draft', 'pending', 'active', 'paused', 'sold', 'rejected', 'removed');
+create type order_status  as enum ('paid', 'shipped', 'delivered', 'released', 'cancelled', 'incident', 'disputed', 'refunded');
 create type report_status as enum ('open', 'removed', 'dismissed');
 
 -- Perfil público/privado. id = auth.users.id
@@ -34,6 +35,7 @@ create table sellers (
   status seller_status not null default 'pending',
   comm_language text not null default 'es',
   about text not null default '',
+  shop_name text not null default '', shop_bio text not null default '', shop_policy text not null default '',   -- tienda pública (sin datos personales)
   created_at timestamptz not null default now()
 );
 
@@ -67,6 +69,7 @@ create table listings (
   moderation_reason text,                -- exposición de motivos (art. 17 del Reglamento (UE) 2022/2065)
   moderated_by uuid references auth.users,
   moderated_at timestamptz,
+  views int not null default 0,
   created_at timestamptz not null default now()
 );
 create index on listings (status, created_at desc);
@@ -82,7 +85,7 @@ create table orders (
   subtotal numeric(9,2) not null, shipping numeric(9,2) not null, vat_included numeric(9,2) not null default 0,
   total numeric(9,2) not null,
   commission_pct numeric(5,2) not null, commission numeric(9,2) not null, seller_net numeric(9,2) not null,
-  status order_status not null default 'paid_held',
+  status order_status not null default 'paid',
   charge_ref text, payout_ref text, refund_ref text,    -- referencias del proveedor de pagos
   carrier text, tracking text,
   created_at timestamptz not null default now(),
@@ -112,20 +115,40 @@ create table messages (
 create table reviews (
   id bigserial primary key, order_id bigint not null unique references orders,
   buyer_id uuid not null references buyers, seller_id uuid not null references sellers,
-  rating int not null check (rating between 1 and 5), body text not null default '' , at timestamptz not null default now()
+  rating int not null check (rating between 1 and 5), body text not null default '' , seller_reply text, replied_at timestamptz, at timestamptz not null default now()
 );
 create table favourites (buyer_id uuid not null references buyers on delete cascade, listing_id bigint not null references listings on delete cascade, primary key (buyer_id, listing_id));
 
 -- Notificaciones de contenido ilegal (art. 16 del Reglamento (UE) 2022/2065). Se admiten sin cuenta.
 create table reports (
   id bigserial primary key, no text generated always as ('DN-' || lpad(id::text, 5, '0')) stored,
-  listing_id bigint not null references listings, reason text not null, body text not null default '', contact_email text,
+  listing_id bigint references listings, seller_id uuid references sellers,   -- denuncia de un anuncio o de una tienda
+  reason text not null, body text not null default '', contact_email text,
   status report_status not null default 'open', statement text, resolved_by uuid references auth.users, resolved_at timestamptz,
   at timestamptz not null default now()
 );
 
+-- Incidencias de pedidos (procedimiento descrito en incidencias.html)
+create table incidents (
+  id bigserial primary key, no text generated always as ('IN-' || lpad(id::text, 5, '0')) stored,
+  order_id bigint not null references orders, buyer_id uuid not null references buyers, seller_id uuid not null references sellers,
+  reason text not null check (reason in ('no_enviado','no_recibido','distinto','danado','descripcion','fraude','pago','privacidad')),
+  status text not null default 'open' check (status in ('open','disputed','resolved')),
+  prev_order_status order_status not null,
+  evidence text[] not null default '{}' check (array_length(evidence, 1) is null or array_length(evidence, 1) <= 2),
+  decision text check (decision in ('refund','partial','reject')), refund_amount numeric(9,2), statement text,
+  resolved_by uuid references auth.users, resolved_at timestamptz, opened_at timestamptz not null default now()
+);
+create table incident_messages (id bigserial primary key, incident_id bigint not null references incidents on delete cascade, from_role text not null check (from_role in ('buyer','seller','admin')), body text not null, at timestamptz not null default now());
+
+create table notifications (id bigserial primary key, recipient uuid not null, recipient_role text not null, body text not null, link text, read boolean not null default false, at timestamptz not null default now());
+create table follows (buyer_id uuid not null references buyers on delete cascade, seller_id uuid not null references sellers on delete cascade, primary key (buyer_id, seller_id));
+create table blocks (buyer_id uuid not null references buyers on delete cascade, seller_id uuid not null references sellers on delete cascade, primary key (buyer_id, seller_id));
+create table saved_searches (id bigserial primary key, buyer_id uuid not null references buyers on delete cascade, label text not null, filters jsonb not null);
+create table legal_acceptances (id bigserial primary key, user_id uuid not null, document text not null, version text not null, at timestamptz not null default now());
+
 create table settings (key text primary key, value jsonb not null);
-insert into settings values ('commission', '20'), ('auto_deliver_days', '10'), ('auto_release_days', '3');
+insert into settings values ('commission', '20'), ('auto_deliver_days', '10'), ('auto_release_days', '7'), ('ship_deadline_days', '7'), ('incident_reply_days', '5');
 
 create table audit_log (id bigserial primary key, actor text not null, action text not null, detail text, at timestamptz not null default now());
 
@@ -139,6 +162,10 @@ alter table order_events enable row level security;  alter table threads enable 
 alter table messages enable row level security;      alter table reviews enable row level security;
 alter table favourites enable row level security;    alter table reports enable row level security;
 alter table settings enable row level security;      alter table audit_log enable row level security;
+alter table incidents enable row level security;     alter table incident_messages enable row level security;
+alter table notifications enable row level security; alter table follows enable row level security;
+alter table blocks enable row level security;        alter table saved_searches enable row level security;
+alter table legal_acceptances enable row level security;
 
 -- Tienda pública: solo anuncios activos de vendedores verificados y perfiles mínimos.
 create policy listings_public on listings for select using (status = 'active' and exists (select 1 from sellers s where s.id = seller_id and s.status = 'verified'));
@@ -162,6 +189,13 @@ create policy reports_admin   on reports for all using (is_admin());
 create policy settings_read   on settings for select using (true);
 create policy settings_admin  on settings for all using (is_admin());
 create policy audit_admin     on audit_log for select using (is_admin());
+create policy incidents_parties on incidents for select using (buyer_id = auth.uid() or seller_id = auth.uid() or is_admin());
+create policy incmsg_parties  on incident_messages for select using (exists (select 1 from incidents i where i.id = incident_id and (i.buyer_id = auth.uid() or i.seller_id = auth.uid() or is_admin())));
+create policy notes_self      on notifications for all using (recipient = auth.uid());
+create policy follows_self    on follows for all using (buyer_id = auth.uid()) with check (buyer_id = auth.uid());
+create policy blocks_self     on blocks for all using (buyer_id = auth.uid()) with check (buyer_id = auth.uid());
+create policy searches_self   on saved_searches for all using (buyer_id = auth.uid()) with check (buyer_id = auth.uid());
+create policy accept_self     on legal_acceptances for select using (user_id = auth.uid() or is_admin());
 
 -- Escrituras sensibles (crear pedido, enviar, cancelar, confirmar, liquidar, mensajes, valoraciones):
 -- deben hacerse con funciones de servidor (funciones con SECURITY DEFINER o funciones de borde) que validen

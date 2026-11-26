@@ -52,7 +52,11 @@ I18N.register("es", {
   "rate.one": "{avg} de 5 · {n} valoración", "rate.other": "{avg} de 5 · {n} valoraciones", "rate.none": "Sin valoraciones todavía",
   "rep.sent": "Denuncia recibida. Número: {no}.", "rep.invalid": "Indica el motivo y marca la declaración.",
   "cart.login": "Para pagar necesitas una cuenta de comprador.", "cart.age": "Para pagar debes verificar tu edad.", "cart.cta": "Entrar o crear cuenta", "cart.cta.age": "Verificar edad",
-  "msg.paid": "Pedido registrado: {no}. El pago queda retenido hasta que confirmes la recepción.", "msg.stock": "Alguna prenda ya no está disponible. Actualiza el pedido.", "msg.addr": "Completa tu nombre y dirección de entrega.", "o.link": "Ver mis pedidos",
+  "msg.paid": "Pedido registrado: {no}. El vendedor recibirá el aviso para prepararlo.", "msg.stock": "Alguna prenda ya no está disponible. Actualiza el pedido.", "msg.addr": "Completa tu nombre y dirección de entrega.", "o.link": "Ver mis pedidos",
+  // muestras, plazos, búsquedas y tiendas
+  "sample.tag": "Muestra", "shop.view": "Ver tienda", "spec.eta": "Plazo estimado",
+  "eta.domestic": "2–4 días laborables", "eta.eu": "4–8 días laborables", "eta.export": "7–14 días laborables",
+  "search.saved": "Búsqueda guardada. Te avisaremos en tu cuenta cuando aparezca algo nuevo.", "search.login": "Inicia sesión para guardar búsquedas.", "search.empty": "Aplica algún filtro o escribe algo antes de guardar la búsqueda.",
   // Canarias
   "tax.title.igic": "IGIC incluido: {amount} ({rate} %)",
   "tax.note.igic": "Vendedor profesional en Canarias. Precio con IGIC (tipo general). Estimación pendiente de validar por un asesor fiscal.",

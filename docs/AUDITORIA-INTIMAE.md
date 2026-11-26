@@ -229,3 +229,16 @@ Capital inmovilizado por reservas del procesador (10 % del volumen durante 6 mes
 **Política decidida:** Intimae no gestiona devoluciones, reclamaciones ni disputas. Efectos: sin estados de disputa en el código; pago que no se congela por reclamaciones; contracargos imputados al vendedor en las condiciones. **Riesgos [Probable]:** los procesadores y las tarjetas esperan un procedimiento de reclamaciones y los consumidores UE conservan derechos frente a vendedores profesionales que unas condiciones no pueden eliminar; sin protección al comprador es previsible más contracargos, que son justo lo que pone en riesgo la cuenta de pagos. Hay que validarlo con el abogado y con el procesador.
 
 **Qué no hay que dar por hecho:** el modo demostración **no** es una versión operable. Cuentas, contraseñas y administración no tienen seguridad real porque no hay servidor.
+
+
+---
+
+## 13. Actualización del 26-11-2026: incidencias, muestras y tienda pública
+
+Siguiendo el Documento Maestro v2 y v3 se ha revertido la política «Intimae no gestiona reclamaciones»: ahora hay un **procedimiento de incidencias** (motivo, pruebas, respuesta del vendedor en plazo, resolución motivada: reembolso total, parcial o rechazo) con la liquidación en pausa mientras esté abierta, y una página legal propia (`incidencias.html`). Se ha eliminado el lenguaje de «pago retenido» y de custodia. El texto sobre higiene ya no afirma que la excepción se aplique de forma automática.
+
+Se han añadido, siempre en modo demostración: tienda pública por vendedor con distintivos de confianza separados (sin puntuación única), seguir tiendas, bloqueo de vendedores, búsquedas guardadas con avisos, centro de avisos, filtros de precio, color, país y valoración, ordenación por valoración y popularidad, borradores, duplicado e historial de anuncios, estadísticas y respuesta a valoraciones, denuncia de tiendas, navegación inferior en móvil, registro de aceptación de condiciones, cabeceras de seguridad y pruebas dentro del repositorio.
+
+**Las muestras se mantienen** para enseñar el proyecto, etiquetadas como «Muestra» y con banner de demostración; se pueden ocultar desde Ajustes.
+
+**Sigue siendo una maqueta:** sin servidor real, sin pagos reales, sin verificación real de edad ni identidad, y el panel de administración sin protección. El repositorio es público.

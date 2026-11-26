@@ -3,10 +3,14 @@
   "use strict";
 
   var STATUS = {
-    paid_held: ["Pago retenido", "warn"], shipped: ["Enviado", "warn"], delivered: ["Entregado", "ok"], released: ["Pago liquidado", "ok"], cancelled: ["Cancelado", "bad"],
-    pending: ["Pendiente de revisión", "warn"], active: ["Publicado", "ok"], paused: ["En pausa", ""], sold: ["Vendido", "ok"], rejected: ["Rechazado", "bad"], removed: ["Retirado", "bad"],
-    verified: ["Verificado", "ok"], suspended: ["Suspendido", "bad"], open: ["Abierta", "warn"], dismissed: ["Desestimada", ""]
+    paid: ["Pagado", "warn"], shipped: ["Enviado", "warn"], delivered: ["Entregado", "ok"], released: ["Liquidado", "ok"], cancelled: ["Cancelado", "bad"],
+    incident: ["Incidencia", "bad"], disputed: ["En disputa", "bad"], refunded: ["Reembolsado", ""],
+    pending: ["Pendiente de revisión", "warn"], draft: ["Borrador", ""], active: ["Publicado", "ok"], paused: ["En pausa", ""], sold: ["Vendido", "ok"], rejected: ["Rechazado", "bad"], removed: ["Retirado", "bad"],
+    verified: ["Verificado", "ok"], suspended: ["Suspendido", "bad"], open: ["Abierta", "warn"], dismissed: ["Desestimada", ""], resolved: ["Resuelta", "ok"]
   };
+
+  var REASONS = { no_enviado: "Pedido no enviado", no_recibido: "Pedido no recibido", distinto: "Producto distinto al anunciado", danado: "Producto dañado", descripcion: "Descripción engañosa", fraude: "Posible fraude", pago: "Problema con el pago", privacidad: "Problema de privacidad" };
+  var WHO = { b: "Comprador", s: "Vendedor", a: "Intimae" };
 
   function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
   function add(parent) { for (var i = 1; i < arguments.length; i++) if (arguments[i]) parent.appendChild(arguments[i]); return parent; }
@@ -95,5 +99,15 @@
     return { refresh: function () { var id = (location.hash || "").slice(1) || defs[0].id; build(); show(id); } };
   }
 
-  window.UI = { el: el, add: add, pill: pill, date: date, money: money, btn: btn, field: field, input: input, select: select, table: table, clear: clear, toast: toast, run: run, download: download, csv: csv, resizeImage: resizeImage, tabs: tabs, STATUS: STATUS };
+  // Conversación de una incidencia: me = "b" | "s" | "a" (quien la mira)
+  function bubbles(msgs, me) {
+    var box = el("div", "bubbles");
+    msgs.forEach(function (m) { var b = el("div", "bubble" + (m.from === me ? " me" : ""), m.text); b.appendChild(el("small", null, (m.from === me ? "Tú" : WHO[m.from]) + " · " + date(m.at))); box.appendChild(b); });
+    return box;
+  }
+  function evidence(list) {
+    var th = el("div", "thumbs"); (list || []).forEach(function (d) { var i = el("img"); i.src = d; i.alt = "Prueba adjunta"; th.appendChild(i); }); return th;
+  }
+
+  window.UI = { REASONS: REASONS, bubbles: bubbles, evidence: evidence, el: el, add: add, pill: pill, date: date, money: money, btn: btn, field: field, input: input, select: select, table: table, clear: clear, toast: toast, run: run, download: download, csv: csv, resizeImage: resizeImage, tabs: tabs, STATUS: STATUS };
 })();

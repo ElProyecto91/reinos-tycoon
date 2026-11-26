@@ -30,7 +30,7 @@
     var s = me(), ls = INT.listing.mine(s.id), st = INT.seller.statement(s.id), rt = INT.seller.rating(s.id);
     var k = el("div", "kpis");
     add(k, kpi("Anuncios publicados", String(ls.filter(function (l) { return l.status === "active"; }).length)), kpi("En revisión", String(ls.filter(function (l) { return l.status === "pending"; }).length)),
-      kpi("Pedidos por enviar", String(st.orders.filter(function (o) { return o.status === "paid_held"; }).length)), kpi("Pago retenido", U.money(st.pending)), kpi("Pago liquidado", U.money(st.released)),
+      kpi("Pedidos por enviar", String(st.orders.filter(function (o) { return o.status === "paid"; }).length)), kpi("Pendiente de liquidar", U.money(st.pending)), kpi("Liquidado", U.money(st.released)),
       kpi("Valoración", rt.n ? rt.avg + " / 5 (" + rt.n + ")" : "Sin valoraciones"));
     p.appendChild(k);
     if (s.status === "pending") add(p, el("div", "notice", s.fiscal && s.fiscal.complete ? "Tu cuenta está pendiente de verificación. Un administrador revisará tus datos fiscales; hasta entonces no puedes publicar." : "Para que verifiquemos tu cuenta, completa primero la pestaña «Datos fiscales». Hasta entonces no puedes publicar."));
@@ -68,11 +68,13 @@
     add(ck, cb, el("span", null, "La prenda es mía y la he usado yo. Las fotos son mías, no muestran a menores ni a nadie sin su consentimiento, y la descripción es veraz.")); f.appendChild(ck);
     var acts = el("div", "acts"); acts.style.cssText = "display:flex;gap:10px";
     var sb = el("button", "btn", l ? "Guardar y enviar a revisión" : "Enviar a revisión"); sb.type = "submit";
-    add(acts, sb, U.btn("Cancelar", function () { U.clear(host); editing = null; }, "btn--line")); f.appendChild(acts);
-    f.addEventListener("submit", function (e) {
-      e.preventDefault(); var d = new FormData(f), data = { type: d.get("type"), size: d.get("size"), title: d.get("title"), price: d.get("price"), days: d.get("days"), material: d.get("material"), colour: d.get("colour"), desc: d.get("desc"), imgs: photos };
-      U.run(function () { return editing ? INT.listing.update(s.id, editing.id, data) : INT.listing.create(s.id, data); }, "Anuncio enviado a revisión.").then(refresh, function () {});
-    });
+    function save(draft) {
+      if (!f.checkValidity()) { f.reportValidity(); return; }
+      var d = new FormData(f), data = { type: d.get("type"), size: d.get("size"), title: d.get("title"), price: d.get("price"), days: d.get("days"), material: d.get("material"), colour: d.get("colour"), desc: d.get("desc"), imgs: photos };
+      U.run(function () { return editing ? INT.listing.update(s.id, editing.id, data, draft) : INT.listing.create(s.id, data, draft); }, draft ? "Borrador guardado." : "Anuncio enviado a revisión.").then(refresh, function () {});
+    }
+    add(acts, sb, U.btn("Guardar borrador", function () { save(true); }, "btn--line"), U.btn("Cancelar", function () { U.clear(host); editing = null; }, "btn--line")); f.appendChild(acts);
+    f.addEventListener("submit", function (e) { e.preventDefault(); save(false); });
     host.appendChild(f); f.scrollIntoView({ block: "nearest" });
   }
   function tabListings(p) {
@@ -86,10 +88,14 @@
       var r = el("div", "row-card"), im = el("img"); im.src = thumb(l); im.alt = ""; im.width = 72; im.height = 90;
       var info = el("div"); add(info, el("h3", null, l.title), el("small", null, "N.º " + l.ref + " · " + l.size + " · " + l.days + " días de uso · " + (l.date || "")), U.pill(l.status));
       if (l.moderation && l.moderation.reason) info.appendChild(el("p", "muted-s", "Motivos: " + l.moderation.reason));
+      info.appendChild(el("small", null, (l.views || 0) + " visitas"));
+      if (l.history && l.history.length) { var hd = el("details"); hd.appendChild(el("summary", null, "Historial de cambios")); var hu = el("ul", "history"); l.history.forEach(function (x) { hu.appendChild(el("li", null, U.date(x.at) + " · " + x.action)); }); hd.appendChild(hu); info.appendChild(hd); }
       var acts = el("div", "acts");
+      if (l.status === "draft") acts.appendChild(U.btn("Enviar a revisión", function () { U.run(function () { return INT.listing.submit(s.id, l.id); }, "Enviado a revisión.").then(refresh, function () {}); }));
       if (["sold", "removed"].indexOf(l.status) === -1) acts.appendChild(U.btn("Editar", function () { listingForm(host, l); host.scrollIntoView({ behavior: "auto" }); }, "btn--line"));
       if (l.status === "active") acts.appendChild(U.btn("Pausar", function () { U.run(function () { return INT.listing.setStatus(s.id, l.id, "paused"); }).then(refresh, function () {}); }, "btn--line"));
       if (l.status === "paused") acts.appendChild(U.btn("Reanudar", function () { U.run(function () { return INT.listing.setStatus(s.id, l.id, "active"); }).then(refresh, function () {}); }, "btn--line"));
+      acts.appendChild(U.btn("Duplicar", function () { U.run(function () { return INT.listing.duplicate(s.id, l.id); }, "Copia creada como borrador.").then(refresh, function () {}); }, "btn--line"));
       if (l.status !== "sold") acts.appendChild(U.btn("Eliminar", function () { if (confirm("¿Eliminar este anuncio?")) U.run(function () { return INT.listing.remove(s.id, l.id); }).then(refresh, function () {}); }, "btn--line"));
       info.appendChild(acts); add(r, im, info, el("strong", "num", U.money(l.price))); p.appendChild(r);
     });
@@ -98,16 +104,16 @@
   /* ---------- pedidos ---------- */
   function tabOrders(p) {
     var s = me(); INT.tick(); var list = INT.orders.forSeller(s.id);
-    p.appendChild(el("p", "app-sub", "Envía en bolsa sellada, con embalaje neutro y sin tus datos. Intimae no gestiona devoluciones ni reclamaciones: lo que ocurra tras la entrega se resuelve entre tú y el comprador por mensajes."));
+    p.appendChild(el("p", "app-sub", "Envía en bolsa sellada, con embalaje neutro y sin tus datos. Si un comprador abre una incidencia, la verás en la pestaña «Incidencias» y deberás responder en plazo."));
     if (!list.length) return p.appendChild(el("p", "empty-s", "Aún no tienes pedidos."));
     list.forEach(function (o) {
       var c = el("article", "card"); c.style.marginBottom = "14px";
       var h = el("div", "row-card"); h.style.cssText = "grid-template-columns:1fr auto;padding-top:0"; var l = el("div"); add(l, el("h3", null, o.no), el("small", null, U.date(o.createdAt) + " · Comprador n.º " + o.buyer.replace("u", ""))); add(h, l, U.pill(o.status)); c.appendChild(h);
       var ul = el("ul"); o.items.forEach(function (it) { ul.appendChild(el("li", null, "N.º " + it.ref + " · " + it.title + " · " + U.money(it.unit))); }); c.appendChild(ul);
       c.appendChild(el("p", "muted-s", "Subtotal " + U.money(o.subtotal) + " · Comisión (" + o.commissionPct + " %) −" + U.money(o.commission) + " · Envío " + U.money(o.shipping) + " · Recibes " + U.money(o.sellerNet)));
-      if (["paid_held", "shipped"].indexOf(o.status) !== -1) c.appendChild(el("p", null, "Entrega a: " + o.addr.name + ", " + o.addr.line + " (" + I18N.country(o.addr.country) + ")"));
+      if (["paid", "shipped"].indexOf(o.status) !== -1) c.appendChild(el("p", null, "Entrega a: " + o.addr.name + ", " + o.addr.line + " (" + I18N.country(o.addr.country) + ")"));
       if (o.tracking) c.appendChild(el("p", "muted-s", "Seguimiento: " + o.carrier + " " + o.tracking));
-      if (o.status === "paid_held") {
+      if (o.status === "paid") {
         var f = el("form", "inline-form"), car = U.select("carrier", ["Correos", "SEUR", "DHL", "UPS", "Otro"]), tr = U.input("tracking", "text", { required: "", maxlength: "60", placeholder: "Número de seguimiento" });
         var b = U.btn("Marcar como enviado", function () {}); b.type = "submit"; add(f, car, tr, b); f.style.marginTop = "12px";
         f.addEventListener("submit", function (e) { e.preventDefault(); U.run(function () { return INT.orders.ship(s.id, o.id, car.value, tr.value); }, "Pedido marcado como enviado.").then(refresh, function () {}); });
@@ -122,8 +128,8 @@
   /* ---------- cobros ---------- */
   function tabPayouts(p) {
     var s = me(), st = INT.seller.statement(s.id), k = el("div", "kpis");
-    add(k, kpi("Retenido hasta la entrega", U.money(st.pending)), kpi("Liquidado", U.money(st.released)), kpi("Comisión vigente", INT.settings().commission + " %")); p.appendChild(k);
-    p.appendChild(el("p", "app-sub", "El pago queda retenido hasta que el comprador confirma la recepción o pasan " + INT.settings().autoDeliverDays + " días desde el envío; después se liquida a los " + INT.settings().autoReleaseDays + " días. No hay reclamaciones que lo congelen: Intimae no las gestiona. Los contracargos del procesador de pagos se imputan al vendedor."));
+    add(k, kpi("Pendiente de liquidar", U.money(st.pending)), kpi("Liquidado", U.money(st.released)), kpi("Comisión vigente", INT.settings().commission + " %")); p.appendChild(k);
+    p.appendChild(el("p", "app-sub", "Cada pedido se liquida " + INT.settings().autoReleaseDays + " días después de la entrega (o de que el comprador confirme la recepción; si no la confirma, la entrega se da por hecha a los " + INT.settings().autoDeliverDays + " días del envío). Si hay una incidencia abierta, la liquidación de ese pedido queda en pausa hasta que se resuelva. Los reembolsos y contracargos que imponga el proveedor de pagos se descontarán de tus liquidaciones."));
     var rows = st.orders.map(function (o) { return [o.no, U.date(o.createdAt), U.STATUS[o.status][0], U.money(o.subtotal), "−" + U.money(o.commission), U.money(o.shipping), U.money(o.status === "cancelled" ? 0 : o.sellerNet)]; });
     if (!rows.length) return p.appendChild(el("p", "empty-s", "Sin movimientos todavía."));
     p.appendChild(U.table(["Pedido", "Fecha", "Estado", "Subtotal", "Comisión", "Envío", "Neto"], rows));
@@ -144,6 +150,69 @@
       f.addEventListener("submit", function (e) { e.preventDefault(); U.run(function () { return Promise.resolve().then(function () { return INT.msg.reply(t.id, "seller", ta.value); }).catch(msgError); }).then(refresh, function () {}); });
       c.appendChild(f); p.appendChild(c); INT.msg.markRead(t.id, "seller");
     });
+  }
+
+  /* ---------- incidencias ---------- */
+  function tabIncidents(p) {
+    var s = me(), list = INT.incident.forSeller(s.id);
+    p.appendChild(el("p", "app-sub", "Responde en " + INT.settings().incidentReplyDays + " días. Si no respondes, la incidencia pasa a revisión de Intimae sin tu versión. Mientras esté abierta, la liquidación del pedido queda en pausa."));
+    if (!list.length) return p.appendChild(el("p", "empty-s", "No tienes incidencias."));
+    list.forEach(function (inc) {
+      var c = el("div", "thread"), h = el("header"); add(h, el("span", null, inc.no + " · pedido " + inc.orderNo + " · " + U.REASONS[inc.reason]), U.pill(inc.status === "resolved" ? "resolved" : inc.status === "open" ? "incident" : "disputed", inc.status === "open" ? "Pendiente de tu respuesta" : inc.status === "disputed" ? "En revisión" : "Resuelta"));
+      add(c, h, U.bubbles(inc.messages, "s"), U.evidence(inc.evidence));
+      if (inc.status !== "resolved") c.appendChild((function () {
+        var f = el("form", "inline-form"), ta = el("textarea"); ta.placeholder = "Tu respuesta…"; ta.required = true; ta.maxLength = 800; ta.style.minHeight = "44px"; var b = U.btn("Responder", function () {}); b.type = "submit"; add(f, ta, b);
+        f.addEventListener("submit", function (e) { e.preventDefault(); U.run(function () { return INT.incident.reply("seller", s.id, inc.id, ta.value); }, "Respuesta enviada.").then(refresh, function () {}); }); return f; })());
+      p.appendChild(c);
+    });
+  }
+
+  /* ---------- estadísticas ---------- */
+  function tabStats(p) {
+    var s = me(), st = INT.seller.stats(s.id), k = el("div", "kpis");
+    add(k, kpi("Visitas a tus fichas", String(st.views)), kpi("Favoritos", String(st.favs)), kpi("Pedidos", String(st.orders)), kpi("Conversión", st.conversion + " %"), kpi("Ingresos brutos", U.money(st.gross)), kpi("Comisiones", U.money(st.commission)), kpi("Ingresos netos", U.money(st.net)));
+    p.appendChild(k);
+    p.appendChild(el("p", "app-sub", "Visitas: una por navegador y anuncio. Los pedidos cancelados y reembolsados no cuentan. Son datos de la demostración."));
+    if (st.top.length) p.appendChild(U.table(["Anuncio", "Título", "Visitas", "Favoritos"], st.top.map(function (t) { return ["N.º " + t.ref, t.title, t.views, t.favs]; })));
+  }
+
+  /* ---------- valoraciones ---------- */
+  function tabReviews(p) {
+    var s = me(), list = INT.review.forSeller(s.id).slice().reverse();
+    if (!list.length) return p.appendChild(el("p", "empty-s", "Aún no tienes valoraciones. Solo pueden valorar compradores con un pedido entregado."));
+    list.forEach(function (r) {
+      var c = el("div", "thread"); add(c, el("header", null, "★".repeat(r.rating) + "☆".repeat(5 - r.rating) + " · pedido verificado"), el("p", null, r.text || "(sin comentario)"), el("p", "muted-s", U.date(r.at)));
+      if (r.reply) c.appendChild(el("p", "muted-s", "Tu respuesta: " + r.reply.text));
+      else {
+        var f = el("form", "inline-form"), ta = el("input"); ta.placeholder = "Responder públicamente…"; ta.maxLength = 300; ta.required = true; var b = U.btn("Responder", function () {}); b.type = "submit"; add(f, ta, b);
+        f.addEventListener("submit", function (e) { e.preventDefault(); U.run(function () { return INT.review.reply(s.id, r.id, ta.value); }, "Respuesta publicada.").then(refresh, function () {}); }); c.appendChild(f);
+      }
+      p.appendChild(c);
+    });
+  }
+
+  /* ---------- tienda pública ---------- */
+  function tabShop(p) {
+    var s = me(), sh = s.shop || {}, g = el("div", "auth-grid"), f = el("form", "card form stack"); f.appendChild(el("h2", null, "Tu tienda pública"));
+    var bio = el("textarea"); bio.name = "bio"; bio.maxLength = 400; bio.value = sh.bio || ""; var pol = el("textarea"); pol.name = "policy"; pol.maxLength = 400; pol.value = sh.policy || "";
+    add(f, el("p", "muted-s", "Se muestra en la página pública de tu tienda. No incluyas nombre real, dirección, teléfono, correo ni enlaces."),
+      U.field("Nombre de la tienda", U.input("name", "text", { maxlength: "40", value: sh.name || "" })), U.field("Descripción", bio), U.field("Políticas de tu tienda (envío, preparación…)", pol));
+    var b = el("button", "btn", "Guardar tienda"); b.type = "submit"; f.appendChild(b);
+    var a = el("a", "link", "Ver mi tienda pública"); a.href = "../../tienda/?s=" + encodeURIComponent(s.id); f.appendChild(a);
+    f.addEventListener("submit", function (e) { e.preventDefault(); var d = new FormData(f); U.run(function () { if (/@|https?:\/\/|www\./i.test(d.get("bio") + " " + d.get("policy") + " " + d.get("name"))) throw new Error("No incluyas correos ni enlaces."); return INT.seller.saveShop({ name: d.get("name"), bio: d.get("bio"), policy: d.get("policy") }); }, "Tienda guardada.").then(refresh, function () {}); });
+    var t = INT.seller.trust(s.id), tr = el("div", "card stack"); tr.appendChild(el("h2", null, "Tus indicadores de confianza"));
+    tr.appendChild(el("p", "muted-s", "Son hechos verificables, no una puntuación: una valoración aislada no cambia tus distintivos."));
+    t.badges.forEach(function (x) { var r = el("div"); add(r, U.pill(x.ok ? "ok" : "", x.ok ? "Sí" : "Aún no"), document.createTextNode(" " + x.label + " — " + x.help)); tr.appendChild(r); });
+    tr.appendChild(el("p", "muted-s", "Pedidos completados: " + t.completed + " · Enviados: " + (t.sentPct == null ? "—" : t.sentPct + " %") + " · Cancelados por ti: " + (t.cancelPct == null ? "—" : t.cancelPct + " %") + " · Preparación media: " + (t.prepHours == null ? "—" : t.prepHours + " h") + " · Incidencias: " + t.incidents));
+    add(g, f, tr); p.appendChild(g);
+  }
+
+  /* ---------- avisos ---------- */
+  function tabNotes(p) {
+    var s = me(), key = "s:" + s.id, list = INT.notify.list(key);
+    if (!list.length) return p.appendChild(el("p", "empty-s", "No tienes avisos."));
+    list.slice(0, 60).forEach(function (n) { var r = el("div", "thread"), h = el("header"); add(h, el("span", null, n.text), n.read ? null : U.pill("warn", "Nuevo")); add(r, h, el("p", "muted-s", U.date(n.at))); p.appendChild(r); });
+    INT.notify.readAll(key);
   }
 
   /* ---------- datos fiscales ---------- */
@@ -169,13 +238,18 @@
     $("#auth").hidden = true; $("#app").hidden = false; $("#logout").hidden = false;
     var sub = $("#sub"); sub.textContent = ""; sub.appendChild(document.createTextNode(s.alias + " · ")); sub.appendChild(U.pill(s.status));
     var unread = function () { return INT.msg.forSeller(s.id).reduce(function (a, t) { return a + INT.msg.unread(t, "seller"); }, 0); };
-    var toShip = function () { return INT.orders.forSeller(s.id).filter(function (o) { return o.status === "paid_held"; }).length; };
+    var toShip = function () { return INT.orders.forSeller(s.id).filter(function (o) { return o.status === "paid"; }).length; };
     ctl = U.tabs($("#tabbar"), $("#panel"), [
       { id: "resumen", label: "Resumen", render: tabHome },
       { id: "anuncios", label: "Anuncios", render: tabListings },
       { id: "pedidos", label: "Pedidos", badge: toShip, render: tabOrders },
+      { id: "incidencias", label: "Incidencias", badge: function () { return INT.incident.forSeller(s.id).filter(function (i) { return i.status === "open"; }).length; }, render: tabIncidents },
       { id: "cobros", label: "Cobros", render: tabPayouts },
+      { id: "estadisticas", label: "Estadísticas", render: tabStats },
+      { id: "valoraciones", label: "Valoraciones", render: tabReviews },
+      { id: "tienda", label: "Tienda", render: tabShop },
       { id: "mensajes", label: "Mensajes", badge: unread, render: tabMsgs },
+      { id: "avisos", label: "Avisos", badge: function () { return INT.notify.unread("s:" + s.id); }, render: tabNotes },
       { id: "fiscal", label: "Datos fiscales", render: tabFiscal }
     ]);
   }

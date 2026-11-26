@@ -50,12 +50,16 @@
   <span data-i18n="an.1">Envío discreto a 27 países de la UE</span><span data-i18n="an.2">Embalaje neutro</span><span data-i18n="an.3">Vendedores identificados</span>
 </div>
 
+<div class="demobar" role="note"><span data-i18n="demo.banner">Versión de demostración: los artículos, las tiendas y los precios son de muestra.</span> <a href="vendedores/#solicitud" data-i18n="demo.link">Quiero ser vendedor fundador</a></div>
+
 <header class="site-header">
   <div class="wrap site-header__in">
     <nav class="menu" id="menu" data-i18n-attr="aria-label:aria.main" aria-label="Principal">
       <a href="#catalogo" data-i18n="nav.catalog">Catálogo</a>
+      <a href="#tiendas" data-i18n="nav.shops">Tiendas</a>
       <a href="#como" data-i18n="nav.how">Cómo funciona</a>
-      <a href="#impuestos" data-i18n="nav.taxes">Impuestos</a>
+      <a href="#seguridad" data-i18n="nav.safety">Seguridad</a>
+      <a href="#vender" data-i18n="nav.sell">Vender</a>
       <a class="menu__account" href="cuenta/" data-i18n="nav.account">Mi cuenta</a>
       <div class="menu__prefs">
         <select class="lang" id="lang-menu" data-i18n-attr="aria-label:aria.lang" aria-label="Idioma"></select>
@@ -101,7 +105,7 @@
     </div>
   </section>
 
-  <section class="values" data-i18n-attr="aria-label:aria.values" aria-label="Garantías">
+  <section class="values" id="seguridad" data-i18n-attr="aria-label:aria.values" aria-label="Garantías">
     <div class="wrap values__grid">
       <div class="value"><svg class="icon"><use href="#i-shield"/></svg><div><h3 data-i18n="val.1.t">Vendedores identificados</h3><p data-i18n="val.1.p">Cada vendedor pasa una verificación de su cuenta antes de poder publicar.</p></div></div>
       <div class="value"><svg class="icon"><use href="#i-box"/></svg><div><h3 data-i18n="val.2.t">Envío neutro</h3><p data-i18n="val.2.p">Bolsa sellada, caja sin logotipos y remitente genérico.</p></div></div>
@@ -120,12 +124,22 @@
         <p data-i18n="cat.lead">Cada ficha indica prenda, talla, días de uso, quién vende, desde qué país y qué impuestos se aplican a tu destino. Fotos de muestra de <a href="https://unsplash.com/?utm_source=intimae&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">Unsplash</a>.</p>
       </div>
 
+      <div class="cats" id="cats" role="group" data-i18n-attr="aria-label:aria.cats" aria-label="Categorías"></div>
+
       <div class="toolbar" role="group" data-i18n-attr="aria-label:aria.filters" aria-label="Filtros del catálogo">
         <label class="field field--q"><span data-i18n="f.q">Buscar</span>
-          <input id="f-q" type="search" maxlength="60" placeholder="Prenda, color, material…" data-i18n-attr="placeholder:f.q.ph" autocomplete="off">
+          <input id="f-q" list="f-q-list" type="search" maxlength="60" placeholder="Prenda, color, material…" data-i18n-attr="placeholder:f.q.ph" autocomplete="off">
         </label>
         <label class="field"><span data-i18n="f.type">Prenda</span>
           <select id="f-type"><option value="" data-i18n="opt.all">Todas</option><option value="braga" data-i18n="type.braga">Braga</option><option value="tanga" data-i18n="type.tanga">Tanga</option><option value="sujetador" data-i18n="type.sujetador">Sujetador</option><option value="camison" data-i18n="type.camison">Camisón</option><option value="conjunto" data-i18n="type.conjunto">Lote</option></select>
+        </label>
+        <label class="field field--price"><span data-i18n="f.price">Precio (€)</span>
+          <span class="pr"><input id="f-pmin" type="number" min="0" step="1" inputmode="decimal" placeholder="Mín." data-i18n-attr="placeholder:f.pmin.ph" aria-label="Mín."><input id="f-pmax" type="number" min="0" step="1" inputmode="decimal" placeholder="Máx." data-i18n-attr="placeholder:f.pmax.ph" aria-label="Máx."></span>
+        </label>
+        <label class="field"><span data-i18n="f.color">Color</span><select id="f-color"></select></label>
+        <label class="field"><span data-i18n="f.country">Envía desde</span><select id="f-country"></select></label>
+        <label class="field"><span data-i18n="f.rating">Valoración mínima</span>
+          <select id="f-rating"><option value="0" data-i18n="opt.any">Cualquiera</option><option value="4" data-i18n="rate.min4">4 ★ o más</option><option value="3" data-i18n="rate.min3">3 ★ o más</option></select>
         </label>
         <label class="field"><span data-i18n="f.size">Talla</span>
           <select id="f-size"><option value="" data-i18n="opt.all">Todas</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
@@ -134,13 +148,30 @@
           <select id="f-days"><option value="0" data-i18n="opt.any">Cualquiera</option><option value="1" data-i18n="days.1">1 día o más</option><option value="3" data-i18n="days.3">3 días o más</option><option value="7" data-i18n="days.7">7 días o más</option></select>
         </label>
         <label class="field"><span data-i18n="f.sort">Ordenar por</span>
-          <select id="f-sort"><option value="new" data-i18n="sort.new">Novedades</option><option value="asc" data-i18n="sort.asc">Precio, de menor a mayor</option><option value="desc" data-i18n="sort.desc">Precio, de mayor a menor</option><option value="days" data-i18n="sort.days">Más uso</option></select>
+          <select id="f-sort"><option value="new" data-i18n="sort.new">Novedades</option><option value="asc" data-i18n="sort.asc">Precio, de menor a mayor</option><option value="desc" data-i18n="sort.desc">Precio, de mayor a menor</option><option value="days" data-i18n="sort.days">Más uso</option><option value="rating" data-i18n="sort.rating">Mejor valorados</option><option value="pop" data-i18n="sort.pop">Más populares</option></select>
         </label>
         <p class="toolbar__count num" id="count" aria-live="polite"></p>
       </div>
+      <div class="savebar"><button class="link" type="button" id="save-search" data-i18n="search.save">Guardar esta búsqueda</button><span class="msg" id="search-msg" role="status"></span></div>
+      <datalist id="f-q-list"></datalist>
 
       <div id="grid" class="grid"></div>
       <p id="empty" class="empty" hidden data-i18n="cat.empty">No hay piezas con esos filtros. Prueba a ampliarlos.</p>
+      <div id="founder-empty" class="founder-empty" hidden>
+        <h3 data-i18n="empty.h">Aún no hay artículos publicados</h3>
+        <p data-i18n="empty.p">Estamos abriendo el catálogo con los primeros vendedores fundadores.</p>
+        <a class="btn" href="vendedores/#solicitud" data-i18n="founder.cta">Quiero ser vendedor fundador</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="tiendas" hidden>
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><p class="eyebrow" data-i18n="sellers.eyebrow">02 · Tiendas</p><h2 data-i18n="sellers.h2">Tiendas <em>destacadas</em></h2></div>
+        <p data-i18n="sellers.lead">Cada vendedor tiene su propia tienda pública, con sus indicadores de confianza a la vista y sin datos personales.</p>
+      </div>
+      <div class="shops" id="shops"></div>
     </div>
   </section>
 
@@ -151,9 +182,26 @@
       </div>
       <ol class="steps">
         <li class="step reveal"><span class="step__n num">01</span><h3 data-i18n="how.1.t">Elige</h3><p data-i18n="how.1.p">Filtra por prenda, talla y días de uso. En cada ficha ves quién vende, desde dónde envía y qué impuestos se aplican a tu destino.</p></li>
-        <li class="step reveal"><span class="step__n num">02</span><h3 data-i18n="how.2.t">Confirma</h3><p data-i18n="how.2.p">Inicia sesión, indica tu país y paga. El dinero queda retenido hasta que confirmes la recepción. Por ahora todo funciona en modo demostración.</p></li>
+        <li class="step reveal"><span class="step__n num">02</span><h3 data-i18n="how.2.t">Confirma</h3><p data-i18n="how.2.p">Inicia sesión, indica tu país y paga. El proveedor de pagos procesa el cobro y el vendedor cobra después de la entrega. Por ahora todo funciona en modo demostración.</p></li>
         <li class="step reveal"><span class="step__n num">03</span><h3 data-i18n="how.3.t">Recibe</h3><p data-i18n="how.3.p">La prenda sale en bolsa sellada dentro de un embalaje neutro, sin logotipos ni datos personales del vendedor.</p></li>
       </ol>
+    </div>
+  </section>
+
+  <section class="section" id="vender">
+    <div class="wrap founder reveal">
+      <div>
+        <p class="eyebrow" data-i18n="founder.eyebrow">Vendedores fundadores</p>
+        <h2 data-i18n="founder.h2">Sé de las primeras <em>tiendas</em></h2>
+        <p class="founder__lead" data-i18n="founder.lead">Abrimos Intimae con un grupo reducido de vendedores. Alta gratuita, ayuda para configurar tu tienda y atención prioritaria, sin obligación de suscripción.</p>
+        <a class="btn" href="vendedores/#solicitud" data-i18n="founder.cta">Quiero ser vendedor fundador</a>
+      </div>
+      <ul class="founder__list">
+        <li data-i18n="founder.1">Alta y publicación gratuitas al principio</li>
+        <li data-i18n="founder.2">Perfil destacado temporal</li>
+        <li data-i18n="founder.3">Ayuda para montar tu tienda</li>
+        <li data-i18n="founder.4">Tu tienda pública, estadísticas y valoraciones verificadas</li>
+      </ul>
     </div>
   </section>
 
@@ -182,7 +230,7 @@
         <details><summary data-i18n="faq.3.q">¿Puedo comprar a un vendedor de otro país?</summary><p data-i18n="faq.3.a">Sí, si el vendedor está en la UE. Elige tu país de envío arriba y verás en cada ficha el coste de envío y el tratamiento de IVA.</p></details>
         <details><summary data-i18n="faq.4.q">¿Cómo sé si el vendedor es particular o profesional?</summary><p data-i18n="faq.4.a">Cada ficha lo indica. Los particulares no cobran IVA y, al no ser una venta profesional, no se aplican las normas de consumo de la UE. Con vendedores profesionales sí tienes desistimiento y garantía legal.</p></details>
         <details><summary data-i18n="faq.5.q">¿Y la higiene?</summary><p data-i18n="faq.5.a">Son artículos usados y se venden como tales. Se envían en bolsa hermética. Lávalos antes de volver a usarlos.</p></details>
-        <details><summary data-i18n="faq.7.q">¿Quién se encarga de devoluciones y reclamaciones?</summary><p data-i18n="faq.7.a">Intimae es solo intermediario: no gestiona devoluciones, reclamaciones ni disputas. Cualquier asunto sobre una compra se resuelve directamente con el vendedor por mensajes. Antes del envío puedes cancelar el pedido y recuperar el importe íntegro.</p></details>
+        <details><summary data-i18n="faq.7.q">¿Qué pasa si hay un problema con mi pedido?</summary><p data-i18n="faq.7.a">Abre una incidencia desde tu cuenta con el motivo y pruebas. El vendedor responde, Intimae revisa el caso y aplica el procedimiento del proveedor de pagos. Antes del envío puedes cancelar el pedido y recuperar el importe íntegro. Tus derechos legales como consumidor no se ven afectados.</p></details>
         <details><summary data-i18n="faq.6.q">¿Qué datos guardáis?</summary><p data-i18n="faq.6.a">Lo mínimo para tramitar el pedido, con tu consentimiento explícito para los datos que puedan revelar tu vida sexual. El carrito vive solo en tu navegador. Más detalle en la <a href="privacidad.html" style="text-decoration:underline">política de privacidad</a>.</p></details>
       </div>
     </div>
@@ -194,7 +242,7 @@
     <div class="footer__grid">
       <div><a class="wordmark" href="#top">Intimae</a><p data-i18n="ft.about">Mercado europeo de prendas íntimas de segunda mano entre adultos. Sitio para mayores de 18 años.</p></div>
       <div><h4 data-i18n="ft.h.shop">Tienda</h4><ul><li><a href="#catalogo" data-i18n="ft.catalog">Catálogo</a></li><li><a href="#como" data-i18n="ft.how">Cómo funciona</a></li><li><a href="cuenta/" data-i18n="nav.account">Mi cuenta</a></li><li><a href="envios.html" data-i18n="ft.ship">Envíos y entrega</a></li><li><a href="iva.html" data-i18n="ft.vat">IVA e impuestos</a></li></ul></div>
-      <div><h4 data-i18n="ft.h.legal">Legal</h4><ul><li><a href="aviso-legal.html" data-i18n="ft.aviso">Aviso legal</a></li><li><a href="privacidad.html" data-i18n="ft.priv">Privacidad</a></li><li><a href="cookies.html" data-i18n="ft.cook">Cookies</a></li><li><a href="condiciones-compra.html" data-i18n="ft.compra">Condiciones de compra</a></li><li><a href="normas.html" data-i18n="ft.normas">Normas y denuncias</a></li></ul></div>
+      <div><h4 data-i18n="ft.h.legal">Legal</h4><ul><li><a href="aviso-legal.html" data-i18n="ft.aviso">Aviso legal</a></li><li><a href="privacidad.html" data-i18n="ft.priv">Privacidad</a></li><li><a href="cookies.html" data-i18n="ft.cook">Cookies</a></li><li><a href="condiciones-compra.html" data-i18n="ft.compra">Condiciones de compra</a></li><li><a href="incidencias.html" data-i18n="ft.incid">Incidencias y reclamaciones</a></li><li><a href="normas.html" data-i18n="ft.normas">Normas y denuncias</a></li></ul></div>
       <div><h4 data-i18n="ft.h.sell">¿Quieres vender?</h4><ul><li><a href="vendedores/" data-i18n="ft.sell">Vender en Intimae</a></li></ul></div>
     </div>
     <div class="footer__legal">
@@ -213,11 +261,13 @@
     <div class="seller-line" id="pdp-seller"></div>
     <div class="price price--lg num" id="pdp-price"></div>
     <div class="taxbox" id="pdp-tax" aria-live="polite"></div>
+    <div class="protect"><strong data-i18n="pdp.protect.h">Protección de la compra</strong><p data-i18n="pdp.protect.p">Si el pedido no llega o no es lo anunciado, abre una incidencia en tu cuenta. Intimae la revisa con el vendedor y aplica el procedimiento del proveedor de pagos. No podemos prometer reembolsos fuera de ese procedimiento.</p></div>
     <dl class="specs" id="pdp-specs"></dl>
     <div class="pdp__actions">
       <button class="btn" type="button" id="pdp-add" data-i18n="pdp.add">Añadir al pedido</button>
       <button class="btn btn--line" type="button" id="pdp-fav"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><span id="pdp-fav-t"></span></button>
       <button class="btn btn--line" type="button" id="pdp-ask" data-i18n="pdp.ask">Preguntar al vendedor</button>
+      <a class="link" id="pdp-shop" href="tienda/" data-i18n="pdp.shop">Ver tienda</a>
       <button class="link" id="pdp-report" type="button" data-i18n="pdp.report">Denunciar este anuncio</button>
     </div>
     <div class="ask" id="pdp-askbox" hidden>
@@ -273,6 +323,14 @@
     </form>
   </div>
 </dialog>
+
+<nav class="mnav" id="mnav" data-i18n-attr="aria-label:aria.main" aria-label="Principal">
+  <a href="#top" data-i18n="mnav.home">Inicio</a>
+  <a href="#catalogo" id="mn-search" data-i18n="mnav.search">Buscar</a>
+  <a href="cuenta/#favoritos" data-i18n="mnav.favs">Favoritos</a>
+  <a href="cuenta/#mensajes"><span data-i18n="mnav.msgs">Mensajes</span><span class="mnav__n" id="mn-msgs" hidden></span></a>
+  <a href="cuenta/" data-i18n="mnav.acct">Cuenta</a>
+</nav>
 
 <script src="js/i18n.js"></script>
 <script src="i18n/es.js"></script>

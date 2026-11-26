@@ -2,15 +2,15 @@
 // Las fotos son de muestra, de Unsplash (https://unsplash.com): solo prendas, sin personas.
 // price: precio final en € (con IVA incluido cuando el vendedor lo cobra).
 window.SELLERS = {
-  lunaroja:  { alias: "Lunaroja",  country: "ES", type: "profesional", vat: "margin",   since: 2025 },
-  cleo:      { alias: "Cleo",      country: "GB", type: "profesional", vat: "standard", since: 2025 },
-  maribel:   { alias: "Maribel_V", country: "ES", type: "particular",  vat: "none",     since: 2026 },
-  sofiluz:   { alias: "Sofi.Luz",  country: "PT", type: "particular",  vat: "none",     since: 2026 },
-  carlota:   { alias: "Carlota",   country: "FR", type: "profesional", vat: "margin",   since: 2025 },
-  aitana:    { alias: "Aitana",    country: "DE", type: "profesional", vat: "standard", since: 2025 },
-  noa:       { alias: "Noa",       country: "ES", type: "particular",  vat: "none",     since: 2026 },
-  mar:       { alias: "Mar",       country: "IT", type: "particular",  vat: "none",     since: 2026 },
-  fitirene:  { alias: "Fit_Irene", country: "NL", type: "profesional", vat: "margin",   since: 2026 }
+  lunaroja:  { alias: "Lunaroja",  country: "ES", type: "profesional", vat: "margin",   since: 2025, bio: "Tienda de muestra. Encaje y satén cuidados, siempre en perfecto estado." },
+  cleo:      { alias: "Cleo",      country: "GB", type: "profesional", vat: "standard", since: 2025, bio: "Tienda de muestra. Lotes de lencería y envíos rápidos desde el Reino Unido." },
+  maribel:   { alias: "Maribel_V", country: "ES", type: "particular",  vat: "none",     since: 2026, bio: "Perfil de muestra. Vendedora particular con prendas de uso ligero." },
+  sofiluz:   { alias: "Sofi.Luz",  country: "PT", type: "particular",  vat: "none",     since: 2026, bio: "Perfil de muestra. Bralettes y conjuntos de encaje." },
+  carlota:   { alias: "Carlota",   country: "FR", type: "profesional", vat: "margin",   since: 2025, bio: "Tienda de muestra. Lencería francesa de segunda mano." },
+  aitana:    { alias: "Aitana",    country: "DE", type: "profesional", vat: "standard", since: 2025, bio: "Tienda de muestra. Selección alemana de encaje y microfibra." },
+  noa:       { alias: "Noa",       country: "ES", type: "particular",  vat: "none",     since: 2026, bio: "Perfil de muestra. Satén y camisones." },
+  mar:       { alias: "Mar",       country: "IT", type: "particular",  vat: "none",     since: 2026, bio: "Perfil de muestra. Tops y camisones italianos." },
+  fitirene:  { alias: "Fit_Irene", country: "NL", type: "profesional", vat: "margin",   since: 2026, bio: "Tienda de muestra. Básicos de satén en tonos neutros." }
 };
 
 window.PRODUCTS = [
